@@ -1,0 +1,22 @@
+<!-- رسائل التنبيه -->
+@if(session('success'))
+<div class="container mx-auto px-4 mt-4">
+    <div class="bg-green-500/20 border border-green-400 text-green-200 px-4 py-3 rounded-lg" data-aos="fade-down">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle ml-2"></i>
+            {{ session('success') }}
+        </div>
+    </div>
+</div>
+@endif
+
+@if(session('error'))
+<div class="container mx-auto px-4 mt-4">
+    <div class="bg-red-500/20 border border-red-400 text-red-200 px-4 py-3 rounded-lg" data-aos="fade-down">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle ml-2"></i>
+            {{ session('error') }}
+        </div>
+    </div>
+</div>
+@endif
