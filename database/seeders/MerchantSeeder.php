@@ -23,10 +23,9 @@ class MerchantSeeder extends Seeder
             'store_description' => 'متخصص في بيع الأجهزة الإلكترونية والهواتف الذكية بأفضل الأسعار',
             'store_category' => 'electronics',
             'store_phone' => '+905551234567',
-            'store_address' => 'شارع الاستقلال، إسطنبول',
             'store_city' => 'إسطنبول',
-            'store_verified' => true,
-            'store_opened_at' => now()->subYears(2)
+            'product_limit' => 10,
+            'is_active' => true,
         ]);
 
         // إنشاء تاجر ثاني
@@ -41,10 +40,9 @@ class MerchantSeeder extends Seeder
             'store_description' => 'أجمل وأحدث موديلات الملابس التركية بأسعار منافسة',
             'store_category' => 'clothes',
             'store_phone' => '+905551234568',
-            'store_address' => 'شارع الاتحاد، غازي عنتاب',
             'store_city' => 'غازي عنتاب',
-            'store_verified' => true,
-            'store_opened_at' => now()->subYear()
+            'product_limit' => 10,
+            'is_active' => true,
         ]);
 
         // إنشاء مستخدم عادي
@@ -54,7 +52,9 @@ class MerchantSeeder extends Seeder
             'password' => Hash::make('password'),
             'phone' => '+905551234569',
             'user_type' => 'user',
-            'city' => 'أنقرة'
+            'city' => 'أنقرة',
+            'product_limit' => 5,
+            'is_active' => true,
         ]);
 
         $this->command->info('✅ تم إنشاء 2 تاجر و1 مستخدم عادي بنجاح!');

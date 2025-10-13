@@ -6,8 +6,6 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Discount;
-use App\Models\Rating;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
@@ -42,7 +40,7 @@ class DatabaseSeeder extends Seeder
         Schema::enableForeignKeyConstraints();
 
         // إضافة التصنيفات أولاً
-        $this->createCategories();
+        $this->call(CategorySeeder::class);
         
         // إضافة المستخدمين الأساسيين
         $this->createBasicUsers();
@@ -50,42 +48,11 @@ class DatabaseSeeder extends Seeder
         // إضافة المنتجات
         $this->createProducts();
         
-        // تخطي التقييمات مؤقتاً
-        echo "⏭️  تخطي إضافة التقييمات مؤقتاً\n";
-
         echo "🎉 تم إعداد قاعدة البيانات بنجاح!\n";
-    }
-
-    private function createCategories()
-    {
-        // التحقق من وجود جدول categories
-        if (!Schema::hasTable('categories')) {
-            echo "❌ جدول التصنيفات غير موجود - تخطي\n";
-            return;
-        }
-
-        $categories = [
-            ['name' => 'ملابس', 'slug' => 'clothes', 'icon' => 'fas fa-tshirt'],
-            ['name' => 'إلكترونيات', 'slug' => 'electronics', 'icon' => 'fas fa-laptop'],
-            ['name' => 'أدوات منزلية', 'slug' => 'home', 'icon' => 'fas fa-home'],
-            ['name' => 'بقالة', 'slug' => 'grocery', 'icon' => 'fas fa-shopping-basket'],
-        ];
-
-        foreach ($categories as $category) {
-            Category::create($category);
-        }
-
-        echo "✅ تم إضافة التصنيفات\n";
     }
 
     private function createBasicUsers()
     {
-        // التحقق من وجود جدول users
-        if (!Schema::hasTable('users')) {
-            echo "❌ جدول المستخدمين غير موجود - تخطي\n";
-            return;
-        }
-
         // إنشاء المستخدمين باستخدام الموديل
         User::create([
             'name' => 'مسؤول النظام',

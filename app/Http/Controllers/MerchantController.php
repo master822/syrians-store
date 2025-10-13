@@ -15,13 +15,21 @@ class MerchantController extends Controller
         $user = Auth::user();
         $products = Product::where('user_id', $user->id)->get();
         
-        return view('merchant.dashboard', compact('user', 'products'));
+        $stats = [
+            'total_products' => $products->count(),
+            'active_products' => $products->where('status', 'active')->count(),
+            'total_views' => $products->sum('views'),
+            'total_ratings' => Rating::where('merchant_id', $user->id)->count(),
+            'average_rating' => Rating::where('merchant_id', $user->id)->avg('rating') ?? 0,
+        ];
+        
+        return view('merchant.dashboard', compact('user', 'products', 'stats'));
     }
 
     public function myProducts()
     {
         $user = Auth::user();
-        $products = Product::where('user_id', $user->id)->get();
+        $products = Product::where('user_id', $user->id)->latest()->get();
         
         return view('merchant.products', compact('user', 'products'));
     }
@@ -31,7 +39,11 @@ class MerchantController extends Controller
         $category = $request->get('category');
         
         $query = User::where('user_type', 'merchant')
-                    ->where('is_active', true);
+                    ->where('is_active', true)
+                    ->withCount(['products' => function($query) {
+                        $query->where('status', 'active');
+                    }])
+                    ->with(['ratings']);
 
         // تصفية حسب نوع المتجر إذا كان محدد
         if ($category && in_array($category, ['clothes', 'electronics', 'home', 'grocery'])) {
@@ -40,9 +52,7 @@ class MerchantController extends Controller
 
         $merchants = $query->paginate(12);
 
-        $currentCategory = $category;
-
-        return view('merchants.index', compact('merchants', 'currentCategory'));
+        return view('merchants.index', compact('merchants', 'category'));
     }
 
     public function show($id)
@@ -50,13 +60,22 @@ class MerchantController extends Controller
         $merchant = User::where('id', $id)
                         ->where('user_type', 'merchant')
                         ->where('is_active', true)
+                        ->withCount(['products' => function($query) {
+                            $query->where('status', 'active');
+                        }])
+                        ->with(['ratings'])
                         ->firstOrFail();
+
+        // حساب متوسط التقييم
+        $averageRating = $merchant->ratings->avg('rating') ?? 0;
+        $totalRatings = $merchant->ratings->count();
 
         $products = Product::where('user_id', $id)
                           ->where('status', 'active')
+                          ->with('category')
                           ->paginate(12);
 
-        return view('merchants.show', compact('merchant', 'products'));
+        return view('merchants.show', compact('merchant', 'products', 'averageRating', 'totalRatings'));
     }
 
     // دالة لعرض تجار نوع معين
@@ -65,6 +84,10 @@ class MerchantController extends Controller
         $merchants = User::where('user_type', 'merchant')
                         ->where('is_active', true)
                         ->where('store_category', $category)
+                        ->withCount(['products' => function($query) {
+                            $query->where('status', 'active');
+                        }])
+                        ->with(['ratings'])
                         ->paginate(12);
 
         $categoryName = $this->getCategoryName($category);

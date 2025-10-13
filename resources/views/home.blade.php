@@ -3,341 +3,559 @@
 @section('title', 'الصفحة الرئيسية - متجر التخفيضات')
 
 @section('content')
-<!-- Hero Section -->
-<section class="hero-section py-5 mb-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 slide-in-left">
-                <h1 class="display-4 fw-bold mb-4 gradient-text">
-                    اكتشف عالماً من <span class="floating">🎯</span> التخفيضات
-                </h1>
-                <p class="lead mb-4 text-muted">
-                    أفضل العروض الحصرية من تجار موثوقين. تسوق بذكاء ووفر أكثر!
-                </p>
-                <div class="d-flex gap-3 flex-wrap">
-                    <a href="#products" class="btn btn-modern pulse-animation">
-                        🛍️ ابدأ التسوق
-                    </a>
-                    <a href="#discounts" class="btn btn-outline-primary rounded-pill px-4">
-                        🔥 عروض اليوم
-                    </a>
-                </div>
+<div class="container-fluid px-0">
+    <!-- سلايدر العروض والخطط -->
+    <section class="hero-slider mb-5">
+        <div id="plansSlider" class="carousel slide" data-bs-ride="carousel">
+            <!-- Indicators -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#plansSlider" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#plansSlider" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#plansSlider" data-bs-slide-to="2"></button>
+                <button type="button" data-bs-target="#plansSlider" data-bs-slide-to="3"></button>
             </div>
-            <div class="col-lg-6 text-center fade-in-up">
-                <div class="hero-image position-relative">
-                    <div class="floating" style="animation-delay: 0.2s;">
-                        <img src="https://cdn-icons-png.flaticon.com/512/3737/3737372.png" 
-                             alt="Shopping" class="img-fluid" style="max-height: 400px;">
-                    </div>
-                    <div class="position-absolute top-0 start-0 w-100 h-100">
-                        <div class="position-absolute top-0 start-0 rounded-circle bg-primary opacity-25" 
-                             style="width: 100px; height: 100px; animation: floating 3s ease-in-out infinite 0.5s;"></div>
-                        <div class="position-absolute bottom-0 end-0 rounded-circle bg-warning opacity-25" 
-                             style="width: 150px; height: 150px; animation: floating 3s ease-in-out infinite 1s;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- المنتجات الجديدة -->
-@if($newProducts->count() > 0)
-<section id="products" class="py-5 mb-5">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 text-center">
-                <h2 class="section-title gradient-text fw-bold display-5">
-                    🆕 المنتجات الجديدة
-                </h2>
-                <p class="text-muted lead">أحدث الإضافات إلى متجرنا</p>
-            </div>
-        </div>
-        <div class="row">
-            @foreach($newProducts as $index => $product)
-            <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                <div class="animated-card h-100 fade-in-up" style="animation-delay: {{ $index * 0.1 }}s;">
-                    @if($product->discount_percentage > 0)
-                        <div class="position-absolute top-0 start-0 m-3">
-                            <span class="badge bg-danger fs-6 glow-effect">خصم {{ $product->discount_percentage }}%</span>
-                        </div>
-                    @endif
-                    
-                    <div class="product-image-container position-relative overflow-hidden">
-                        @if($product->discount_images)
-                            @php
-                                $images = json_decode($product->discount_images);
-                                $firstImage = $images[0] ?? null;
-                            @endphp
-                            @if($firstImage)
-                                <img src="{{ asset('storage/' . $firstImage) }}" 
-                                     class="card-img-top product-image" 
-                                     alt="{{ $product->name }}"
-                                     style="height: 250px; object-fit: cover; transition: transform 0.5s ease;">
-                            @else
-                                <div class="card-img-top bg-light-gradient d-flex align-items-center justify-content-center" 
-                                     style="height: 250px;">
-                                    <i class="fas fa-image fa-3x text-muted"></i>
+            <!-- Slides -->
+            <div class="carousel-inner">
+                <!-- العرض 1: الفترة المجانية -->
+                <div class="carousel-item active">
+                    <div class="slider-content" style="background: linear-gradient(135deg, var(--dark-card) 0%, var(--dark-surface) 100%);">
+                        <div class="container">
+                            <div class="row align-items-center min-vh-60 py-5">
+                                <div class="col-lg-6">
+                                    <div class="slider-text">
+                                        <h1 class="display-4 fw-bold text-gold mb-4">
+                                            🎉 الفترة التجريبية المجانية
+                                        </h1>
+                                        <p class="lead text-light mb-4 fs-5">
+                                            انضم الآن واستفد من <span class="text-aqua fw-bold">شهرين مجاناً</span> كاملاً!<br>
+                                            أضف حتى 20 منتج وابدأ تجارتك بدون أي تكاليف
+                                        </p>
+                                        <div class="offer-badge mb-4">
+                                            <span class="badge bg-success fs-6 p-3">
+                                                <i class="fas fa-gift me-2"></i>مجاني بالكامل - لا توجد رسوم خفية
+                                            </span>
+                                        </div>
+                                        <div class="slider-features mb-4">
+                                            <div class="feature-item text-light mb-2">
+                                                <i class="fas fa-check text-aqua me-2"></i>20 منتج مجاني
+                                            </div>
+                                            <div class="feature-item text-light mb-2">
+                                                <i class="fas fa-check text-aqua me-2"></i>جميع الميزات متاحة
+                                            </div>
+                                            <div class="feature-item text-light mb-2">
+                                                <i class="fas fa-check text-aqua me-2"></i>دعم فني كامل
+                                            </div>
+                                        </div>
+                                        <div class="slider-actions">
+                                            <a href="{{ route('register') }}" class="btn-gold me-3">
+                                                <i class="fas fa-rocket me-2"></i>ابدأ مجاناً الآن
+                                            </a>
+                                            <a href="#plans" class="btn btn-outline-aqua">
+                                                <i class="fas fa-info-circle me-2"></i>المزيد من التفاصيل
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
-                            @endif
-                        @else
-                            <div class="card-img-top bg-light-gradient d-flex align-items-center justify-content-center" 
-                                 style="height: 250px;">
-                                <i class="fas fa-image fa-3x text-muted"></i>
+                                <div class="col-lg-6 text-center">
+                                    <div class="slider-image floating-element">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" 
+                                             alt="الفترة المجانية" class="img-fluid" style="max-height: 400px;">
+                                        <div class="floating-badge pulse-glow">
+                                            <span class="badge bg-gold text-dark fs-6">مجاني</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        @endif
-                        
-                        <div class="product-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
-                            <a href="/products/{{ $product->id }}" class="btn btn-modern btn-sm opacity-0">
-                                👀 عرض سريع
+                        </div>
+                    </div>
+                </div>
+
+                <!-- العرض 2: الخطة الأساسية -->
+                <div class="carousel-item">
+                    <div class="slider-content" style="background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);">
+                        <div class="container">
+                            <div class="row align-items-center min-vh-60 py-5">
+                                <div class="col-lg-6">
+                                    <div class="slider-text">
+                                        <h1 class="display-4 fw-bold text-warning mb-4">
+                                            ⭐ الخطة الأساسية
+                                        </h1>
+                                        <div class="price-section mb-4">
+                                            <span class="text-light fs-3">فقط</span>
+                                            <span class="text-warning fw-bold display-5 mx-2">2,000 TL</span>
+                                            <span class="text-light fs-3">/شهر</span>
+                                        </div>
+                                        <p class="lead text-light mb-4 fs-5">
+                                            مثالي للتجار الصغار والمبتدئين<br>
+                                            <span class="text-warning fw-bold">خصم 25%</span> للاشتراكات السنوية
+                                        </p>
+                                        <div class="offer-badge mb-4">
+                                            <span class="badge bg-danger fs-6 p-3">
+                                                <i class="fas fa-bolt me-2"></i>عرض محدود - وفر 500 TL
+                                            </span>
+                                        </div>
+                                        <div class="slider-features mb-4">
+                                            <div class="feature-item text-light mb-2">
+                                                <i class="fas fa-check text-warning me-2"></i>20 منتج نشط
+                                            </div>
+                                            <div class="feature-item text-light mb-2">
+                                                <i class="fas fa-check text-warning me-2"></i>تقارير مبيعات أساسية
+                                            </div>
+                                            <div class="feature-item text-light mb-2">
+                                                <i class="fas fa-check text-warning me-2"></i>دعم فني عبر البريد
+                                            </div>
+                                        </div>
+                                        <div class="slider-actions">
+                                            <a href="{{ route('register') }}" class="btn-warning me-3">
+                                                <i class="fas fa-shopping-cart me-2"></i>اشترك الآن
+                                            </a>
+                                            <a href="#plans" class="btn btn-outline-warning">
+                                                <i class="fas fa-list me-2"></i>مقارنة الخطط
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 text-center">
+                                    <div class="slider-image floating-element">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135675.png" 
+                                             alt="الخطة الأساسية" class="img-fluid" style="max-height: 400px;">
+                                        <div class="floating-badge pulse-glow">
+                                            <span class="badge bg-warning text-dark fs-6">الأكثر طلباً</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- العرض 3: الخطة المتوسطة -->
+                <div class="carousel-item">
+                    <div class="slider-content" style="background: linear-gradient(135deg, #2d5a27 0%, #4a7c3a 100%);">
+                        <div class="container">
+                            <div class="row align-items-center min-vh-60 py-5">
+                                <div class="col-lg-6">
+                                    <div class="slider-text">
+                                        <h1 class="display-4 fw-bold text-success mb-4">
+                                            💎 الخطة المتوسطة
+                                        </h1>
+                                        <div class="price-section mb-4">
+                                            <span class="text-light fs-3">فقط</span>
+                                            <span class="text-success fw-bold display-5 mx-2">4,000 TL</span>
+                                            <span class="text-light fs-3">/شهر</span>
+                                        </div>
+                                        <p class="lead text-light mb-4 fs-5">
+                                            للمتاجر المتوسطة والناشئة<br>
+                                            <span class="text-success fw-bold">خصم 30%</span> للاشتراكات السنوية
+                                        </p>
+                                        <div class="offer-badge mb-4">
+                                            <span class="badge bg-primary fs-6 p-3">
+                                                <i class="fas fa-star me-2"></i>الأفضل قيمة - وفر 1,200 TL
+                                            </span>
+                                        </div>
+                                        <div class="slider-features mb-4">
+                                            <div class="feature-item text-light mb-2">
+                                                <i class="fas fa-check text-success me-2"></i>40 منتج نشط
+                                            </div>
+                                            <div class="feature-item text-light mb-2">
+                                                <i class="fas fa-check text-success me-2"></i>تقارير متقدمة
+                                            </div>
+                                            <div class="feature-item text-light mb-2">
+                                                <i class="fas fa-check text-success me-2"></i>دعم فني هاتفي
+                                            </div>
+                                            <div class="feature-item text-light mb-2">
+                                                <i class="fas fa-check text-success me-2"></i>تحليلات متقدمة
+                                            </div>
+                                        </div>
+                                        <div class="slider-actions">
+                                            <a href="{{ route('register') }}" class="btn-success me-3">
+                                                <i class="fas fa-crown me-2"></i>الترقية الآن
+                                            </a>
+                                            <a href="#plans" class="btn btn-outline-success">
+                                                <i class="fas fa-chart-line me-2"></i>عرض الميزات
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 text-center">
+                                    <div class="slider-image floating-element">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135695.png" 
+                                             alt="الخطة المتوسطة" class="img-fluid" style="max-height: 400px;">
+                                        <div class="floating-badge pulse-glow">
+                                            <span class="badge bg-success text-white fs-6">الأفضل قيمة</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- العرض 4: الخطة الذهبية -->
+                <div class="carousel-item">
+                    <div class="slider-content" style="background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 100%);">
+                        <div class="container">
+                            <div class="row align-items-center min-vh-60 py-5">
+                                <div class="col-lg-6">
+                                    <div class="slider-text">
+                                        <h1 class="display-4 fw-bold text-dark mb-4">
+                                            👑 الخطة الذهبية
+                                        </h1>
+                                        <div class="price-section mb-4">
+                                            <span class="text-dark fs-3">فقط</span>
+                                            <span class="text-dark fw-bold display-5 mx-2">6,000 TL</span>
+                                            <span class="text-dark fs-3">/شهر</span>
+                                        </div>
+                                        <p class="lead text-dark mb-4 fs-5">
+                                            للمتاجر الكبيرة والمحترفين<br>
+                                            <span class="text-dark fw-bold">خصم 40%</span> للاشتراكات السنوية
+                                        </p>
+                                        <div class="offer-badge mb-4">
+                                            <span class="badge bg-dark text-warning fs-6 p-3">
+                                                <i class="fas fa-gem me-2"></i>بريميوم - وفر 2,400 TL
+                                            </span>
+                                        </div>
+                                        <div class="slider-features mb-4">
+                                            <div class="feature-item text-dark mb-2">
+                                                <i class="fas fa-check text-dark me-2"></i>عدد غير محدود من المنتجات
+                                            </div>
+                                            <div class="feature-item text-dark mb-2">
+                                                <i class="fas fa-check text-dark me-2"></i>جميع الميزات المتقدمة
+                                            </div>
+                                            <div class="feature-item text-dark mb-2">
+                                                <i class="fas fa-check text-dark me-2"></i>دعم فني مميز 24/7
+                                            </div>
+                                            <div class="feature-item text-dark mb-2">
+                                                <i class="fas fa-check text-dark me-2"></i>تقارير وتحليلات شاملة
+                                            </div>
+                                            <div class="feature-item text-dark mb-2">
+                                                <i class="fas fa-check text-dark me-2"></i>أولوية في الظهور
+                                            </div>
+                                        </div>
+                                        <div class="slider-actions">
+                                            <a href="{{ route('register') }}" class="btn-dark me-3">
+                                                <i class="fas fa-gem me-2"></i>الاشتراك المميز
+                                            </a>
+                                            <a href="#plans" class="btn btn-outline-dark">
+                                                <i class="fas fa-medal me-2"></i>عرض التفاصيل
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 text-center">
+                                    <div class="slider-image floating-element">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135706.png" 
+                                             alt="الخطة الذهبية" class="img-fluid" style="max-height: 400px;">
+                                        <div class="floating-badge pulse-glow">
+                                            <span class="badge bg-dark text-warning fs-6">بريميوم</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#plansSlider" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#plansSlider" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- قسم الخطط -->
+    <section id="plans" class="py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <h2 class="text-gold mb-3">خطط الاشتراك</h2>
+                    <p class="text-light">اختر الخطة التي تناسب متجرك</p>
+                </div>
+            </div>
+            <div class="row">
+                @foreach([
+                    ['name' => 'المجاني', 'price' => 0, 'products' => 20, 'period' => 'شهرين', 'color' => 'success', 'icon' => 'gift'],
+                    ['name' => 'الأساسي', 'price' => 2000, 'products' => 20, 'period' => 'شهري', 'color' => 'warning', 'icon' => 'star'],
+                    ['name' => 'المتوسط', 'price' => 4000, 'products' => 40, 'period' => 'شهري', 'color' => 'info', 'icon' => 'crown'],
+                    ['name' => 'الذهبي', 'price' => 6000, 'products' => 'غير محدود', 'period' => 'شهري', 'color' => 'gold', 'icon' => 'gem']
+                ] as $plan)
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="elite-card text-center h-100">
+                        <div class="card-header bg-{{ $plan['color'] }} text-dark py-4">
+                            <i class="fas fa-{{ $plan['icon'] }} fa-3x mb-3"></i>
+                            <h4 class="fw-bold">{{ $plan['name'] }}</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="price mb-3">
+                                <span class="h2 fw-bold text-{{ $plan['color'] }}">
+                                    @if($plan['price'] == 0)
+                                        مجاني
+                                    @else
+                                        {{ number_format($plan['price']) }} TL
+                                    @endif
+                                </span>
+                                <span class="text-muted">/{{ $plan['period'] }}</span>
+                            </div>
+                            <div class="features">
+                                <div class="feature-item mb-3">
+                                    <i class="fas fa-box text-{{ $plan['color'] }} me-2"></i>
+                                    <span class="text-light">{{ $plan['products'] }} منتج</span>
+                                </div>
+                                <div class="feature-item mb-3">
+                                    <i class="fas fa-chart-bar text-{{ $plan['color'] }} me-2"></i>
+                                    <span class="text-light">تقارير {{ $plan['name'] == 'الذهبي' ? 'متقدمة' : 'أساسية' }}</span>
+                                </div>
+                                <div class="feature-item mb-3">
+                                    <i class="fas fa-headset text-{{ $plan['color'] }} me-2"></i>
+                                    <span class="text-light">دعم فني {{ $plan['name'] == 'الذهبي' ? '24/7' : 'عادي' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent py-3">
+                            <a href="{{ route('register') }}" class="btn btn-{{ $plan['color'] }} w-100">
+                                @if($plan['price'] == 0)
+                                    ابدأ مجاناً
+                                @else
+                                    اشترك الآن
+                                @endif
                             </a>
                         </div>
                     </div>
-                    
-                    <div class="card-body p-4">
-                        <h5 class="card-title fw-bold text-dark mb-2">{{ $product->name }}</h5>
-                        <p class="card-text text-muted small mb-3">{{ Str::limit($product->description, 60) }}</p>
-                        
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="price-section">
-                                @if($product->discount_percentage > 0)
-                                    @php
-                                        $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
-                                    @endphp
-                                    <span class="text-danger fw-bold fs-5">{{ number_format($discountedPrice, 2) }} ر.س</span>
-                                    <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} ر.س</small>
-                                @else
-                                    <span class="fw-bold fs-5 text-dark">{{ number_format($product->price, 2) }} ر.س</span>
-                                @endif
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                                <i class="fas fa-store me-1"></i>
-                                {{ $product->user->name }}
-                            </small>
-                            <div class="rating">
-                                <i class="fas fa-star text-warning"></i>
-                                <small class="text-muted">4.5</small>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card-footer bg-transparent border-0 p-3 pt-0">
-                        <a href="/products/{{ $product->id }}" class="btn btn-outline-primary w-100 rounded-pill">
-                            🛒 إضافة إلى السلة
-                        </a>
-                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    <!-- باقي المحتوى -->
+    @if($newProducts->count() > 0)
+    <section class="py-5">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-12 text-center">
+                    <h2 class="text-gold mb-3">أحدث المنتجات</h2>
+                    <p class="text-light">اكتشف أحدث الإضافات إلى متجرنا</p>
                 </div>
             </div>
-            @endforeach
-        </div>
-    </div>
-</section>
-@endif
-
-<!-- التخفيضات -->
-@if($activeDiscounts->count() > 0)
-<section id="discounts" class="py-5 mb-5 bg-light rounded-4">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 text-center">
-                <h2 class="section-title gradient-text fw-bold display-5">
-                    🔥 عروض حصرية
-                </h2>
-                <p class="text-muted lead">لا تفوت هذه الفرص المميزة</p>
-            </div>
-        </div>
-        <div class="row">
-            @foreach($activeDiscounts as $index => $product)
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="animated-card h-100 border-warning slide-in-left" style="animation-delay: {{ $index * 0.1 }}s;">
-                    <div class="card-header bg-warning-gradient border-0 py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0 fw-bold text-white">{{ $product->name }}</h5>
-                            <span class="badge bg-white text-warning fs-6 pulse-animation">
-                                ⚡ محدود
-                            </span>
-                        </div>
-                    </div>
-                    
-                    @if($product->discount_images)
-                        @php
-                            $images = json_decode($product->discount_images);
-                            $firstImage = $images[0] ?? null;
-                        @endphp
-                        @if($firstImage)
-                            <img src="{{ asset('storage/' . $firstImage) }}" 
-                                 class="card-img-top" 
-                                 alt="{{ $product->name }}"
-                                 style="height: 200px; object-fit: cover;">
+            <div class="row">
+                @foreach($newProducts as $product)
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <div class="elite-card h-100">
+                        @if($product->discount_percentage > 0)
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-danger">خصم {{ $product->discount_percentage }}%</span>
+                            </div>
                         @endif
-                    @endif
-                    
-                    <div class="card-body p-4">
-                        <p class="card-text text-muted mb-3">{{ Str::limit($product->description, 100) }}</p>
                         
-                        <div class="discount-info text-center mb-3">
-                            <span class="badge bg-danger fs-5 px-3 py-2 glow-effect mb-2">
-                                خصم {{ $product->discount_percentage }}%
-                            </span>
-                            <div class="price-comparison mt-2">
+                        <div class="card-img-top position-relative overflow-hidden">
+                            @if($product->images)
                                 @php
-                                    $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
+                                    $images = json_decode($product->images);
+                                    $firstImage = $images[0] ?? null;
                                 @endphp
-                                <span class="text-success fw-bold fs-4">{{ number_format($discountedPrice, 2) }} ر.س</span>
-                                <small class="text-muted text-decoration-line-through d-block fs-6">
-                                    {{ number_format($product->price, 2) }} ر.س
-                                </small>
+                                @if($firstImage)
+                                    <img src="{{ asset('storage/' . $firstImage) }}" 
+                                         class="img-fluid" 
+                                         alt="{{ $product->name }}"
+                                         style="height: 200px; width: 100%; object-fit: cover;">
+                                @else
+                                    <div class="bg-dark d-flex align-items-center justify-content-center" 
+                                         style="height: 200px;">
+                                        <i class="fas fa-image fa-2x text-muted"></i>
+                                    </div>
+                                @endif
+                            @else
+                                <div class="bg-dark d-flex align-items-center justify-content-center" 
+                                     style="height: 200px;">
+                                    <i class="fas fa-image fa-2x text-muted"></i>
+                                </div>
+                            @endif
+                        </div>
+                        
+                        <div class="card-body">
+                            <h5 class="card-title text-light">{{ $product->name }}</h5>
+                            <p class="card-text text-muted small">{{ Str::limit($product->description, 60) }}</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="price-section">
+                                    @if($product->discount_percentage > 0)
+                                        @php
+                                            $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
+                                        @endphp
+                                        <span class="text-danger fw-bold">{{ number_format($discountedPrice, 2) }} ر.س</span>
+                                        <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} ر.س</small>
+                                    @else
+                                        <span class="fw-bold text-light">{{ number_format($product->price, 2) }} ر.س</span>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center text-muted small">
+                                <span>
+                                    <i class="fas fa-store"></i>
+                                    {{ $product->user->name }}
+                                </span>
+                                <span>
+                                    <i class="fas fa-eye"></i>
+                                    {{ $product->views }}
+                                </span>
                             </div>
                         </div>
                         
-                        <div class="merchant-info text-center">
-                            <small class="text-muted">
-                                <i class="fas fa-crown me-1 text-warning"></i>
-                                {{ $product->user->name }}
-                            </small>
+                        <div class="card-footer bg-transparent">
+                            <a href="{{ route('products.show', $product->id) }}" class="btn btn-primary w-100">
+                                عرض المنتج
+                            </a>
                         </div>
                     </div>
-                    
-                    <div class="card-footer bg-transparent border-0 p-3">
-                        <a href="/products/{{ $product->id }}" class="btn btn-warning btn-modern w-100">
-                            🎁 استفد من العرض
-                        </a>
-                    </div>
                 </div>
+                @endforeach
             </div>
-            @endforeach
         </div>
-    </div>
-</section>
-@endif
+    </section>
+    @endif
 
-<!-- التجار -->
-@if($merchants->count() > 0)
-<section class="py-5">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 text-center">
-                <h2 class="section-title gradient-text fw-bold display-5">
-                    🏪 تجارنا المميزون
-                </h2>
-                <p class="text-muted lead">تعرف على أفضل التجار في منصتنا</p>
-            </div>
-        </div>
-        <div class="row">
-            @foreach($merchants as $index => $merchant)
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="animated-card text-center p-4 fade-in-up" style="animation-delay: {{ $index * 0.1 }}s;">
-                    <div class="merchant-avatar mb-3">
-                        <div class="rounded-circle bg-primary-gradient d-inline-flex align-items-center justify-content-center"
-                             style="width: 80px; height: 80px;">
-                            <i class="fas fa-store fa-2x text-white"></i>
-                        </div>
-                    </div>
-                    <h5 class="fw-bold text-dark mb-2">{{ $merchant->name }}</h5>
-                    <div class="merchant-stats mb-3">
-                        <span class="badge bg-light text-dark">
-                            <i class="fas fa-box me-1"></i>
-                            {{ $merchant->products_count }} منتج
-                        </span>
-                    </div>
-                    <a href="/merchant/{{ $merchant->id }}" class="btn btn-outline-primary btn-sm rounded-pill">
-                        زيارة المتجر
-                    </a>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-</section>
-@endif
-
-@if($newProducts->count() == 0 && $activeDiscounts->count() == 0)
-<section class="py-5 text-center">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="animated-card p-5">
-                    <i class="fas fa-inbox fa-5x text-muted mb-4"></i>
-                    <h3 class="text-muted mb-3">لا توجد منتجات أو تخفيضات حالياً</h3>
-                    <p class="text-muted mb-4">كن أول من يضيف منتجات وتخفيضات!</p>
-                    <a href="{{ route('register') }}" class="btn btn-modern">
-                        🚀 ابدأ البيع الآن
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-@endif
+    <!-- باقي الأقسام -->
+</div>
 
 <style>
-.hero-section {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    border-radius: 30px;
-    margin: 20px;
-}
+    .hero-slider {
+        margin-top: 80px;
+    }
 
-.bg-warning-gradient {
-    background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%) !important;
-}
+    .min-vh-60 {
+        min-height: 60vh;
+    }
 
-.bg-primary-gradient {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
-}
+    .slider-content {
+        border-radius: 0;
+        position: relative;
+        overflow: hidden;
+    }
 
-.bg-light-gradient {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
-}
+    .carousel-indicators button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin: 0 5px;
+        background-color: var(--text-secondary);
+        border: 2px solid transparent;
+    }
 
-.product-image-container:hover .product-image {
-    transform: scale(1.1);
-}
+    .carousel-indicators button.active {
+        background-color: var(--gold-primary);
+        border-color: var(--gold-primary);
+    }
 
-.product-image-container:hover .product-overlay a {
-    opacity: 1 !important;
-    transform: translateY(0);
-}
+    .floating-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        animation: bounce 2s infinite;
+    }
 
-.product-overlay {
-    background: rgba(0, 0, 0, 0.7);
-    opacity: 0;
-    transition: all 0.3s ease;
-}
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
 
-.product-image-container:hover .product-overlay {
-    opacity: 1;
-}
+    .btn-warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        border: none;
+        color: #000;
+        font-weight: 700;
+        padding: 12px 28px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
 
-.product-overlay a {
-    transform: translateY(20px);
-    transition: all 0.3s ease 0.1s;
-}
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        color: #000;
+    }
 
-.merchant-avatar {
-    transition: transform 0.3s ease;
-}
+    .btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        padding: 12px 28px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
 
-.merchant-avatar:hover {
-    transform: scale(1.1);
-}
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        color: #fff;
+    }
+
+    .btn-dark {
+        background: linear-gradient(135deg, #1f2937, #374151);
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        padding: 12px 28px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-dark:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(31, 41, 55, 0.4);
+        color: #fff;
+    }
+
+    .btn-outline-aqua {
+        border: 2px solid var(--aqua-primary);
+        color: var(--aqua-primary);
+        background: transparent;
+        font-weight: 600;
+        padding: 12px 28px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-aqua:hover {
+        background: var(--aqua-primary);
+        color: #000;
+    }
+
+    .bg-gold {
+        background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary)) !important;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 5%;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: var(--gold-primary);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Add hover effects to product cards
-    const productCards = document.querySelectorAll('.animated-card');
-    productCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-10px) scale(1.02)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1)';
+    // تشغيل السلايدر تلقائياً
+    document.addEventListener('DOMContentLoaded', function() {
+        const myCarousel = document.getElementById('plansSlider');
+        const carousel = new bootstrap.Carousel(myCarousel, {
+            interval: 5000, // تغيير كل 5 ثواني
+            wrap: true,
+            pause: false
         });
     });
-});
 </script>
 @endsection

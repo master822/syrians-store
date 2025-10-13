@@ -22,9 +22,7 @@ class User extends Authenticatable
         'store_description',
         'store_phone',
         'store_city',
-        'subscription_plan',
         'product_limit',
-        'subscription_ends_at',
         'is_active'
     ];
 
@@ -35,46 +33,39 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'subscription_ends_at' => 'datetime',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
     ];
 
-    /**
-     * العلاقة مع المنتجات (للتجار)
-     */
+    // العلاقة مع المنتجات
     public function products()
     {
         return $this->hasMany(Product::class);
     }
 
-    /**
-     * التحقق إذا كان المستخدم تاجر
-     */
-    public function isMerchant()
+    // العلاقة مع التقييمات كتاجر
+    public function ratings()
     {
-        return $this->user_type === 'merchant';
+        return $this->hasMany(Rating::class, 'merchant_id');
     }
 
-    /**
-     * التحقق إذا كان المستخدم مدير
-     */
+    // العلاقة مع التقييمات كمستخدم
+    public function givenRatings()
+    {
+        return $this->hasMany(Rating::class, 'user_id');
+    }
+
     public function isAdmin()
     {
         return $this->user_type === 'admin';
     }
 
-    /**
-     * الحصول على اسم فئة المتجر بالعربية
-     */
-    public function getStoreCategoryName()
+    public function isMerchant()
     {
-        $categories = [
-            'clothes' => 'ملابس',
-            'electronics' => 'إلكترونيات',
-            'home' => 'أدوات منزلية',
-            'food' => 'بقالة'
-        ];
-        
-        return $categories[$this->store_category] ?? $this->store_category;
+        return $this->user_type === 'merchant';
+    }
+
+    public function isRegularUser()
+    {
+        return $this->user_type === 'user';
     }
 }
