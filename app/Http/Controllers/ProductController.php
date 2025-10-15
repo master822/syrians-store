@@ -156,7 +156,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::where('is_active', true)->get();
         return view('products.create', compact('categories'));
     }
 
@@ -222,7 +222,7 @@ class ProductController extends Controller
             abort(403, 'غير مصرح لك بتعديل هذا المنتج.');
         }
         
-        $categories = Category::all();
+        $categories = Category::where('is_active', true)->get();
         return view('products.edit', compact('product', 'categories'));
     }
 

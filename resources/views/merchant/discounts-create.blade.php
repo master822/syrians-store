@@ -1,380 +1,329 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إنشاء تخفيض جديد - سوق السوريين</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2c5aa0;
-            --accent-color: #ff6b6b;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-attachment: fixed;
-        }
-        
-        .form-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            margin: 30px auto;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            max-width: 800px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .page-header {
-            background: linear-gradient(135deg, var(--primary-color), #1e4a8a);
-            color: white;
-            padding: 40px 0;
-            text-align: center;
-            border-radius: 20px 20px 0 0;
-            margin: -40px -40px 40px -40px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .page-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff20"><polygon points="0,0 1000,50 1000,100 0,100"/></svg>');
-            background-size: cover;
-        }
-        
-        .product-card {
-            background: linear-gradient(135deg, #ffffff, #f8f9fa);
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .product-card:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-        
-        .product-card.selected {
-            border-color: var(--accent-color);
-            background: linear-gradient(135deg, #fff5f5, #ffeaea);
-            transform: translateY(-5px);
-        }
-        
-        .product-image {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            object-fit: cover;
-            margin-left: 15px;
-            border: 2px solid #e9ecef;
-        }
-        
-        .discount-preview {
-            background: linear-gradient(135deg, var(--primary-color), #1e4a8a);
-            color: white;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            margin-top: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        .original-price {
-            text-decoration: line-through;
-            opacity: 0.7;
-            font-size: 1.2rem;
-        }
-        
-        .discounted-price {
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        
-        .discount-badge {
-            background: var(--accent-color);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            display: inline-block;
-            margin: 10px 0;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
-        }
-        
-        .btn-custom {
-            background: linear-gradient(135deg, var(--primary-color), #1e4a8a);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(44, 90, 160, 0.3);
-        }
-        
-        .btn-custom:hover {
-            background: linear-gradient(135deg, #1e4a8a, var(--primary-color));
-            transform: translateY(-2px);
-            color: white;
-            box-shadow: 0 8px 20px rgba(44, 90, 160, 0.4);
-        }
-        
-        .image-upload-section {
-            background: linear-gradient(135deg, #ffffff, #f8f9fa);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .image-preview {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin: 5px;
-            border: 2px dashed #ddd;
-            transition: all 0.3s ease;
-        }
-        
-        .image-preview:hover {
-            transform: scale(1.1);
-            border-color: var(--primary-color);
-        }
-    </style>
-</head>
-<body>
-    @include('partials.navbar')
-    
-    <div class="container">
-        <div class="form-container" data-aos="fade-up">
-            <div class="page-header" data-aos="fade-down">
-                <h1><i class="fas fa-tag"></i> إنشاء تخفيض جديد</h1>
-                <p class="mb-0">اختر المنتجات التي تريد تطبيق التخفيض عليها وأضف صوراً للتخفيض</p>
-            </div>
+@extends('layouts.app')
 
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" data-aos="fade-down">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+@section('title', 'إضافة تخفيض جديد - متجر التخفيضات')
+
+@section('content')
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="elite-card">
+                <div class="card-header bg-gold text-dark text-center py-4">
+                    <h2 class="mb-0">
+                        <i class="fas fa-tag me-2"></i>
+                        إضافة تخفيض جديد
+                    </h2>
                 </div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" data-aos="fade-down">
-                    <ul class="mb-0">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            <form action="/merchant/discounts/store" method="POST" enctype="multipart/form-data" id="discountForm">
-                @csrf
-                
-                <!-- اختيار المنتجات -->
-                <div class="mb-4" data-aos="fade-right">
-                    <h4 class="mb-3"><i class="fas fa-boxes"></i> اختر المنتجات</h4>
-                    <div class="row" id="productsContainer">
-                        @foreach($products as $product)
-                        <div class="col-md-6">
-                            <div class="product-card" onclick="toggleProduct(this, {{ $product->id }}, {{ $product->price }})">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="products[]" 
-                                           value="{{ $product->id }}" id="product{{ $product->id }}" 
-                                           style="display: none;">
-                                    <label class="form-check-label w-100" for="product{{ $product->id }}">
-                                        <div class="d-flex align-items-center">
-                                            <img src="{{ $product->getFirstImage() }}" 
-                                                 alt="{{ $product->name }}" 
-                                                 class="product-image">
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1">{{ $product->name }}</h6>
-                                                <p class="text-muted mb-1">{{ number_format($product->price) }} ل.س</p>
-                                                <small class="text-muted">المخزون: {{ $product->stock }}</small>
+                <div class="card-body p-4">
+                    <form action="{{ route('merchant.discounts.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        
+                        <!-- اختيار المنتجات -->
+                        <div class="mb-4">
+                            <label class="form-label text-light">اختر المنتجات <span class="text-danger">*</span></label>
+                            <div class="products-grid">
+                                @if($products->count() > 0)
+                                    @foreach($products as $product)
+                                    <div class="product-checkbox-card">
+                                        <input type="checkbox" 
+                                               name="products[]" 
+                                               value="{{ $product->id }}" 
+                                               id="product_{{ $product->id }}"
+                                               class="product-checkbox"
+                                               {{ request('product') == $product->id ? 'checked' : '' }}>
+                                        <label for="product_{{ $product->id }}" class="product-label">
+                                            <div class="product-image">
+                                                @if($product->images)
+                                                    @php
+                                                        $images = json_decode($product->images);
+                                                        $firstImage = $images[0] ?? null;
+                                                    @endphp
+                                                    @if($firstImage)
+                                                        <img src="{{ asset('storage/' . $firstImage) }}" 
+                                                             alt="{{ $product->name }}">
+                                                    @else
+                                                        <div class="no-image">
+                                                            <i class="fas fa-image"></i>
+                                                        </div>
+                                                    @endif
+                                                @else
+                                                    <div class="no-image">
+                                                        <i class="fas fa-image"></i>
+                                                    </div>
+                                                @endif
                                             </div>
+                                            <div class="product-info">
+                                                <h6 class="product-name">{{ $product->name }}</h6>
+                                                <p class="product-price">{{ number_format($product->price) }} ل.س</p>
+                                                <p class="product-category">
+                                                    <small>{{ $product->category->name ?? 'غير محدد' }}</small>
+                                                </p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    @endforeach
+                                @else
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">لا توجد منتجات متاحة للتخفيض</p>
+                                        <a href="{{ route('products.create') }}" class="btn btn-gold">
+                                            إضافة منتج جديد
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                            @error('products')
+                                <div class="text-danger small mt-2">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- نسبة التخفيض -->
+                        <div class="mb-3">
+                            <label for="discount_percentage" class="form-label text-light">
+                                نسبة التخفيض (%) <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" class="form-control dark-input" 
+                                   id="discount_percentage" name="discount_percentage" 
+                                   min="1" max="90" value="{{ old('discount_percentage', 10) }}" required>
+                            <div class="form-text text-muted">
+                                أدخل نسبة التخفيض من 1% إلى 90%
+                            </div>
+                            @error('discount_percentage')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- مدة التخفيض -->
+                        <div class="mb-3">
+                            <label for="discount_duration" class="form-label text-light">
+                                مدة التخفيض (أيام) <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-control dark-input" id="discount_duration" name="discount_duration" required>
+                                <option value="1" {{ old('discount_duration') == 1 ? 'selected' : '' }}>1 يوم</option>
+                                <option value="3" {{ old('discount_duration') == 3 ? 'selected' : '' }}>3 أيام</option>
+                                <option value="7" {{ old('discount_duration') == 7 ? 'selected' : '' }}>أسبوع</option>
+                                <option value="15" {{ old('discount_duration') == 15 ? 'selected' : '' }}>15 يوم</option>
+                                <option value="30" {{ old('discount_duration') == 30 ? 'selected' : '' }}>شهر</option>
+                                <option value="0" {{ old('discount_duration') == 0 ? 'selected' : '' }}>غير محدد</option>
+                            </select>
+                            @error('discount_duration')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- صور التخفيض -->
+                        <div class="mb-4">
+                            <label for="discount_images" class="form-label text-light">صور التخفيض (اختياري)</label>
+                            <input type="file" class="form-control dark-input" 
+                                   id="discount_images" name="discount_images[]" 
+                                   multiple accept="image/*">
+                            <div class="form-text text-muted">
+                                يمكنك رفع صور خاصة بالتخفيض (اختياري)
+                            </div>
+                            @error('discount_images.*')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- معاينة التخفيض -->
+                        <div class="mb-4 preview-section" style="display: none;">
+                            <h6 class="text-gold mb-3">معاينة التخفيض:</h6>
+                            <div class="preview-card elite-card p-3">
+                                <div class="row align-items-center">
+                                    <div class="col-3">
+                                        <div class="preview-image bg-dark rounded text-center py-4">
+                                            <i class="fas fa-tag fa-2x text-warning"></i>
                                         </div>
-                                    </label>
+                                    </div>
+                                    <div class="col-9">
+                                        <h6 class="text-light mb-1">تخفيض خاص</h6>
+                                        <p class="text-muted mb-1">سيتم تطبيق الخصم على <span class="selected-count">0</span> منتج</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-danger fw-bold discount-preview">0%</span>
+                                            <span class="badge bg-info duration-preview">0 يوم</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        @endforeach
-                    </div>
-                    
-                    @if($products->count() === 0)
-                        <div class="text-center py-4" data-aos="zoom-in">
-                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-                            <h5>لا توجد منتجات</h5>
-                            <p class="text-muted">يجب أن تضيف منتجات أولاً قبل إنشاء تخفيضات</p>
-                            <a href="/merchant/products/create" class="btn btn-custom">
-                                <i class="fas fa-plus"></i> إضافة منتج جديد
+
+                        <!-- معلومات مهمة -->
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>معلومات مهمة:</h6>
+                            <ul class="mb-0">
+                                <li>يمكنك اختيار أكثر من منتج لتطبيق نفس نسبة التخفيض عليها</li>
+                                <li>التخفيض يزيد من فرص ظهور منتجاتك للعملاء</li>
+                                <li>يمكنك تعديل أو إزالة التخفيض في أي وقت</li>
+                                <li>يجب أن تكون المنتجات نشطة لتطبيق التخفيض</li>
+                            </ul>
+                        </div>
+
+                        <!-- أزرار -->
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="{{ route('merchant.discounts') }}" class="btn btn-outline-aqua">
+                                <i class="fas fa-arrow-right me-2"></i>العودة
                             </a>
+                            <button type="submit" class="btn btn-gold" id="submitBtn" {{ $products->count() == 0 ? 'disabled' : '' }}>
+                                <i class="fas fa-tag me-2"></i>تطبيق التخفيض
+                            </button>
                         </div>
-                    @endif
+                    </form>
                 </div>
-
-                <!-- إعدادات التخفيض -->
-                <div class="mb-4" data-aos="fade-left">
-                    <h4 class="mb-3"><i class="fas fa-cog"></i> إعدادات التخفيض</h4>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="discount_percentage" class="form-label">نسبة التخفيض (%)</label>
-                                <input type="number" class="form-control" id="discount_percentage" 
-                                       name="discount_percentage" min="1" max="100" value="10"
-                                       oninput="updatePreview()">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="discount_duration" class="form-label">مدة التخفيض (أيام)</label>
-                                <select class="form-select" id="discount_duration" name="discount_duration">
-                                    <option value="7">7 أيام</option>
-                                    <option value="15">15 يوم</option>
-                                    <option value="30">30 يوم</option>
-                                    <option value="60">60 يوم</option>
-                                    <option value="0">غير محدد</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- رفع صور للتخفيض -->
-                <div class="image-upload-section" data-aos="fade-right">
-                    <h4 class="mb-3"><i class="fas fa-images"></i> صور التخفيض (اختياري)</h4>
-                    <div class="mb-3">
-                        <label for="discount_images" class="form-label">أضف صوراً تعبر عن التخفيض</label>
-                        <input type="file" class="form-control" id="discount_images" name="discount_images[]" 
-                               multiple accept="image/*" onchange="previewDiscountImages(this)">
-                        <small class="text-muted">يمكنك رفع حتى 3 صور للتخفيض</small>
-                        
-                        <div id="discount-images-preview" class="mt-3 d-flex flex-wrap gap-2"></div>
-                    </div>
-                </div>
-
-                <!-- معاينة التخفيض -->
-                <div class="discount-preview" data-aos="zoom-in">
-                    <h4><i class="fas fa-eye"></i> معاينة التخفيض</h4>
-                    <div class="original-price" id="originalPricePreview">0 ل.س</div>
-                    <div class="discounted-price" id="discountedPricePreview">0 ل.س</div>
-                    <div class="discount-badge" id="discountBadgePreview">0% خصم</div>
-                    <p class="mb-0">سيوفر للمشتري: <span id="savingsPreview">0 ل.س</span></p>
-                </div>
-
-                <!-- زر الإرسال -->
-                <div class="text-center mt-4" data-aos="fade-up">
-                    <button type="submit" class="btn btn-custom btn-lg" id="submitBtn" disabled>
-                        <i class="fas fa-check"></i> تطبيق التخفيض
-                    </button>
-                    <a href="/merchant/dashboard" class="btn btn-outline-secondary btn-lg ms-2">
-                        <i class="fas fa-arrow-right"></i> إلغاء
-                    </a>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
+</div>
 
-    <script>
-        let selectedProducts = [];
-        let selectedProductPrice = 0;
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.product-checkbox');
+    const discountPercentage = document.getElementById('discount_percentage');
+    const discountDuration = document.getElementById('discount_duration');
+    const previewSection = document.querySelector('.preview-section');
+    const selectedCount = document.querySelector('.selected-count');
+    const discountPreview = document.querySelector('.discount-preview');
+    const durationPreview = document.querySelector('.duration-preview');
+    const submitBtn = document.getElementById('submitBtn');
 
-        function toggleProduct(card, productId, productPrice) {
-            const checkbox = card.querySelector('input[type="checkbox"]');
-            const isSelected = card.classList.contains('selected');
-            
-            if (isSelected) {
-                card.classList.remove('selected');
-                checkbox.checked = false;
-                selectedProducts = selectedProducts.filter(id => id !== productId);
-                selectedProductPrice = 0;
-            } else {
-                // إلغاء تحديد جميع المنتجات الأخرى
-                document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
-                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-                
-                // تحديد المنتج الحالي
-                card.classList.add('selected');
-                checkbox.checked = true;
-                selectedProducts = [productId];
-                selectedProductPrice = productPrice;
-            }
-            
-            updateSubmitButton();
-            updatePreview();
+    function updatePreview() {
+        const selectedProducts = document.querySelectorAll('.product-checkbox:checked').length;
+        const percentage = discountPercentage.value;
+        const duration = discountDuration.options[discountDuration.selectedIndex].text;
+        
+        if (selectedProducts > 0 && percentage > 0) {
+            previewSection.style.display = 'block';
+            selectedCount.textContent = selectedProducts;
+            discountPreview.textContent = percentage + '%';
+            durationPreview.textContent = duration;
+            submitBtn.disabled = false;
+        } else {
+            previewSection.style.display = 'none';
+            submitBtn.disabled = selectedProducts === 0;
         }
+    }
 
-        function updateSubmitButton() {
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = selectedProducts.length === 0;
-        }
+    // تحديث المعاينة عند تغيير الاختيارات
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updatePreview);
+    });
 
-        function updatePreview() {
-            const discountPercentage = parseInt(document.getElementById('discount_percentage').value) || 0;
-            const price = selectedProductPrice || 10000; // سعر افتراضي إذا لم يتم اختيار منتج
-            const discountAmount = price * (discountPercentage / 100);
-            const discountedPrice = price - discountAmount;
-            
-            document.getElementById('originalPricePreview').textContent = price.toLocaleString() + ' ل.س';
-            document.getElementById('discountedPricePreview').textContent = discountedPrice.toLocaleString() + ' ل.س';
-            document.getElementById('discountBadgePreview').textContent = discountPercentage + '% خصم';
-            document.getElementById('savingsPreview').textContent = discountAmount.toLocaleString() + ' ل.س';
-        }
+    discountPercentage.addEventListener('input', updatePreview);
+    discountDuration.addEventListener('change', updatePreview);
 
-        function previewDiscountImages(input) {
-            const preview = document.getElementById('discount-images-preview');
-            preview.innerHTML = '';
-            
-            if (input.files) {
-                const files = Array.from(input.files).slice(0, 3); // حد أقصى 3 صور
-                
-                files.forEach((file, index) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.className = 'image-preview';
-                        img.alt = `صورة تخفيض ${index + 1}`;
-                        preview.appendChild(img);
-                    }
-                    reader.readAsDataURL(file);
-                });
-            }
-        }
+    // التهيئة الأولية
+    updatePreview();
+});
+</script>
 
-        // تحديث المعاينة عند التحميل
-        document.addEventListener('DOMContentLoaded', function() {
-            updatePreview();
-        });
-    </script>
+<style>
+.dark-input {
+    background: var(--dark-surface);
+    border: 1px solid var(--dark-border);
+    color: var(--text-primary);
+}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({
-            duration: 1000,
-            once: true
-        });
-    </script>
-</body>
-</html>
+.dark-input:focus {
+    background: var(--dark-surface);
+    border-color: var(--gold-primary);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid var(--dark-border);
+    border-radius: 8px;
+    background: var(--dark-surface);
+}
+
+.product-checkbox-card {
+    position: relative;
+}
+
+.product-checkbox {
+    display: none;
+}
+
+.product-checkbox:checked + .product-label {
+    border-color: var(--gold-primary);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.product-label {
+    display: block;
+    border: 2px solid var(--dark-border);
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--dark-card);
+}
+
+.product-label:hover {
+    border-color: var(--aqua-primary);
+}
+
+.product-image {
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--dark-surface);
+    color: var(--text-secondary);
+}
+
+.product-info {
+    text-align: center;
+}
+
+.product-name {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.product-price {
+    color: var(--aqua-primary);
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.product-category {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin-bottom: 0;
+}
+
+.preview-card {
+    border: 2px solid var(--gold-primary);
+}
+
+.alert-info {
+    background: rgba(32, 201, 151, 0.1);
+    border: 1px solid var(--aqua-primary);
+    color: var(--text-primary);
+}
+</style>
+@endsection

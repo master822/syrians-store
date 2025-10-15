@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\MerchantDiscountController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ProfileController;
 
 // الصفحة الرئيسية
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -68,6 +69,22 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
     Route::get('/products', [AdminController::class, 'products'])->name('admin.products');
+    Route::get('/merchants', [AdminController::class, 'merchants'])->name('admin.merchants');
+    Route::get('/categories', [AdminController::class, 'categories'])->name('admin.categories');
+    Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
+    Route::post('/settings', [AdminController::class, 'updateSettings'])->name('admin.settings.update');
+    
+    // إدارة المستخدمين
+    Route::post('/users/{id}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('admin.user.toggle-status');
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.user.delete');
+    Route::get('/users/{id}', [AdminController::class, 'viewUser'])->name('admin.user.view');
+    
+    // إدارة المنتجات
+    Route::post('/products/{id}/toggle-status', [AdminController::class, 'toggleProductStatus'])->name('admin.product.toggle-status');
+    Route::delete('/products/{id}', [AdminController::class, 'deleteProduct'])->name('admin.product.delete');
+    
+    // متاجر التجار
+    Route::get('/merchants/{id}/store', [AdminController::class, 'viewMerchantStore'])->name('admin.merchant.store');
 });
 
 // التخفيضات
@@ -79,7 +96,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ratings/{merchantId}', [RatingController::class, 'index'])->name('ratings.index');
 });
 
+// الملف الشخصي وإدارة الحساب
+Route::middleware(['auth'])->group(function () {
+    // الملف الشخصي
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    
+    // تغيير كلمة المرور
+    Route::get('/change-password', [ProfileController::class, 'showChangePassword'])->name('change-password');
+    Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('change-password.update');
+    
+    // المحادثات
+    Route::get('/chat', [ProfileController::class, 'showChat'])->name('chat');
+});
+
 // صفحات إضافية
 Route::view('/about', 'about')->name('about');
 Route::view('/contact', 'contact')->name('contact');
 Route::view('/privacy', 'privacy')->name('privacy');
+Route::view('/terms', 'terms')->name('terms');

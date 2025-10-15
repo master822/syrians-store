@@ -7,931 +7,686 @@
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* الألوان الأساسية - داكنة دائماً */
-            --dark-bg: #0a0b0e;
-            --dark-card: #15171e;
-            --dark-surface: #1e2129;
-            --dark-border: #2a2e3a;
-            
-            /* ألوان التمييز - ذهبية وزرقاء */
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-surface: #334155;
+            --dark-border: #475569;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
             --gold-primary: #d4af37;
             --gold-secondary: #f7ef8a;
-            --gold-glow: #ffd700;
-            --aqua-primary: #00e5ff;
-            --aqua-secondary: #80f2ff;
-            --blue-primary: #3a86ff;
-            --blue-secondary: #6ba4ff;
-            --red-accent: #ff2e63;
-            --red-glow: #ff6b9d;
-            
-            /* ألوان النص */
-            --text-primary: #ffffff;
-            --text-secondary: #b0b3c1;
-            --text-muted: #6c7280;
+            --aqua-primary: #20c997;
+            --aqua-secondary: #96f2d7;
         }
 
-        [data-theme="light"] {
-            /* الوضع العادي - داكن لكن أقل قتامة */
-            --dark-bg: #1a1d28;
-            --dark-card: #252837;
-            --dark-surface: #2d3142;
-            --dark-border: #3a3f5a;
-            --text-primary: #e2e8f0;
-            --text-secondary: #a0aec0;
-            --text-muted: #718096;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1d28 100%);
+            background: var(--dark-bg);
             color: var(--text-primary);
             min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
         }
 
-        body::before {
-            content: '';
+        .navbar {
+            background: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--dark-border);
+            padding: 1rem 0;
             position: fixed;
             top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 229, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(58, 134, 255, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-            animation: backgroundFloat 20s ease-in-out infinite;
-        }
-
-        [data-theme="light"] body::before {
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 229, 255, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(58, 134, 255, 0.02) 0%, transparent 50%);
-        }
-
-        @keyframes backgroundFloat {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-20px) rotate(1deg); }
-            66% { transform: translateY(10px) rotate(-1deg); }
-        }
-
-        /* Navbar */
-        .navbar {
-            background: rgba(21, 23, 30, 0.95) !important;
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--dark-border);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        [data-theme="light"] .navbar {
-            background: rgba(37, 40, 55, 0.95) !important;
-            border-bottom: 1px solid var(--dark-border);
+            z-index: 1000;
         }
 
         .navbar-brand {
-            font-weight: 900;
-            font-size: 1.6rem;
-            background: linear-gradient(135deg, var(--gold-primary), var(--aqua-primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-        }
-
-        .nav-link {
-            color: var(--text-secondary) !important;
-            font-weight: 600;
-            padding: 0.8rem 1.2rem !important;
-            margin: 0 4px;
-            border-radius: 12px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .nav-link:hover::before {
-            left: 100%;
-        }
-
-        .nav-link:hover {
-            color: var(--text-primary) !important;
-            background: rgba(212, 175, 55, 0.1);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
-        }
-
-        /* Dropdown */
-        .dropdown-menu {
-            background: rgba(30, 33, 41, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--dark-border);
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            animation: dropdownAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        [data-theme="light"] .dropdown-menu {
-            background: rgba(45, 49, 66, 0.95);
-            border: 1px solid var(--dark-border);
-        }
-
-        @keyframes dropdownAppear {
-            from {
-                opacity: 0;
-                transform: translateY(-20px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .dropdown-item {
-            color: var(--text-secondary);
-            padding: 12px 20px;
-            margin: 4px 8px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-item:hover {
-            background: rgba(58, 134, 255, 0.1);
-            color: var(--aqua-primary);
-            transform: translateX(-8px);
-        }
-
-        /* أزرار */
-        .btn-gold {
-            background: linear-gradient(135deg, var(--gold-primary), #e6c34a);
-            border: none;
-            color: #000 !important;
-            font-weight: 700;
-            padding: 12px 28px;
-            border-radius: 12px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
-            text-decoration: none !important;
-            display: inline-block;
-        }
-
-        .btn-gold::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .btn-gold:hover::before {
-            left: 100%;
-        }
-
-        .btn-gold:hover {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.6);
-            color: #000 !important;
-        }
-
-        /* بطاقات */
-        .elite-card {
-            background: linear-gradient(145deg, var(--dark-card), var(--dark-surface));
-            border: 1px solid var(--dark-border);
-            border-radius: 20px;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            position: relative;
-            backdrop-filter: blur(10px);
-        }
-
-        .elite-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--gold-primary), var(--aqua-primary), var(--blue-primary));
-            transform: scaleX(0);
-            transition: transform 0.6s ease;
-        }
-
-        .elite-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .elite-card:hover {
-            transform: translateY(-12px) rotateX(5deg);
-            box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.4),
-                0 0 80px rgba(212, 175, 55, 0.2);
-            border-color: rgba(212, 175, 55, 0.3);
-        }
-
-        /* تصميم البحث */
-        .search-icon {
-            background: rgba(30, 33, 41, 0.8);
-            border: 1px solid var(--dark-border);
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            backdrop-filter: blur(10px);
-            color: var(--gold-primary);
-        }
-
-        [data-theme="light"] .search-icon {
-            background: rgba(45, 49, 66, 0.8);
-        }
-
-        .search-icon:hover {
-            transform: scale(1.1);
-            border-color: var(--gold-primary);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-            color: var(--aqua-primary);
-        }
-
-        .search-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 11, 14, 0.95);
-            backdrop-filter: blur(20px);
-            z-index: 9999;
-            display: none;
-            animation: modalAppear 0.4s ease;
-            overflow-y: auto;
-        }
-
-        [data-theme="light"] .search-modal {
-            background: rgba(26, 29, 40, 0.95);
-        }
-
-        @keyframes modalAppear {
-            from {
-                opacity: 0;
-                backdrop-filter: blur(0px);
-            }
-            to {
-                opacity: 1;
-                backdrop-filter: blur(20px);
-            }
-        }
-
-        .search-modal-content {
-            position: relative;
-            width: 90%;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-
-        .search-modal .search-box {
-            background: rgba(30, 33, 41, 0.9);
-            border: 2px solid var(--gold-primary);
-            border-radius: 20px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
-        }
-
-        [data-theme="light"] .search-modal .search-box {
-            background: rgba(45, 49, 66, 0.9);
-        }
-
-        .close-search {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: none;
-            border: none;
-            color: var(--gold-primary);
-            font-size: 2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10000;
-        }
-
-        .close-search:hover {
-            color: var(--red-accent);
-            transform: rotate(90deg);
-        }
-
-        /* زر الوضع */
-        .theme-toggle {
-            background: rgba(30, 33, 41, 0.8);
-            border: 1px solid var(--dark-border);
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            backdrop-filter: blur(10px);
-            color: var(--gold-primary);
-        }
-
-        [data-theme="light"] .theme-toggle {
-            background: rgba(45, 49, 66, 0.8);
-        }
-
-        .theme-toggle:hover {
-            transform: rotate(180deg) scale(1.1);
-            border-color: var(--gold-primary);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-        }
-
-        /* تأثيرات النص */
-        .text-gold {
+            font-weight: 800;
+            font-size: 1.5rem;
             background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .text-aqua {
-            background: linear-gradient(135deg, var(--aqua-primary), var(--aqua-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem !important;
+            font-size: 0.95rem;
         }
 
-        .text-blue {
-            background: linear-gradient(135deg, var(--blue-primary), var(--blue-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .nav-link:hover {
+            color: var(--gold-primary) !important;
+            transform: translateY(-2px);
         }
 
-        /* الفوتر */
-        .footer {
-            background: linear-gradient(135deg, var(--dark-bg), var(--dark-card));
-            border-top: 1px solid var(--dark-border);
-            position: relative;
+        .dropdown-menu {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            min-width: 200px;
+        }
+
+        .dropdown-item {
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item:hover {
+            background: var(--dark-surface);
+            color: var(--gold-primary);
+        }
+
+        .elite-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
             overflow: hidden;
         }
 
-        [data-theme="light"] .footer {
-            background: linear-gradient(135deg, var(--dark-bg), #252837);
+        .elite-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
 
-        .footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gold-primary), var(--aqua-primary), transparent);
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            border: none;
+            color: #000;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
 
-        /* تخصيص السكرول بار */
-        ::-webkit-scrollbar {
-            width: 12px;
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+            color: #000;
         }
 
-        ::-webkit-scrollbar-track {
-            background: var(--dark-bg);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--gold-primary), var(--aqua-primary));
-            border-radius: 6px;
-            border: 2px solid var(--dark-bg);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, var(--aqua-primary), var(--blue-primary));
-        }
-
-        /* تأثير التحديد */
-        ::selection {
-            background: rgba(212, 175, 55, 0.3);
-            color: var(--text-primary);
-        }
-
-        /* حقول الإدخال */
-        .form-control, .form-select {
-            background: rgba(30, 33, 41, 0.8) !important;
-            border: 1px solid var(--dark-border) !important;
-            color: var(--text-primary) !important;
-            border-radius: 12px;
+        .btn-aqua {
+            background: linear-gradient(135deg, var(--aqua-primary), var(--aqua-secondary));
+            border: none;
+            color: #000;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 20px;
             transition: all 0.3s ease;
         }
 
-        [data-theme="light"] .form-control, 
-        [data-theme="light"] .form-select {
-            background: rgba(45, 49, 66, 0.8) !important;
-            border: 1px solid var(--dark-border) !important;
+        .btn-aqua:hover {
+            background: linear-gradient(135deg, var(--aqua-secondary), var(--aqua-primary));
+            color: #000;
+            transform: translateY(-2px);
         }
 
-        .form-control:focus, .form-select:focus {
-            border-color: var(--gold-primary) !important;
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2) !important;
-            background: rgba(30, 33, 41, 0.9) !important;
-            color: var(--text-primary) !important;
+        .text-gold {
+            color: var(--gold-primary) !important;
         }
 
-        .form-control::placeholder {
-            color: var(--text-muted) !important;
+        .text-aqua {
+            color: var(--aqua-primary) !important;
         }
 
-        /* تصميم متقدم لنموذج البحث */
-        .price-range-container {
-            background: rgba(30, 33, 41, 0.6);
-            border: 1px solid var(--dark-border);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
+        .bg-gold {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary)) !important;
         }
 
-        .range-inputs {
-            display: flex;
-            gap: 15px;
-            align-items: center;
+        .bg-aqua {
+            background: linear-gradient(135deg, var(--aqua-primary), var(--aqua-secondary)) !important;
         }
 
-        .range-inputs .form-control {
+        .main-content {
             flex: 1;
+            padding-top: 100px; /* مساحة لل navbar الثابت */
+            min-height: calc(100vh - 200px);
         }
 
-        .range-separator {
-            color: var(--gold-primary);
+        .footer {
+            background: var(--dark-card);
+            border-top: 1px solid var(--dark-border);
+            margin-top: auto;
+            padding: 2rem 0;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold-primary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--aqua-primary);
+            color: #000;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: bold;
         }
 
-        .search-filters {
-            background: rgba(30, 33, 41, 0.6);
-            border: 1px solid var(--dark-border);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 15px 0;
-        }
-
-        .filter-section {
-            margin-bottom: 20px;
-        }
-
-        .filter-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .filter-title {
-            color: var(--gold-primary);
-            font-weight: 600;
-            margin-bottom: 15px;
+        .search-icon {
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            cursor: pointer;
             font-size: 1.1rem;
         }
 
-        .filter-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
+        .search-icon:hover {
+            color: var(--gold-primary);
+            transform: scale(1.1);
         }
 
-        .filter-checkbox {
+        .search-modal .modal-content {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 15px;
+        }
+
+        .search-modal .form-control {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .search-modal .form-control:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+        }
+
+        /* تحسينات للوضع المتنقل */
+        @media (max-width: 768px) {
+            .navbar-nav {
+                text-align: center;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem !important;
+                font-size: 1rem;
+            }
+            
+            .dropdown-menu {
+                text-align: right;
+            }
+            
+            .main-content {
+                padding-top: 80px;
+            }
+            
+            .container-fluid {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+        }
+
+        /* تخصيص شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-surface);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--gold-secondary), var(--gold-primary));
+        }
+
+        /* تحسينات عامة للقراءة */
+        .container, .container-fluid {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        /* تحسينات للجداول */
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+            padding: 1rem 0.75rem;
+            border-color: var(--dark-border);
+        }
+
+        /* تحسينات للنماذج */
+        .form-control, .form-select {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: var(--dark-surface);
+            border-color: var(--gold-primary);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+        }
+
+        /* تحسينات للبطاقات */
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+        }
+
+        /* تحسينات للأزرار */
+        .btn {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* تحسينات للنصوص */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        /* منع التكرار في التمرير */
+        .content-wrapper {
+            min-height: 100vh;
             display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .filter-checkbox:hover {
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        .filter-checkbox input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--gold-primary);
-        }
-
-        .filter-checkbox label {
-            color: var(--text-secondary);
-            cursor: pointer;
-            margin: 0;
-        }
-
-        .search-main-input {
-            font-size: 1.2rem;
-            padding: 15px 20px;
-            border: 2px solid var(--gold-primary) !important;
+            flex-direction: column;
         }
     </style>
 </head>
 <body>
-    <!-- شريط التنقل -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="{{ route('home') }}">
-                متجر التخفيضات
-            </a>
+    <div class="content-wrapper">
+        <!-- شريط التنقل -->
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <!-- الشعار -->
+                <a class="navbar-brand" href="{{ route('home') }}">
+                    <i class="fas fa-tags me-2"></i>متجر التخفيضات
+                </a>
 
-            <!-- زر الوضع -->
-            <div class="theme-toggle me-3" id="themeToggle">
-                <i class="fas fa-moon"></i>
-            </div>
+                <!-- زر القائمة للموبايل -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <!-- أيقونة البحث -->
-            <div class="search-icon me-3 d-none d-lg-flex" id="searchIcon">
-                <i class="fas fa-search"></i>
-            </div>
-            
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <i class="fas fa-bars text-gold"></i>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- القائمة الرئيسية -->
-                <ul class="navbar-nav me-auto">
-                    <!-- المنتجات مع القائمة الفرعية -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            المنتجات
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('products.index') }}">جميع المنتجات</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ route('products.byCategory', 'clothes') }}">ملابس</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.byCategory', 'electronics') }}">إلكترونيات</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.byCategory', 'home') }}">أدوات منزلية</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.byCategory', 'grocery') }}">بقالة</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- التجار مع القائمة الفرعية -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            التجار
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('merchants.index') }}">جميع التجار</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'clothes') }}">ملابس</a></li>
-                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'electronics') }}">إلكترونيات</a></li>
-                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'home') }}">أدوات منزلية</a></li>
-                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'grocery') }}">بقالة</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- العروض -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('discounts') }}">
-                            العروض
-                        </a>
-                    </li>
-
-                    <!-- سوق المستعمل -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('products.used') }}">
-                            سوق المستعمل
-                        </a>
-                    </li>
-                </ul>
-                
-                <!-- أيقونة البحث للجوال -->
-                <div class="search-icon me-3 d-lg-none" id="searchIconMobile">
-                    <i class="fas fa-search"></i>
-                </div>
-                
-                <!-- حسابات المستخدمين -->
-                <ul class="navbar-nav">
-                    @auth
+                <!-- عناصر القائمة -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('home') }}">
+                                <i class="fas fa-home me-1"></i>الرئيسية
+                            </a>
+                        </li>
+                        
+                        <!-- المنتجات مع قائمة منسدلة -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                {{ Auth::user()->name }}
+                                <i class="fas fa-box me-1"></i>المنتجات
                             </a>
                             <ul class="dropdown-menu">
-                                @if(Auth::user()->user_type === 'admin')
-                                    <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">لوحة التحكم</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.users') }}">إدارة المستخدمين</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.products') }}">إدارة المنتجات</a></li>
-                                @elseif(Auth::user()->user_type === 'merchant')
-                                    <li><a class="dropdown-item" href="{{ route('merchant.dashboard') }}">لوحة التاجر</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('merchant.products') }}">منتجاتي</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('merchant.discounts') }}">تخفيضاتي</a></li>
-                                    <li><a class="dropdown-item" href="#">إعدادات المتجر</a></li>
-                                @else
-                                    <li><a class="dropdown-item" href="{{ route('user.dashboard') }}">لوحتي</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('user.products') }}">منتجاتي المستعملة</a></li>
-                                    <li><a class="dropdown-item" href="#">المحادثات</a></li>
-                                @endif
+                                <li><a class="dropdown-item" href="{{ route('products.index') }}">
+                                    <i class="fas fa-boxes me-2"></i>جميع المنتجات
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ route('products.new') }}">
+                                    <i class="fas fa-star me-2"></i>منتجات جديدة
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ route('products.used') }}">
+                                    <i class="fas fa-recycle me-2"></i>منتجات مستعملة
+                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">تعديل الملف الشخصي</a></li>
-                                <li><a class="dropdown-item" href="#">تغيير كلمة المرور</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">تسجيل الخروج</button>
-                                    </form>
-                                </li>
+                                <li><a class="dropdown-item" href="{{ route('discounts') }}">
+                                    <i class="fas fa-tag me-2"></i>التخفيضات
+                                </a></li>
                             </ul>
                         </li>
-                    @else
+
+                        <!-- التجار مع قائمة منسدلة -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-store me-1"></i>التجار
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ route('merchants.index') }}">
+                                    <i class="fas fa-list me-2"></i>جميع التجار
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'electronics') }}">
+                                    <i class="fas fa-laptop me-2"></i>تجار الإلكترونيات
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'clothes') }}">
+                                    <i class="fas fa-tshirt me-2"></i>تجار الملابس
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'home') }}">
+                                    <i class="fas fa-home me-2"></i>تجار الأدوات المنزلية
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'grocery') }}">
+                                    <i class="fas fa-shopping-basket me-2"></i>تجار البقالة
+                                </a></li>
+                            </ul>
+                        </li>
+
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">
-                                تسجيل الدخول
+                            <a class="nav-link" href="{{ route('discounts') }}">
+                                <i class="fas fa-tag me-1"></i>التخفيضات
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="btn-gold ms-2" href="{{ route('register') }}">
-                                إنشاء حساب
+                    </ul>
+
+                    <!-- البحث والإشعارات -->
+                    <div class="d-flex align-items-center me-3">
+                        <!-- أيقونة البحث -->
+                        <i class="fas fa-search search-icon me-3" data-bs-toggle="modal" data-bs-target="#searchModal" style="font-size: 1.2rem;"></i>
+
+                        <!-- الإشعارات -->
+                        @auth
+                        <div class="nav-item dropdown">
+                            <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-bell" style="font-size: 1.2rem;"></i>
+                                <span class="notification-badge">3</span>
                             </a>
-                        </li>
-                    @endauth
-                </ul>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="fas fa-gift me-2 text-success"></i>عرض جديد
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="fas fa-star me-2 text-warning"></i>تقييم جديد
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="fas fa-shopping-cart me-2 text-primary"></i>طلب جديد
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-center" href="#">
+                                    عرض جميع الإشعارات
+                                </a></li>
+                            </ul>
+                        </div>
+                        @endauth
+                    </div>
+
+                    <!-- عناصر المستخدم -->
+                    <ul class="navbar-nav">
+                        @auth
+                            <!-- الملف الشخصي -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" 
+                                   role="button" data-bs-toggle="dropdown">
+                                    <img src="{{ Auth::user()->avatar_url }}" 
+                                         alt="{{ Auth::user()->name }}" 
+                                         class="user-avatar me-2">
+                                    <span>{{ Auth::user()->name }}</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    @if(Auth::user()->isAdmin())
+                                        <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                            <i class="fas fa-crown me-2"></i>لوحة التحكم
+                                        </a></li>
+                                    @elseif(Auth::user()->isMerchant())
+                                        <li><a class="dropdown-item" href="{{ route('merchant.dashboard') }}">
+                                            <i class="fas fa-store me-2"></i>لوحة التاجر
+                                        </a></li>
+                                    @else
+                                        <li><a class="dropdown-item" href="{{ route('user.dashboard') }}">
+                                            <i class="fas fa-user me-2"></i>لوحة المستخدم
+                                        </a></li>
+                                    @endif
+                                    
+                                    <li><hr class="dropdown-divider"></li>
+                                    
+                                    <li><a class="dropdown-item" href="{{ route('profile') }}">
+                                        <i class="fas fa-user-edit me-2"></i>الملف الشخصي
+                                    </a></li>
+                                    
+                                    <li><a class="dropdown-item" href="{{ route('change-password') }}">
+                                        <i class="fas fa-key me-2"></i>تغيير كلمة المرور
+                                    </a></li>
+
+                                    @if(Auth::user()->isMerchant())
+                                        <li><a class="dropdown-item" href="{{ route('merchant.products') }}">
+                                            <i class="fas fa-boxes me-2"></i>منتجاتي
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ route('merchant.discounts') }}">
+                                            <i class="fas fa-tags me-2"></i>التخفيضات
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ route('products.create') }}">
+                                            <i class="fas fa-plus-circle me-2"></i>إضافة منتج
+                                        </a></li>
+                                    @elseif(Auth::user()->isRegularUser())
+                                        <li><a class="dropdown-item" href="{{ route('user.products') }}">
+                                            <i class="fas fa-boxes me-2"></i>منتجاتي
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ route('products.create') }}">
+                                            <i class="fas fa-plus-circle me-2"></i>إضافة منتج
+                                        </a></li>
+                                    @endif
+
+                                    <li><a class="dropdown-item" href="{{ route('chat') }}">
+                                        <i class="fas fa-comments me-2"></i>المحادثات
+                                    </a></li>
+                                    
+                                    <li><hr class="dropdown-divider"></li>
+                                    
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-sign-out-alt me-2"></i>تسجيل الخروج
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        @else
+                            <!-- زر تسجيل الدخول للمستخدمين الزائرين -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('login') }}">
+                                    <i class="fas fa-sign-in-alt me-1"></i>تسجيل الدخول
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-gold ms-2" href="{{ route('register') }}">
+                                    <i class="fas fa-user-plus me-1"></i>إنشاء حساب
+                                </a>
+                            </li>
+                        @endauth
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <!-- نافذة البحث المتقدمة -->
-    <div class="search-modal" id="searchModal">
-        <button class="close-search" id="closeSearch">
-            <i class="fas fa-times"></i>
-        </button>
-        <div class="search-modal-content">
-            <div class="search-box">
-                <form action="{{ route('products.search') }}" method="GET">
-                    <!-- البحث الأساسي -->
-                    <div class="mb-4">
-                        <label for="searchInput" class="form-label text-gold mb-3 fs-5">
-                            <i class="fas fa-search me-2"></i>ابحث عن المنتجات
-                        </label>
-                        <input type="text" name="query" class="form-control search-main-input" 
-                               placeholder="اكتب اسم المنتج الذي تبحث عنه..." 
-                               autocomplete="off" id="searchInput">
-                    </div>
-
-                    <!-- نطاق السعر -->
-                    <div class="price-range-container">
-                        <h6 class="filter-title">
-                            <i class="fas fa-tag me-2"></i>نطاق السعر
-                        </h6>
-                        <div class="range-inputs">
-                            <input type="number" name="min_price" class="form-control" 
-                                   placeholder="الحد الأدنى للسعر" min="0">
-                            <span class="range-separator">-</span>
-                            <input type="number" name="max_price" class="form-control" 
-                                   placeholder="الحد الأقصى للسعر" min="0">
-                            <span class="text-muted ms-2">ر.س</span>
-                        </div>
-                    </div>
-
-                    <!-- الفلاتر المتقدمة -->
-                    <div class="search-filters">
-                        <!-- التصنيف -->
-                        <div class="filter-section">
-                            <h6 class="filter-title">
-                                <i class="fas fa-layer-group me-2"></i>التصنيف
-                            </h6>
-                            <select name="category_id" class="form-select">
-                                <option value="">جميع التصنيفات</option>
-                                @foreach(\App\Models\Category::where('is_active', true)->get() as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- نوع المنتج -->
-                        <div class="filter-section">
-                            <h6 class="filter-title">
-                                <i class="fas fa-box me-2"></i>نوع المنتج
-                            </h6>
-                            <div class="filter-options">
-                                <div class="filter-checkbox">
-                                    <input type="radio" name="product_type" id="all_products" value="" checked>
-                                    <label for="all_products">جميع المنتجات</label>
-                                </div>
-                                <div class="filter-checkbox">
-                                    <input type="radio" name="product_type" id="new_products" value="new">
-                                    <label for="new_products">منتجات جديدة</label>
-                                </div>
-                                <div class="filter-checkbox">
-                                    <input type="radio" name="product_type" id="used_products" value="used">
-                                    <label for="used_products">منتجات مستعملة</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- الترتيب -->
-                        <div class="filter-section">
-                            <h6 class="filter-title">
-                                <i class="fas fa-sort me-2"></i>ترتيب حسب
-                            </h6>
-                            <select name="sort" class="form-select">
-                                <option value="newest">الأحدث أولاً</option>
-                                <option value="oldest">الأقدم أولاً</option>
-                                <option value="price_low">السعر: من الأقل للأعلى</option>
-                                <option value="price_high">السعر: من الأعلى للأقل</option>
-                                <option value="name">الاسم (أ-ي)</option>
-                                <option value="views">الأكثر مشاهدة</option>
-                            </select>
-                        </div>
-
-                        <!-- خيارات إضافية -->
-                        <div class="filter-section">
-                            <h6 class="filter-title">
-                                <i class="fas fa-filter me-2"></i>خيارات إضافية
-                            </h6>
-                            <div class="filter-options">
-                                <div class="filter-checkbox">
-                                    <input type="checkbox" name="has_discount" id="has_discount">
-                                    <label for="has_discount">عروض وتخفيضات فقط</label>
-                                </div>
-                                <div class="filter-checkbox">
-                                    <input type="checkbox" name="in_stock" id="in_stock" checked>
-                                    <label for="in_stock">منتجات متوفرة</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- أزرار البحث -->
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                        <button type="reset" class="btn btn-outline-secondary me-2 px-4">
-                            <i class="fas fa-undo me-2"></i>إعادة تعيين
-                        </button>
-                        <button type="submit" class="btn-gold px-4">
+        <!-- نافذة البحث -->
+        <div class="modal fade search-modal" id="searchModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title text-gold">
                             <i class="fas fa-search me-2"></i>بحث متقدم
-                        </button>
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                </form>
+                    <div class="modal-body">
+                        <form action="{{ route('products.search') }}" method="GET">
+                            <div class="mb-3">
+                                <label class="form-label text-light">كلمة البحث</label>
+                                <input type="text" name="query" class="form-control" 
+                                       placeholder="ابحث عن منتج أو تاجر...">
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-light">أقل سعر</label>
+                                    <input type="number" name="min_price" class="form-control" placeholder="0">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-light">أعلى سعر</label>
+                                    <input type="number" name="max_price" class="form-control" placeholder="100000">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label text-light">نوع المنتج</label>
+                                <select name="product_type" class="form-control">
+                                    <option value="">جميع المنتجات</option>
+                                    <option value="new">منتجات جديدة</option>
+                                    <option value="used">منتجات مستعملة</option>
+                                </select>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-gold">
+                                    <i class="fas fa-search me-2"></i>بحث
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <div class="container-fluid">
+                @yield('content')
+            </div>
+        </main>
+
+        <!-- التذييل -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 mb-4">
+                        <h5 class="text-gold mb-3">
+                            <i class="fas fa-tags me-2"></i>متجر التخفيضات
+                        </h5>
+                        <p class="text-light">
+                            منصة متكاملة لبيع وشراء المنتجات الجديدة والمستعملة بأفضل الأسعار والتخفيضات.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="text-aqua me-3"><i class="fab fa-facebook fa-lg"></i></a>
+                            <a href="#" class="text-aqua me-3"><i class="fab fa-twitter fa-lg"></i></a>
+                            <a href="#" class="text-aqua me-3"><i class="fab fa-instagram fa-lg"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-6 mb-4">
+                        <h6 class="text-gold mb-3">روابط سريعة</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><a href="{{ route('home') }}" class="text-light text-decoration-none">الرئيسية</a></li>
+                            <li class="mb-2"><a href="{{ route('products.index') }}" class="text-light text-decoration-none">المنتجات</a></li>
+                            <li class="mb-2"><a href="{{ route('merchants.index') }}" class="text-light text-decoration-none">التجار</a></li>
+                            <li class="mb-2"><a href="{{ route('discounts') }}" class="text-light text-decoration-none">التخفيضات</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-2 col-6 mb-4">
+                        <h6 class="text-gold mb-3">الحساب</h6>
+                        <ul class="list-unstyled">
+                            @auth
+                                <li class="mb-2"><a href="{{ route('profile') }}" class="text-light text-decoration-none">الملف الشخصي</a></li>
+                                <li class="mb-2"><a href="{{ route('change-password') }}" class="text-light text-decoration-none">كلمة المرور</a></li>
+                            @else
+                                <li class="mb-2"><a href="{{ route('login') }}" class="text-light text-decoration-none">تسجيل الدخول</a></li>
+                                <li class="mb-2"><a href="{{ route('register') }}" class="text-light text-decoration-none">إنشاء حساب</a></li>
+                            @endauth
+                        </ul>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <h6 class="text-gold mb-3">معلومات التواصل</h6>
+                        <ul class="list-unstyled text-light">
+                            <li class="mb-2">
+                                <i class="fas fa-envelope me-2 text-aqua"></i>
+                                info@example.com
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-phone me-2 text-aqua"></i>
+                                +1234567890
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-map-marker-alt me-2 text-aqua"></i>
+                                دمشق، سوريا
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <hr class="border-secondary">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="text-muted mb-0">&copy; 2024 متجر التخفيضات. جميع الحقوق محفوظة.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <a href="{{ route('privacy') }}" class="text-muted text-decoration-none me-3">سياسة الخصوصية</a>
+                        <a href="{{ route('terms') }}" class="text-muted text-decoration-none">الشروط والأحكام</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <!-- المحتوى الرئيسي -->
-    <main style="padding-top: 80px;">
-        @yield('content')
-    </main>
-
-    <!-- الفوتر -->
-    <footer class="footer mt-5 py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <h5 class="text-gold mb-3">متجر التخفيضات</h5>
-                    <p class="text-light mb-4">منصة تسوق إلكتروني تقدم أفضل العروض والتخفيضات من تجار موثوقين.</p>
-                </div>
-                <div class="col-md-2 mb-4">
-                    <h6 class="text-gold mb-3">روابط سريعة</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="{{ route('home') }}" class="text-light text-decoration-none">الرئيسية</a></li>
-                        <li class="mb-2"><a href="{{ route('products.index') }}" class="text-light text-decoration-none">المنتجات</a></li>
-                        <li class="mb-2"><a href="{{ route('discounts') }}" class="text-light text-decoration-none">التخفيضات</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <h6 class="text-aqua mb-3">التصنيفات</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="{{ route('products.byCategory', 'clothes') }}" class="text-light text-decoration-none">ملابس</a></li>
-                        <li class="mb-2"><a href="{{ route('products.byCategory', 'electronics') }}" class="text-light text-decoration-none">إلكترونيات</a></li>
-                        <li class="mb-2"><a href="{{ route('products.byCategory', 'home') }}" class="text-light text-decoration-none">أدوات منزلية</a></li>
-                        <li class="mb-2"><a href="{{ route('products.byCategory', 'grocery') }}" class="text-light text-decoration-none">بقالة</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <h6 class="text-blue mb-3">التواصل</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2 text-light">0912345678</li>
-                        <li class="mb-2 text-light">info@example.com</li>
-                        <li class="mb-2 text-light">دمشق، سوريا</li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="my-4" style="border-color: var(--dark-border);">
-            <div class="text-center">
-                <p class="mb-0 text-light">&copy; 2024 متجر التخفيضات. جميع الحقوق محفوظة.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <script>
-        // التحكم في الوضع المظلم/الفاتح
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = themeToggle.querySelector('i');
-        
-        // التحقق من التفضيل المحفوظ
-        const currentTheme = localStorage.getItem('theme') || 'dark';
-        document.body.setAttribute('data-theme', currentTheme);
-        updateThemeIcon(currentTheme);
-        
-        themeToggle.addEventListener('click', function() {
-            const currentTheme = document.body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            document.body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon(newTheme);
-        });
-        
-        function updateThemeIcon(theme) {
-            if (theme === 'dark') {
-                themeIcon.className = 'fas fa-sun';
-            } else {
-                themeIcon.className = 'fas fa-moon';
-            }
-        }
-
-        // التحكم في نافذة البحث
-        const searchIcon = document.getElementById('searchIcon');
-        const searchIconMobile = document.getElementById('searchIconMobile');
-        const searchModal = document.getElementById('searchModal');
-        const closeSearch = document.getElementById('closeSearch');
-        const searchInput = document.getElementById('searchInput');
-
-        function openSearch() {
-            searchModal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => {
-                searchInput.focus();
-            }, 100);
-        }
-
-        function closeSearchModal() {
-            searchModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        searchIcon.addEventListener('click', openSearch);
-        searchIconMobile.addEventListener('click', openSearch);
-        closeSearch.addEventListener('click', closeSearchModal);
-
-        // إغلاق البحث بالزر Escape
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeSearchModal();
-            }
-        });
-
-        // إغلاق البحث بالضغط خارج المحتوى
-        searchModal.addEventListener('click', function(e) {
-            if (e.target === searchModal) {
-                closeSearchModal();
-            }
-        });
-
-        // تأثيرات التمرير للنافبار
-        window.addEventListener('scroll', function() {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 100) {
-                navbar.style.background = 'rgba(21, 23, 30, 0.98)';
-                navbar.style.backdropFilter = 'blur(25px)';
-            } else {
-                navbar.style.background = 'rgba(21, 23, 30, 0.95)';
-                navbar.style.backdropFilter = 'blur(20px)';
-            }
-        });
-
-        // إعادة تعيين الفورم
-        document.querySelector('button[type="reset"]').addEventListener('click', function() {
-            document.querySelector('form').reset();
-        });
-    </script>
-    
-    @yield('scripts')
+    @stack('scripts')
 </body>
 </html>

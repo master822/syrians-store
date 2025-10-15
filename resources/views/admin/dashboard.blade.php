@@ -1,98 +1,311 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - الأدمن</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-gradient-to-br from-gray-900 to-blue-900 min-h-screen text-white">
-    <div class="container mx-auto px-4 py-8">
-        <!-- رأس الأدمن -->
-        <div class="glass-effect rounded-2xl p-6 mb-8 border border-white/20">
-            <div class="flex justify-between items-center">
-                <h1 class="text-3xl font-bold">لوحة التحكم - الأدمن</h1>
-                <div class="flex items-center gap-4">
-                    <span class="text-blue-300">مرحباً، {{ $user->name }}</span>
-                    <a href="/logout" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition-colors">
-                        تسجيل الخروج
-                    </a>
+@extends('layouts.app')
+
+@section('title', 'لوحة تحكم المسؤول - متجر التخفيضات')
+
+@section('content')
+<div class="container-fluid py-4">
+    <!-- رأس لوحة التحكم -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="text-gold mb-2">
+                        <i class="fas fa-crown me-2"></i>لوحة تحكم المسؤول
+                    </h1>
+                    <p class="text-light mb-0">مرحباً بك في لوحة التحكم الشاملة للموقع</p>
+                </div>
+                <div class="text-end">
+                    <div class="text-aqua fw-bold fs-5">{{ now()->format('Y-m-d') }}</div>
+                    <div class="text-muted">آخر تحديث</div>
                 </div>
             </div>
-        </div>
-
-        <!-- الإحصائيات -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <div class="glass-effect rounded-2xl p-6 border border-white/20 text-center">
-                <i class="fas fa-users text-4xl text-blue-400 mb-4"></i>
-                <h3 class="text-2xl font-bold">{{ $stats['users'] }}</h3>
-                <p class="text-blue-200">إجمالي المستخدمين</p>
-            </div>
-            
-            <div class="glass-effect rounded-2xl p-6 border border-white/20 text-center">
-                <i class="fas fa-store text-4xl text-green-400 mb-4"></i>
-                <h3 class="text-2xl font-bold">{{ $stats['merchants'] }}</h3>
-                <p class="text-blue-200">التجار</p>
-            </div>
-            
-            <div class="glass-effect rounded-2xl p-6 border border-white/20 text-center">
-                <i class="fas fa-box text-4xl text-purple-400 mb-4"></i>
-                <h3 class="text-2xl font-bold">{{ $stats['products'] }}</h3>
-                <p class="text-blue-200">المنتجات</p>
-            </div>
-        </div>
-
-        <!-- القوائم السريعة -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <a href="/admin/users" class="glass-effect rounded-2xl p-6 border border-white/20 hover:border-blue-400 transition-all block">
-                <div class="flex items-center gap-4">
-                    <i class="fas fa-users text-3xl text-blue-400"></i>
-                    <div>
-                        <h3 class="text-xl font-bold">إدارة المستخدمين</h3>
-                        <p class="text-blue-200">عرض وتعديل جميع المستخدمين</p>
-                    </div>
-                </div>
-            </a>
-
-            <a href="/admin/products" class="glass-effect rounded-2xl p-6 border border-white/20 hover:border-green-400 transition-all block">
-                <div class="flex items-center gap-4">
-                    <i class="fas fa-box text-3xl text-green-400"></i>
-                    <div>
-                        <h3 class="text-xl font-bold">إدارة المنتجات</h3>
-                        <p class="text-blue-200">عرض جميع المنتجات في النظام</p>
-                    </div>
-                </div>
-            </a>
-
-            <a href="/admin/categories" class="glass-effect rounded-2xl p-6 border border-white/20 hover:border-purple-400 transition-all block">
-                <div class="flex items-center gap-4">
-                    <i class="fas fa-tags text-3xl text-purple-400"></i>
-                    <div>
-                        <h3 class="text-xl font-bold">إدارة الفئات</h3>
-                        <p class="text-blue-200">إدارة فئات المنتجات</p>
-                    </div>
-                </div>
-            </a>
-
-            <a href="/" class="glass-effect rounded-2xl p-6 border border-white/20 hover:border-yellow-400 transition-all block">
-                <div class="flex items-center gap-4">
-                    <i class="fas fa-home text-3xl text-yellow-400"></i>
-                    <div>
-                        <h3 class="text-xl font-bold">الموقع الرئيسي</h3>
-                        <p class="text-blue-200">العودة للصفحة الرئيسية</p>
-                    </div>
-                </div>
-            </a>
         </div>
     </div>
 
-    <style>
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-    </style>
-</body>
-</html>
+    <!-- الإحصائيات الرئيسية -->
+    <div class="row mb-5">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="elite-card stats-card bg-dark-card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h6 class="text-muted mb-2">إجمالي المستخدمين</h6>
+                            <h4 class="text-aqua mb-0">{{ $stats['total_users'] }}</h4>
+                            <small class="text-muted">+{{ $stats['today_registrations'] }} اليوم</small>
+                        </div>
+                        <div class="col-4 text-end">
+                            <i class="fas fa-users fa-2x text-aqua"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="elite-card stats-card bg-dark-card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h6 class="text-muted mb-2">إجمالي التجار</h6>
+                            <h4 class="text-warning mb-0">{{ $stats['total_merchants'] }}</h4>
+                            <small class="text-muted">نشطين</small>
+                        </div>
+                        <div class="col-4 text-end">
+                            <i class="fas fa-store fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="elite-card stats-card bg-dark-card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h6 class="text-muted mb-2">إجمالي المنتجات</h6>
+                            <h4 class="text-success mb-0">{{ $stats['total_products'] }}</h4>
+                            <small class="text-muted">{{ $stats['active_products'] }} نشطة</small>
+                        </div>
+                        <div class="col-4 text-end">
+                            <i class="fas fa-boxes fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="elite-card stats-card bg-dark-card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h6 class="text-muted mb-2">الإيرادات الشهرية</h6>
+                            <h4 class="text-danger mb-0">{{ number_format($revenueStats['monthly_revenue']) }} ل.س</h4>
+                            <small class="text-muted">إجمالي: {{ number_format($revenueStats['total_revenue']) }} ل.س</small>
+                        </div>
+                        <div class="col-4 text-end">
+                            <i class="fas fa-money-bill-wave fa-2x text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الإحصائيات الثانوية -->
+    <div class="row mb-5">
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="elite-card bg-dark-card text-center p-3">
+                <i class="fas fa-tags fa-2x text-info mb-2"></i>
+                <h6 class="text-light mb-1">{{ $stats['total_categories'] }}</h6>
+                <small class="text-muted">التصنيفات</small>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="elite-card bg-dark-card text-center p-3">
+                <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                <h6 class="text-light mb-1">{{ $stats['total_ratings'] }}</h6>
+                <small class="text-muted">التقييمات</small>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="elite-card bg-dark-card text-center p-3">
+                <i class="fas fa-clock fa-2x text-secondary mb-2"></i>
+                <h6 class="text-light mb-1">{{ $stats['pending_products'] }}</h6>
+                <small class="text-muted">بانتظار المراجعة</small>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="elite-card bg-dark-card text-center p-3">
+                <i class="fas fa-gift fa-2x text-success mb-2"></i>
+                <h6 class="text-light mb-1">{{ $subscriptionStats['free_merchants'] }}</h6>
+                <small class="text-muted">مجاني</small>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="elite-card bg-dark-card text-center p-3">
+                <i class="fas fa-star fa-2x text-primary mb-2"></i>
+                <h6 class="text-light mb-1">{{ $subscriptionStats['basic_merchants'] }}</h6>
+                <small class="text-muted">أساسي</small>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="elite-card bg-dark-card text-center p-3">
+                <i class="fas fa-crown fa-2x text-gold mb-2"></i>
+                <h6 class="text-light mb-1">{{ $subscriptionStats['premium_merchants'] + $subscriptionStats['medium_merchants'] }}</h6>
+                <small class="text-muted">مميز</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- أحدث المستخدمين -->
+        <div class="col-xl-6 mb-4">
+            <div class="elite-card h-100">
+                <div class="card-header bg-dark-card d-flex justify-content-between align-items-center py-3">
+                    <h5 class="text-gold mb-0">
+                        <i class="fas fa-users me-2"></i>أحدث المستخدمين
+                    </h5>
+                    <a href="{{ route('admin.users') }}" class="btn btn-sm btn-outline-aqua">عرض الكل</a>
+                </div>
+                <div class="card-body">
+                    @if($recentUsers->count() > 0)
+                        @foreach($recentUsers as $user)
+                        <div class="d-flex align-items-center mb-3 pb-3 border-bottom border-secondary">
+                            <div class="flex-shrink-0">
+                                <img src="{{ $user->avatar_url }}" 
+                                     alt="{{ $user->name }}" 
+                                     class="rounded-circle"
+                                     style="width: 40px; height: 40px; object-fit: cover;">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="text-light mb-1">{{ $user->name }}</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small">{{ $user->email }}</span>
+                                    <span class="badge bg-{{ $user->user_type == 'merchant' ? 'warning' : ($user->user_type == 'admin' ? 'danger' : 'info') }}">
+                                        {{ $user->user_type == 'merchant' ? 'تاجر' : ($user->user_type == 'admin' ? 'مسؤول' : 'مستخدم') }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    @else
+                        <div class="text-center py-4">
+                            <i class="fas fa-users fa-2x text-muted mb-3"></i>
+                            <p class="text-muted">لا يوجد مستخدمين</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- أحدث المنتجات -->
+        <div class="col-xl-6 mb-4">
+            <div class="elite-card h-100">
+                <div class="card-header bg-dark-card d-flex justify-content-between align-items-center py-3">
+                    <h5 class="text-gold mb-0">
+                        <i class="fas fa-boxes me-2"></i>أحدث المنتجات
+                    </h5>
+                    <a href="{{ route('admin.products') }}" class="btn btn-sm btn-outline-aqua">عرض الكل</a>
+                </div>
+                <div class="card-body">
+                    @if($recentProducts->count() > 0)
+                        @foreach($recentProducts as $product)
+                        <div class="d-flex align-items-center mb-3 pb-3 border-bottom border-secondary">
+                            <div class="flex-shrink-0">
+                                @if($product->images)
+                                    @php
+                                        $images = json_decode($product->images);
+                                        $firstImage = $images[0] ?? null;
+                                    @endphp
+                                    @if($firstImage)
+                                        <img src="{{ asset('storage/' . $firstImage) }}" 
+                                             alt="{{ $product->name }}" 
+                                             class="rounded"
+                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                    @else
+                                        <div class="bg-dark rounded d-flex align-items-center justify-content-center" 
+                                             style="width: 40px; height: 40px;">
+                                            <i class="fas fa-image text-muted"></i>
+                                        </div>
+                                    @endif
+                                @else
+                                    <div class="bg-dark rounded d-flex align-items-center justify-content-center" 
+                                         style="width: 40px; height: 40px;">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="text-light mb-1">{{ Str::limit($product->name, 30) }}</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-aqua small">{{ number_format($product->price) }} ل.س</span>
+                                    <span class="badge bg-{{ $product->status == 'active' ? 'success' : 'secondary' }}">
+                                        {{ $product->status == 'active' ? 'نشط' : 'غير نشط' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    @else
+                        <div class="text-center py-4">
+                            <i class="fas fa-box-open fa-2x text-muted mb-3"></i>
+                            <p class="text-muted">لا يوجد منتجات</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الإجراءات السريعة -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="elite-card">
+                <div class="card-header bg-dark-card py-3">
+                    <h5 class="text-gold mb-0">
+                        <i class="fas fa-bolt me-2"></i>الإجراءات السريعة
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ route('admin.users') }}" class="btn btn-aqua w-100 py-3">
+                                <i class="fas fa-users fa-2x mb-2"></i><br>
+                                إدارة المستخدمين
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ route('admin.merchants') }}" class="btn btn-warning w-100 py-3">
+                                <i class="fas fa-store fa-2x mb-2"></i><br>
+                                إدارة التجار
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ route('admin.products') }}" class="btn btn-success w-100 py-3">
+                                <i class="fas fa-boxes fa-2x mb-2"></i><br>
+                                إدارة المنتجات
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ route('admin.settings') }}" class="btn btn-primary w-100 py-3">
+                                <i class="fas fa-cogs fa-2x mb-2"></i><br>
+                                إعدادات الموقع
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stats-card {
+    transition: transform 0.3s ease;
+    border: 1px solid var(--dark-border);
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-aqua {
+    background: linear-gradient(135deg, var(--aqua-primary), var(--aqua-secondary));
+    border: none;
+    color: #000;
+    font-weight: 600;
+}
+
+.btn-aqua:hover {
+    background: linear-gradient(135deg, var(--aqua-secondary), var(--aqua-primary));
+    color: #000;
+    transform: translateY(-2px);
+}
+
+.text-gold {
+    color: var(--gold-primary) !important;
+}
+</style>
+@endsection
