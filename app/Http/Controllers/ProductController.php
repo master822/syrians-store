@@ -156,12 +156,33 @@ class ProductController extends Controller
 
     public function create()
     {
+        // التحقق من تسجيل الدخول
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'يجب تسجيل الدخول أولاً');
+        }
+
+        $user = Auth::user();
         $categories = Category::where('is_active', true)->get();
-        return view('products.create', compact('categories'));
+
+        // التحقق من الصلاحيات
+        if ($user->user_type === 'user') {
+            // المستخدم العادي يمكنه فقط إضافة منتجات مستعملة
+            return view('products.create-used', compact('categories'));
+        } elseif ($user->user_type === 'merchant') {
+            // التاجر يمكنه فقط إضافة منتجات جديدة
+            return view('products.create-new', compact('categories'));
+        } else {
+            return redirect()->back()->with('error', 'ليس لديك صلاحية لإضافة منتجات.');
+        }
     }
 
     public function store(Request $request)
     {
+        // التحقق من تسجيل الدخول
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $user = Auth::user();
         
         $request->validate([

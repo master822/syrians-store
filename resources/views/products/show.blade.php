@@ -3,110 +3,115 @@
 @section('title', $product->name)
 
 @section('content')
-<div class="container py-5 fade-in">
+<div class="container py-4">
     <div class="row">
-        <div class="col-lg-6 mb-4">
-            <div class="card product-card">
-                <div class="card-body p-0">
-                    @if($product->images)
-                        @php
-                            $images = json_decode($product->images);
-                            $firstImage = $images[0] ?? null;
-                        @endphp
-                        @if($firstImage)
-                            <img src="{{ asset('storage/' . $firstImage) }}" class="card-img-top w-100" alt="{{ $product->name }}" style="height: 400px; object-fit: cover;">
-                        @else
-                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
-                                <span class="text-muted">لا توجد صورة</span>
-                            </div>
-                        @endif
+        <div class="col-md-6">
+            <div class="elite-card p-3">
+                @if($product->images)
+                    @php
+                        $images = json_decode($product->images);
+                        $firstImage = $images[0] ?? null;
+                    @endphp
+                    @if($firstImage)
+                        <img src="{{ asset('storage/' . $firstImage) }}" 
+                             class="img-fluid rounded" 
+                             alt="{{ $product->name }}"
+                             style="max-height: 400px; width: 100%; object-fit: cover;">
                     @else
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
-                            <span class="text-muted">لا توجد صورة</span>
+                        <div class="bg-dark text-white text-center py-5 rounded">
+                            <i class="fas fa-image fa-3x"></i>
+                            <p class="mt-2">لا توجد صورة</p>
                         </div>
                     @endif
-                </div>
+                @else
+                    <div class="bg-dark text-white text-center py-5 rounded">
+                        <i class="fas fa-image fa-3x"></i>
+                        <p class="mt-2">لا توجد صورة</p>
+                    </div>
+                @endif
             </div>
         </div>
         
-        <div class="col-lg-6">
-            <div class="card animated-card">
-                <div class="card-header">
-                    <h2 class="mb-0">{{ $product->name }}</h2>
-                </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <h3 class="text-success mb-3">{{ number_format($product->price) }} ل.س</h3>
-                        <div class="d-flex gap-2 mb-3">
-                            <span class="badge {{ $product->is_used ? 'bg-warning' : 'bg-success' }}">
-                                {{ $product->is_used ? '🔄 منتج مستعمل' : '🆕 منتج جديد' }}
-                            </span>
-                            <span class="badge bg-info">
-                                <i class="fas fa-eye me-1"></i>{{ $product->views }} مشاهدة
-                            </span>
-                        </div>
-                    </div>
-
-                    @if($product->is_used && $product->condition)
-                        <div class="mb-4">
-                            <h5>حالة المنتج</h5>
-                            <p class="text-muted">{{ $product->condition }}</p>
-                        </div>
+        <div class="col-md-6">
+            <div class="elite-card p-4">
+                <h2 class="text-dark mb-3">{{ $product->name }}</h2>
+                
+                <div class="mb-3">
+                    <span class="h4 text-primary">{{ number_format($product->price, 2) }} ر.س</span>
+                    @if($product->discount_percentage > 0)
+                        <span class="text-danger text-decoration-line-through ms-2">
+                            {{ number_format($product->price + ($product->price * $product->discount_percentage / 100), 2) }} ر.س
+                        </span>
+                        <span class="badge bg-danger ms-2">خصم {{ $product->discount_percentage }}%</span>
                     @endif
-
-                    <div class="mb-4">
-                        <h5>الوصف</h5>
-                        <p class="text-muted">{{ $product->description }}</p>
-                    </div>
-
-                    <div class="mb-4">
-                        <h5>البائع</h5>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-user fa-2x text-primary me-3"></i>
-                            <div>
-                                <h6 class="mb-1">{{ $product->user->name }}</h6>
-                                <small class="text-muted">{{ $product->user->city }}</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary btn-lg flex-fill">
-                            <i class="fas fa-shopping-cart me-2"></i>إضافة إلى السلة
-                        </button>
-                        <button class="btn btn-outline-warning btn-lg">
-                            <i class="fas fa-heart"></i>
-                        </button>
+                </div>
+                
+                <div class="mb-3">
+                    <strong class="text-dark">التصنيف:</strong>
+                    <span class="text-muted">{{ $product->category->name ?? 'غير محدد' }}</span>
+                </div>
+                
+                @if($product->is_used)
+                <div class="mb-3">
+                    <strong class="text-dark">الحالة:</strong>
+                    <span class="text-muted">{{ $product->condition }}</span>
+                </div>
+                @endif
+                
+                <div class="mb-4">
+                    <strong class="text-dark">الوصف:</strong>
+                    <p class="text-dark mt-2">{{ $product->description }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <strong class="text-dark">البائع:</strong>
+                    <div class="d-flex align-items-center mt-2">
+                        <span class="text-dark">{{ $product->user->name }}</span>
+                        @if($product->user->is_merchant)
+                            <span class="badge bg-warning ms-2">تاجر</span>
+                        @endif
                     </div>
                 </div>
+                
+                <div class="mb-4">
+                    <strong class="text-dark">المشاهدات:</strong>
+                    <span class="text-muted">{{ $product->views }}</span>
+                </div>
+                
+                @if(Auth::check() && Auth::id() !== $product->user_id)
+                <div class="contact-section mt-4">
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#contactModal">
+                        <i class="fas fa-envelope me-2"></i>تواصل مع البائع
+                    </button>
+                </div>
+                @endif
             </div>
         </div>
     </div>
 </div>
 
-<style>
-.product-card {
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.product-card img {
-    border-radius: 20px;
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-    
-    .product-card img {
-        height: 300px !important;
-    }
-    
-    .btn-lg {
-        padding: 12px 20px;
-        font-size: 1rem;
-    }
-}
-</style>
+<!-- نافذة التواصل مع البائع -->
+@if(Auth::check() && Auth::id() !== $product->user_id)
+<div class="modal fade" id="contactModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark">تواصل مع {{ $product->user->name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('messages.contact', $product->id) }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label text-dark">رسالتك</label>
+                        <textarea name="message" class="form-control" rows="4" 
+                                  placeholder="اكتب رسالتك هنا..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">إرسال الرسالة</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 @endsection

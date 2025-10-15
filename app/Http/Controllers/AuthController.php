@@ -25,14 +25,36 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
+            ],
             'user_type' => 'required|in:user,merchant',
             'phone' => 'required|string|max:20',
             'city' => 'required|string|max:255',
+            'store_name' => 'required_if:user_type,merchant|string|max:255',
+            'store_category' => 'required_if:user_type,merchant|in:clothes,electronics,home,grocery',
+            'store_description' => 'required_if:user_type,merchant|string|max:500',
+            'store_phone' => 'required_if:user_type,merchant|string|max:20',
+            'store_city' => 'required_if:user_type,merchant|string|max:255',
+        ], [
+            'password.regex' => 'يجب أن تحتوي كلمة المرور على حرف كبير وحرف صغير ورقم على الأقل.',
+            'password.min' => 'يجب أن تكون كلمة المرور至少 8 أحرف على الأقل.',
+            'password.confirmed' => 'تأكيد كلمة المرور غير متطابق.',
+            'store_name.required_if' => 'حقل اسم المتجر مطلوب للتجار.',
+            'store_category.required_if' => 'حقل فئة المتجر مطلوب للتجار.',
+            'store_description.required_if' => 'حقل وصف المتجر مطلوب للتجار.',
+            'store_phone.required_if' => 'حقل هاتف المتجر مطلوب للتجار.',
+            'store_city.required_if' => 'حقل مدينة المتجر مطلوب للتجار.',
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput($request->except('password', 'password_confirmation'));
         }
 
         $userData = [

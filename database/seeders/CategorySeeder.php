@@ -50,6 +50,6 @@ class CategorySeeder extends Seeder
             Category::create($category);
         }
 
-        $this->command->info('✅ تم إضافة التصنيفات بنجاح!');
+        echo "✅ تم إضافة التصنيفات بنجاح!\n";
     }
 }

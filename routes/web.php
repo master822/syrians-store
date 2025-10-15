@@ -11,6 +11,8 @@ use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\MerchantDiscountController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\MerchantSubscriptionController;
 
 // الصفحة الرئيسية
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -29,6 +31,13 @@ Route::get('/products/used', [ProductController::class, 'usedProducts'])->name('
 Route::get('/products/category/{categoryId}', [ProductController::class, 'byCategory'])->name('products.byCategory');
 Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
+
+// الرسائل
+Route::middleware(['auth'])->group(function () {
+    Route::post('/messages/contact/{productId}', [MessageController::class, 'contactMerchant'])->name('messages.contact');
+    Route::get('/messages/inbox', [MessageController::class, 'inbox'])->name('messages.inbox');
+    Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
+});
 
 // المنتجات (تحتاج مصادقة)
 Route::middleware(['auth'])->group(function () {
@@ -56,6 +65,10 @@ Route::middleware(['auth'])->prefix('merchant')->group(function () {
     Route::get('/discounts/{id}/edit', [MerchantDiscountController::class, 'editDiscount'])->name('merchant.discounts.edit');
     Route::put('/discounts/{id}', [MerchantDiscountController::class, 'updateDiscount'])->name('merchant.discounts.update');
     Route::delete('/discounts/{id}', [MerchantDiscountController::class, 'removeDiscount'])->name('merchant.discounts.remove');
+    
+    // خطط الاشتراك
+    Route::get('/subscription/plans', [MerchantSubscriptionController::class, 'plans'])->name('merchant.subscription.plans');
+    Route::post('/subscription/{plan}', [MerchantSubscriptionController::class, 'subscribe'])->name('merchant.subscribe');
 });
 
 // لوحة تحكم المستخدم
@@ -105,9 +118,6 @@ Route::middleware(['auth'])->group(function () {
     // تغيير كلمة المرور
     Route::get('/change-password', [ProfileController::class, 'showChangePassword'])->name('change-password');
     Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('change-password.update');
-    
-    // المحادثات
-    Route::get('/chat', [ProfileController::class, 'showChat'])->name('chat');
 });
 
 // صفحات إضافية

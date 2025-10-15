@@ -3,63 +3,58 @@
 @section('title', 'تسجيل الدخول')
 
 @section('content')
-<div class="container py-5">
+<div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="elite-card p-5">
-                <div class="text-center mb-5">
-                    <h2 class="text-gold mb-3">تسجيل الدخول</h2>
-                    <p class="text-light">مرحباً بعودتك!</p>
-                </div>
-
-                <form method="POST" action="{{ route('login') }}">
+        <div class="col-md-6">
+            <div class="modern-card p-4">
+                <h4 class="text-center mb-4 text-dark">تسجيل الدخول</h4>
+                
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                
+                <form action="{{ route('login') }}" method="POST">
                     @csrf
                     
-                    <div class="mb-4">
-                        <label for="email" class="form-label text-light mb-3">البريد الإلكتروني</label>
-                        <input type="email" class="form-control py-3 px-4 @error('email') is-invalid @enderror" 
-                               id="email" name="email" value="{{ old('email') }}" required autofocus
-                               placeholder="أدخل بريدك الإلكتروني">
-                        @error('email')
-                            <div class="invalid-feedback d-block text-red-accent">{{ $message }}</div>
-                        @enderror
+                    <div class="mb-3">
+                        <label class="form-label text-dark">البريد الإلكتروني *</label>
+                        <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
                     </div>
-
-                    <div class="mb-4">
-                        <label for="password" class="form-label text-light mb-3">كلمة المرور</label>
-                        <input type="password" class="form-control py-3 px-4 @error('password') is-invalid @enderror" 
-                               id="password" name="password" required
-                               placeholder="أدخل كلمة المرور">
-                        @error('password')
-                            <div class="invalid-feedback d-block text-red-accent">{{ $message }}</div>
-                        @enderror
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-dark">كلمة المرور *</label>
+                        <input type="password" name="password" class="form-control" required>
                     </div>
-
-                    <div class="mb-4 form-check">
+                    
+                    <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                        <label class="form-check-label text-light" for="remember">تذكرني</label>
+                        <label class="form-check-label text-dark" for="remember">تذكرني</label>
                     </div>
-
+                    
                     <div class="d-grid">
-                        <button type="submit" class="btn-gold py-3 fs-5">
-                            تسجيل الدخول
-                        </button>
+                        <button type="submit" class="btn btn-primary">تسجيل الدخول</button>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <p class="text-muted">ليس لديك حساب؟ 
+                            <a href="{{ route('register') }}" class="text-primary">إنشاء حساب جديد</a>
+                        </p>
                     </div>
                 </form>
-
-                <div class="text-center mt-4">
-                    <p class="text-light mb-0">ليس لديك حساب؟ 
-                        <a href="{{ route('register') }}" class="text-aqua text-decoration-none fw-bold">إنشاء حساب جديد</a>
-                    </p>
-                </div>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .text-red-accent {
-        color: var(--red-accent) !important;
-    }
-</style>
 @endsection
