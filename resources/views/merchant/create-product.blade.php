@@ -31,16 +31,10 @@
                     </div>
                 @endif
                 
-                <form action="{{ route('add.product.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     
-                    @auth
-                        @if(Auth::user()->user_type === 'merchant')
-                            <input type="hidden" name="is_used" value="0">
-                        @else
-                            <input type="hidden" name="is_used" value="1">
-                        @endif
-                    @endauth
+                    <input type="hidden" name="is_used" value="0">
                     
                     <div class="mb-3">
                         <label class="form-label text-dark fw-bold">اسم المنتج *</label>
@@ -50,7 +44,7 @@
                     
                     <div class="mb-3">
                         <label class="form-label text-dark fw-bold">وصف المنتج *</label>
-                        <textarea name="description" class="form-control" rows="4" 
+                        <textarea name="description" class="form-control" rows="5" 
                                   required placeholder="أدخل وصف مفصل للمنتج">{{ old('description') }}</textarea>
                     </div>
                     
@@ -66,30 +60,27 @@
                             <label class="form-label text-dark fw-bold">التصنيف *</label>
                             <select name="category_id" class="form-select" required>
                                 <option value="">اختر التصنيف</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
+                                @if(isset($categories) && $categories->count() > 0)
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                @else
+                                    <!-- إذا لم توجد تصنيفات، أضف بعض الخيارات الافتراضية -->
+                                    <option value="1">ملابس</option>
+                                    <option value="2">إلكترونيات</option>
+                                    <option value="3">أدوات منزلية</option>
+                                    <option value="4">بقالة</option>
+                                @endif
                             </select>
+                            @if(!isset($categories) || $categories->count() == 0)
+                                <div class="form-text text-warning">
+                                    ⚠️ لم يتم تحميل التصنيفات من قاعدة البيانات
+                                </div>
+                            @endif
                         </div>
                     </div>
-                    
-                    @auth
-                        @if(Auth::user()->user_type === 'user')
-                            <div class="mb-3">
-                                <label class="form-label text-dark fw-bold">حالة المنتج *</label>
-                                <select name="condition" class="form-select" required>
-                                    <option value="">اختر الحالة</option>
-                                    <option value="جديدة" {{ old('condition') == 'جديدة' ? 'selected' : '' }}>جديدة</option>
-                                    <option value="جيدة جداً" {{ old('condition') == 'جيدة جداً' ? 'selected' : '' }}>جيدة جداً</option>
-                                    <option value="جيدة" {{ old('condition') == 'جيدة' ? 'selected' : '' }}>جيدة</option>
-                                    <option value="متوسطة" {{ old('condition') == 'متوسطة' ? 'selected' : '' }}>متوسطة</option>
-                                    <option value="تحتاج إصلاح" {{ old('condition') == 'تحتاج إصلاح' ? 'selected' : '' }}>تحتاج إصلاح</option>
-                                </select>
-                            </div>
-                        @endif
-                    @endauth
                     
                     <div class="mb-4">
                         <label class="form-label text-dark fw-bold">صور المنتج</label>
@@ -108,6 +99,13 @@
                         </a>
                     </div>
                 </form>
+                
+                <!-- قسم تصحيح الأخطاء -->
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6>🔧 معلومات تصحيح الأخطاء:</h6>
+                    <p class="mb-1">عدد التصنيفات: {{ $categories->count() ?? 0 }}</p>
+                    <p class="mb-0">المسار: {{ request()->path() }}</p>
+                </div>
             </div>
         </div>
     </div>

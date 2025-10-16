@@ -24,20 +24,13 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// المنتجات
+// المنتجات (العامة)
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/new', [ProductController::class, 'newProducts'])->name('products.new');
 Route::get('/products/used', [ProductController::class, 'usedProducts'])->name('products.used');
 Route::get('/products/category/{categoryId}', [ProductController::class, 'byCategory'])->name('products.byCategory');
 Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
-
-// الرسائل
-Route::middleware(['auth'])->group(function () {
-    Route::post('/messages/contact/{productId}', [MessageController::class, 'contactMerchant'])->name('messages.contact');
-    Route::get('/messages/inbox', [MessageController::class, 'inbox'])->name('messages.inbox');
-    Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
-});
 
 // المنتجات (تحتاج مصادقة)
 Route::middleware(['auth'])->group(function () {
@@ -46,6 +39,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+});
+
+// الرسائل
+Route::middleware(['auth'])->group(function () {
+    Route::post('/messages/contact/{productId}', [MessageController::class, 'contactMerchant'])->name('messages.contact');
+    Route::get('/messages/inbox', [MessageController::class, 'inbox'])->name('messages.inbox');
+    Route::get('/messages/sent', [MessageController::class, 'sent'])->name('messages.sent');
+    Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
 });
 
 // التجار
@@ -118,6 +119,9 @@ Route::middleware(['auth'])->group(function () {
     // تغيير كلمة المرور
     Route::get('/change-password', [ProfileController::class, 'showChangePassword'])->name('change-password');
     Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('change-password.update');
+    
+    // المحادثات
+    Route::get('/chat', [ProfileController::class, 'showChat'])->name('chat');
 });
 
 // صفحات إضافية
@@ -125,3 +129,11 @@ Route::view('/about', 'about')->name('about');
 Route::view('/contact', 'contact')->name('contact');
 Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/terms', 'terms')->name('terms');
+
+// Ensure the working route exists
+Route::get('/merchant/products/create', [ProductController::class, 'create'])->name('merchant.products.create');
+
+// Simple create page with static categories
+Route::get('/merchant/create-simple', function() {
+    return view('merchant.create-product-simple');
+})->name('merchant.create.simple');

@@ -9,16 +9,6 @@
             <div class="modern-card p-4">
                 <h4 class="text-center mb-4 text-primary">إضافة منتج جديد</h4>
                 
-                @if($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                
                 @if(session('error'))
                     <div class="alert alert-danger">
                         {{ session('error') }}
@@ -30,21 +20,36 @@
                     
                     <input type="hidden" name="is_used" value="0">
                     
+                    <!-- اسم المنتج -->
                     <div class="mb-3">
                         <label class="form-label text-dark">اسم المنتج *</label>
-                        <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                        <input type="text" name="name" class="form-control" 
+                               value="{{ old('name') }}" required>
+                        @error('name')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
                     
+                    <!-- وصف المنتج -->
                     <div class="mb-3">
                         <label class="form-label text-dark">وصف المنتج *</label>
                         <textarea name="description" class="form-control" rows="4" required>{{ old('description') }}</textarea>
+                        @error('description')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
                     
+                    <!-- السعر -->
                     <div class="mb-3">
-                        <label class="form-label text-dark">السعر (ريال سعودي) *</label>
-                        <input type="number" name="price" class="form-control" step="0.01" value="{{ old('price') }}" required>
+                        <label class="form-label text-dark">السعر (ر.س) *</label>
+                        <input type="number" name="price" class="form-control" 
+                               step="0.01" min="0" value="{{ old('price') }}" required>
+                        @error('price')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
                     
+                    <!-- التصنيف -->
                     <div class="mb-3">
                         <label class="form-label text-dark">التصنيف *</label>
                         <select name="category_id" class="form-select" required>
@@ -55,20 +60,50 @@
                                 </option>
                             @endforeach
                         </select>
+                        @error('category_id')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
                     
+                    <!-- صور المنتج -->
                     <div class="mb-3">
-                        <label class="form-label text-dark">صور المنتج (يمكن رفع أكثر من صورة)</label>
-                        <input type="file" name="images[]" class="form-control" multiple accept="image/*">
-                        <small class="text-muted">يمكنك رفع أكثر من صورة للمنتج</small>
+                        <label class="form-label text-dark">صور المنتج *</label>
+                        <input type="file" name="images[]" class="form-control" multiple accept="image/*" required>
+                        <small class="text-muted">يمكنك رفع حتى 5 صور للمنتج</small>
+                        @error('images')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                        @error('images.*')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
                     
-                    <div class="d-grid">
+                    <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary">إضافة المنتج</button>
+                        <a href="{{ route('merchant.products') }}" class="btn btn-outline-secondary">إلغاء</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.modern-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+</style>
 @endsection

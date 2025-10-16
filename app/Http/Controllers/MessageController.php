@@ -12,6 +12,26 @@ class MessageController extends Controller
 {
     public function contactMerchant(Request $request, $productId)
     {
+        // إذا كان productId = 0 فهو رد على رسالة
+        if ($productId == 0 && $request->has('receiver_id')) {
+            $request->validate([
+                'message' => 'required|string|max:1000',
+                'receiver_id' => 'required|exists:users,id'
+            ]);
+
+            // إنشاء رسالة رد
+            Message::create([
+                'sender_id' => Auth::id(),
+                'receiver_id' => $request->receiver_id,
+                'product_id' => null,
+                'message' => $request->message,
+                'is_read' => false
+            ]);
+
+            return back()->with('success', 'تم إرسال ردك بنجاح!');
+        }
+
+        // رسالة عادية عن منتج
         $product = Product::with('user')->findOrFail($productId);
         
         $request->validate([
@@ -40,6 +60,16 @@ class MessageController extends Controller
         return view('messages.inbox', compact('messages'));
     }
 
+    public function sent()
+    {
+        $messages = Message::where('sender_id', Auth::id())
+                          ->with(['receiver', 'product'])
+                          ->orderBy('created_at', 'desc')
+                          ->get();
+
+        return view('messages.sent', compact('messages'));
+    }
+
     public function markAsRead($id)
     {
         $message = Message::where('id', $id)
@@ -58,5 +88,26 @@ class MessageController extends Controller
                        ->count();
 
         return $count;
+    }
+
+    // دالة جديدة للرد المباشر
+    public function replyToMessage(Request $request, $messageId)
+    {
+        $originalMessage = Message::findOrFail($messageId);
+        
+        $request->validate([
+            'message' => 'required|string|max:1000'
+        ]);
+
+        // إنشاء رسالة رد
+        Message::create([
+            'sender_id' => Auth::id(),
+            'receiver_id' => $originalMessage->sender_id,
+            'product_id' => $originalMessage->product_id,
+            'message' => $request->message,
+            'is_read' => false
+        ]);
+
+        return back()->with('success', 'تم إرسال ردك بنجاح!');
     }
 }

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'منتجاتي - لوحة التحكم')
+@section('title', 'منتجاتي')
 
 @section('content')
 <div class="container py-4">
@@ -8,23 +8,16 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="text-primary">منتجاتي</h1>
-                <!-- استخدم الزر الذي يعمل -->
-                <a href="{{ route('merchant.products.create') }}" class="btn btn-primary">
+                <a href="{{ route('products.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>إضافة منتج جديد
                 </a>
             </div>
-
-            @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
 
             @if($products->count() > 0)
                 <div class="row">
                     @foreach($products as $product)
                     <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="modern-card product-card h-100">
+                        <div class="modern-card product-card">
                             @if($product->discount_percentage > 0)
                                 <div class="position-absolute top-0 start-0 m-3">
                                     <span class="badge bg-danger">خصم {{ $product->discount_percentage }}%</span>
@@ -105,8 +98,7 @@
                         <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
                         <h4 class="text-muted">لا توجد منتجات</h4>
                         <p class="text-muted mb-4">لم تقم بإضافة أي منتجات بعد</p>
-                        <!-- استخدم الزر الذي يعمل -->
-                        <a href="{{ route('merchant.products.create') }}" class="btn btn-primary btn-lg">
+                        <a href="{{ route('products.create') }}" class="btn btn-primary btn-lg">
                             <i class="fas fa-plus me-2"></i>إضافة منتج جديد
                         </a>
                     </div>

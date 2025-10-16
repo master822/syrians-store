@@ -20,7 +20,10 @@ class MerchantDiscountController extends Controller
             return redirect('/')->with('error', 'ليس لديك صلاحية للوصول إلى هذه الصفحة');
         }
 
-        $products = Auth::user()->products()->where('is_active', true)->get();
+        $products = Auth::user()->products()
+            ->where('status', 'active')
+            ->where('is_used', false)
+            ->get();
         
         return view('merchant.discounts-create', compact('products'));
     }
@@ -31,21 +34,28 @@ class MerchantDiscountController extends Controller
             return redirect('/')->with('error', 'ليس لديك صلاحية للوصول إلى هذه الصفحة');
         }
 
+        // تحقق من وجود منتجات مختارة
+        if (!$request->has('products') || empty($request->products)) {
+            return back()->with('error', 'يجب اختيار منتج واحد على الأقل')->withInput();
+        }
+
         $request->validate([
-            'products' => 'required|array',
+            'products' => 'required|array|min:1',
             'products.*' => 'exists:products,id',
             'discount_percentage' => 'required|numeric|min:1|max:100',
             'discount_duration' => 'required|integer|min:0',
             'discount_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
+        // التحقق من أن المنتجات تنتمي للتاجر
         $userProducts = Auth::user()->products()->pluck('id')->toArray();
         $invalidProducts = array_diff($request->products, $userProducts);
         
         if (count($invalidProducts) > 0) {
-            return back()->with('error', 'بعض المنتجات المحددة غير موجودة أو لا تنتمي إليك.');
+            return back()->with('error', 'بعض المنتجات المحددة غير موجودة أو لا تنتمي إليك.')->withInput();
         }
 
+        // معالجة الصور
         $discountImages = [];
         if ($request->hasFile('discount_images')) {
             foreach ($request->file('discount_images') as $image) {
@@ -55,14 +65,19 @@ class MerchantDiscountController extends Controller
             $discountImages = array_slice($discountImages, 0, 3);
         }
 
-        Product::whereIn('id', $request->products)
+        // تطبيق التخفيض على المنتجات المختارة
+        $updatedCount = Product::whereIn('id', $request->products)
                ->update([
                    'discount_percentage' => $request->discount_percentage,
                    'discount_images' => !empty($discountImages) ? json_encode($discountImages) : null,
                    'updated_at' => now()
                ]);
 
-        return redirect('/merchant/discounts')->with('success', 'تم تطبيق التخفيض بنجاح على ' . count($request->products) . ' منتج!');
+        if ($updatedCount > 0) {
+            return redirect('/merchant/discounts')->with('success', 'تم تطبيق التخفيض بنجاح على ' . $updatedCount . ' منتج!');
+        } else {
+            return back()->with('error', 'حدث خطأ أثناء تطبيق التخفيض')->withInput();
+        }
     }
 
     public function showDiscounts()
@@ -73,7 +88,7 @@ class MerchantDiscountController extends Controller
 
         $products = Auth::user()->products()
             ->where('discount_percentage', '>', 0)
-            ->where('is_active', true)
+            ->where('status', 'active')
             ->latest()
             ->get();
 
