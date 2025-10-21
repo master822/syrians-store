@@ -31,49 +31,41 @@ class Product extends Model
         'discount_images' => 'array'
     ];
 
-    // العلاقة مع المستخدم
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // العلاقة مع التصنيف
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    // العلاقة مع التقييمات
     public function ratings()
     {
         return $this->hasMany(Rating::class);
     }
 
-    // نطاق للمنتجات النشطة
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
     }
 
-    // نطاق للمنتجات المستعملة
     public function scopeUsed($query)
     {
         return $query->where('is_used', true);
     }
 
-    // نطاق للمنتجات الجديدة
     public function scopeNew($query)
     {
         return $query->where('is_used', false);
     }
 
-    // نطاق للمنتجات المخفضة
     public function scopeDiscounted($query)
     {
         return $query->where('discount_percentage', '>', 0);
     }
 
-    // حساب السعر بعد الخصم
     public function getDiscountedPriceAttribute()
     {
         if ($this->discount_percentage > 0) {
@@ -82,9 +74,19 @@ class Product extends Model
         return $this->price;
     }
 
-    // التحقق مما إذا كان المنتج مخفضاً
     public function getIsDiscountedAttribute()
     {
         return $this->discount_percentage > 0;
+    }
+
+    public function getFirstImageAttribute()
+    {
+        if ($this->images) {
+            $imagesArray = json_decode($this->images, true);
+            if (is_array($imagesArray) && count($imagesArray) > 0 && !empty($imagesArray[0])) {
+                return asset('storage/' . $imagesArray[0]);
+            }
+        }
+        return 'https://via.placeholder.com/300x200/f8f9fa/6c757d?text=No+Image';
     }
 }

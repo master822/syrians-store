@@ -13,6 +13,7 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MerchantSubscriptionController;
+use App\Http\Controllers\ChatController;
 
 // الصفحة الرئيسية
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -34,7 +35,6 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('products
 
 // المنتجات (تحتاج مصادقة)
 Route::middleware(['auth'])->group(function () {
-    // روابط إضافة المنتج - سنغيرها إلى روابط مختلفة
     Route::get('/merchant/products/create', [ProductController::class, 'create'])->name('merchant.products.create');
     Route::get('/user/products/create', [ProductController::class, 'create'])->name('user.products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
@@ -113,6 +113,14 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
 // التخفيضات
 Route::get('/discounts', [DiscountController::class, 'discounts'])->name('discounts');
+Route::get('/discounts/category/{categorySlug}', [DiscountController::class, 'categoryDiscounts'])->name('discounts.category');
+
+// الشات العالمي
+Route::middleware(['auth'])->prefix('chat')->group(function () {
+    Route::get('/global', [ChatController::class, 'globalChat'])->name('chat.global');
+    Route::post('/global/send', [ChatController::class, 'sendGlobalMessage'])->name('chat.global.send');
+    Route::get('/global/messages', [ChatController::class, 'getGlobalMessages'])->name('chat.global.messages');
+});
 
 // الملف الشخصي وإدارة الحساب
 Route::middleware(['auth'])->group(function () {
