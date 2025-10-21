@@ -10,22 +10,42 @@ class Rating extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id',
-        'user_id', 
+        'user_id',
+        'merchant_id', 
         'rating',
         'comment',
-        'status'
+        'is_approved',
+        'is_flagged',
+        'moderation_reason'
     ];
 
-    // العلاقة مع المنتج
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
-
-    // العلاقة مع المستخدم
+    // العلاقة مع المستخدم الذي قام بالتقييم
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // العلاقة مع التاجر الذي تم تقييمه
+    public function merchant()
+    {
+        return $this->belongsTo(User::class, 'merchant_id');
+    }
+
+    // نطاق للتقييمات المعتمدة
+    public function scopeApproved($query)
+    {
+        return $query->where('is_approved', true);
+    }
+
+    // نطاق للتقييمات غير المعتمدة
+    public function scopePending($query)
+    {
+        return $query->where('is_approved', false);
+    }
+
+    // نطاق للتقييمات المفعلة
+    public function scopeActive($query)
+    {
+        return $query->where('is_approved', true)->where('is_flagged', false);
     }
 }

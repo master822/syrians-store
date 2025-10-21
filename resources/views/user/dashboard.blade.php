@@ -4,286 +4,369 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <!-- الإحصائيات -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <h1 class="text-gold mb-4">
-                <i class="fas fa-user me-2"></i>لوحة تحكم المستخدم
-            </h1>
-        </div>
-        
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="elite-card stats-card bg-dark-card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <h6 class="text-muted mb-2">إجمالي المنتجات</h6>
-                            <h4 class="text-aqua mb-0">{{ $usedProductsCount }}</h4>
+    <div class="row">
+        <!-- الشريط الجانبي -->
+        <div class="col-lg-3 mb-4">
+            <!-- بطاقة الملف الشخصي -->
+            <div class="modern-card profile-card animate-fade-in">
+                <div class="card-body text-center p-4">
+                    <!-- صورة المستخدم -->
+                    <div class="user-avatar mb-3">
+                        <img src="{{ $user->getAvatarUrlAttribute() }}" 
+                             class="user-img" 
+                             alt="{{ $user->name }}">
+                        <div class="online-status bg-success"></div>
+                    </div>
+                    
+                    <!-- معلومات المستخدم -->
+                    <h5 class="text-primary mb-2 fw-bold">{{ $user->name }}</h5>
+                    <p class="text-muted mb-3">مستخدم عادي</p>
+                    
+                    <!-- إحصائيات سريعة -->
+                    <div class="user-stats">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number">{{ $usedProductsCount }}</span>
+                                <span class="stat-label">المنتجات</span>
+                            </div>
                         </div>
-                        <div class="col-4 text-end">
-                            <i class="fas fa-boxes fa-2x text-aqua"></i>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number">{{ $viewsCount }}</span>
+                                <span class="stat-label">المشاهدات</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="elite-card stats-card bg-dark-card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <h6 class="text-muted mb-2">المنتجات النشطة</h6>
-                            <h4 class="text-success mb-0">{{ $activeProductsCount }}</h4>
-                        </div>
-                        <div class="col-4 text-end">
-                            <i class="fas fa-check-circle fa-2x text-success"></i>
-                        </div>
-                    </div>
+            <!-- قائمة التنقل -->
+            <div class="modern-card navigation-card mt-3 animate-fade-in" style="animation-delay: 0.1s;">
+                <div class="card-body p-3">
+                    <nav class="nav flex-column modern-nav">
+                        <a class="nav-link active" href="{{ route('user.dashboard') }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <span class="nav-text">لوحة التحكم</span>
+                            <div class="nav-badge"></div>
+                        </a>
+                        <a class="nav-link" href="{{ route('user.products') }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <span class="nav-text">منتجاتي</span>
+                            <div class="nav-badge">{{ $usedProductsCount }}</div>
+                        </a>
+                        <a class="nav-link" href="{{ route('user.products.create') }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <span class="nav-text">إضافة منتج</span>
+                            <div class="nav-badge new"></div>
+                        </a>
+                        <a class="nav-link" href="{{ route('messages.inbox') }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <span class="nav-text">الرسائل</span>
+                            <div class="nav-badge">3</div>
+                        </a>
+                        <a class="nav-link" href="{{ route('profile') }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="nav-text">الملف الشخصي</span>
+                            <div class="nav-badge"></div>
+                        </a>
+                    </nav>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="elite-card stats-card bg-dark-card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <h6 class="text-muted mb-2">إجمالي المشاهدات</h6>
-                            <h4 class="text-warning mb-0">{{ $viewsCount }}</h4>
-                        </div>
-                        <div class="col-4 text-end">
-                            <i class="fas fa-eye fa-2x text-warning"></i>
-                        </div>
+        <!-- المحتوى الرئيسي -->
+        <div class="col-lg-9">
+            <!-- رأس الصفحة -->
+            <div class="d-flex justify-content-between align-items-center mb-4 animate-fade-in" style="animation-delay: 0.2s;">
+                <div>
+                    <h2 class="text-primary mb-1 fw-bold">مرحباً بعودتك، {{ $user->name }}! 👋</h2>
+                    <p class="text-muted mb-0">هذه نظرة عامة على منتجاتك المستعملة</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline-primary me-2" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="date-display">
+                        <i class="fas fa-calendar me-2"></i>
+                        <span id="currentDate"></span>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="elite-card stats-card bg-dark-card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <h6 class="text-muted mb-2">المنتجات المتبقية</h6>
-                            <h4 class="text-info mb-0">{{ Auth::user()->product_limit - $usedProductsCount }}</h4>
-                        </div>
-                        <div class="col-4 text-end">
-                            <i class="fas fa-layer-group fa-2x text-info"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- الإجراءات السريعة -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="elite-card">
-                <div class="card-header bg-gold text-dark py-3">
-                    <h5 class="mb-0">
-                        <i class="fas fa-bolt me-2"></i>الإجراءات السريعة
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <a href="{{ route('products.create') }}" class="btn btn-aqua w-100 py-3">
-                                <i class="fas fa-plus-circle fa-2x mb-2"></i><br>
-                                إضافة منتج مستعمل
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{{ route('user.products') }}" class="btn btn-success w-100 py-3">
-                                <i class="fas fa-boxes fa-2x mb-2"></i><br>
-                                إدارة المنتجات
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{{ route('profile') }}" class="btn btn-warning w-100 py-3">
-                                <i class="fas fa-user-edit fa-2x mb-2"></i><br>
-                                تعديل الملف الشخصي
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{{ route('change-password') }}" class="btn btn-primary w-100 py-3">
-                                <i class="fas fa-key fa-2x mb-2"></i><br>
-                                تغيير كلمة المرور
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- معلومات الحساب -->
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <div class="elite-card h-100">
-                <div class="card-header bg-dark-card py-3">
-                    <h5 class="text-gold mb-0">
-                        <i class="fas fa-info-circle me-2"></i>معلومات الحساب
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <strong class="text-aqua">الاسم:</strong>
-                        <span class="text-light">{{ Auth::user()->name }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-aqua">البريد الإلكتروني:</strong>
-                        <span class="text-light">{{ Auth::user()->email }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-aqua">رقم الهاتف:</strong>
-                        <span class="text-light">{{ Auth::user()->phone ?? 'غير مضاف' }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-aqua">المدينة:</strong>
-                        <span class="text-light">{{ Auth::user()->city }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-aqua">نوع الحساب:</strong>
-                        <span class="badge bg-info">مستخدم عادي</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-aqua">الحد المسموح:</strong>
-                        <span class="text-light">{{ Auth::user()->product_limit }} منتج</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- أحدث المنتجات -->
-        <div class="col-md-6">
-            <div class="elite-card h-100">
-                <div class="card-header bg-dark-card py-3">
-                    <h5 class="text-gold mb-0">
-                        <i class="fas fa-clock me-2"></i>أحدث المنتجات
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @if($recentProducts->count() > 0)
-                        @foreach($recentProducts as $product)
-                            <div class="d-flex align-items-center mb-3 pb-3 border-bottom border-secondary">
-                                <div class="flex-shrink-0">
-                                    @if($product->images)
-                                        @php
-                                            $images = json_decode($product->images);
-                                            $firstImage = $images[0] ?? null;
-                                        @endphp
-                                        @if($firstImage)
-                                            <img src="{{ asset('storage/' . $firstImage) }}" 
-                                                 alt="{{ $product->name }}" 
-                                                 class="rounded" 
-                                                 style="width: 50px; height: 50px; object-fit: cover;">
-                                        @else
-                                            <div class="bg-dark rounded d-flex align-items-center justify-content-center" 
-                                                 style="width: 50px; height: 50px;">
-                                                <i class="fas fa-image text-muted"></i>
-                                            </div>
-                                        @endif
-                                    @else
-                                        <div class="bg-dark rounded d-flex align-items-center justify-content-center" 
-                                             style="width: 50px; height: 50px;">
-                                            <i class="fas fa-image text-muted"></i>
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="text-light mb-1">{{ $product->name }}</h6>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="text-aqua">{{ number_format($product->price) }} ل.س</span>
-                                        <span class="badge bg-{{ $product->status == 'active' ? 'success' : 'secondary' }}">
-                                            {{ $product->status == 'active' ? 'نشط' : 'غير نشط' }}
-                                        </span>
+            <!-- الإحصائيات -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="modern-card stat-card animate-fade-in" style="animation-delay: 0.3s;">
+                        <div class="card-body">
+                            <div class="stat-main">
+                                <div class="stat-content">
+                                    <h6 class="stat-title">إجمالي المنتجات</h6>
+                                    <h2 class="stat-value text-primary">{{ $usedProductsCount }}</h2>
+                                    <div class="stat-trend up">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>8%</span>
                                     </div>
                                 </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
                             </div>
-                        @endforeach
-                        @if($usedProductsCount > 3)
-                            <div class="text-center mt-3">
-                                <a href="{{ route('user.products') }}" class="btn btn-outline-aqua btn-sm">
-                                    عرض جميع المنتجات
-                                </a>
+                            <div class="stat-footer">
+                                <span class="stat-change">زيادة عن الشهر الماضي</span>
                             </div>
-                        @endif
-                    @else
-                        <div class="text-center py-4">
-                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">لا توجد منتجات حتى الآن</p>
-                            <a href="{{ route('products.create') }}" class="btn btn-gold">إضافة أول منتج</a>
                         </div>
-                    @endif
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="modern-card stat-card animate-fade-in" style="animation-delay: 0.4s;">
+                        <div class="card-body">
+                            <div class="stat-main">
+                                <div class="stat-content">
+                                    <h6 class="stat-title">المنتجات النشطة</h6>
+                                    <h2 class="stat-value text-success">{{ $activeProductsCount }}</h2>
+                                    <div class="stat-trend up">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>12%</span>
+                                    </div>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="stat-footer">
+                                <span class="stat-change">جميع المنتجات مفعلة</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="modern-card stat-card animate-fade-in" style="animation-delay: 0.5s;">
+                        <div class="card-body">
+                            <div class="stat-main">
+                                <div class="stat-content">
+                                    <h6 class="stat-title">إجمالي المشاهدات</h6>
+                                    <h2 class="stat-value text-info">{{ $viewsCount }}</h2>
+                                    <div class="stat-trend up">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>18%</span>
+                                    </div>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </div>
+                            <div class="stat-footer">
+                                <span class="stat-change">زيادة في المشاهدات</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="modern-card stat-card animate-fade-in" style="animation-delay: 0.6s;">
+                        <div class="card-body">
+                            <div class="stat-main">
+                                <div class="stat-content">
+                                    <h6 class="stat-title">المبيعات الناجحة</h6>
+                                    <h2 class="stat-value text-warning">15</h2>
+                                    <div class="stat-trend up">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>25%</span>
+                                    </div>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                            </div>
+                            <div class="stat-footer">
+                                <span class="stat-change">زيادة في المبيعات</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- تقدم استخدام الحساب -->
-    <div class="row">
-        <div class="col-12">
-            <div class="elite-card">
-                <div class="card-header bg-dark-card py-3">
-                    <h5 class="text-gold mb-0">
-                        <i class="fas fa-chart-pie me-2"></i>تقدم استخدام الحساب
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="text-light mb-3">المنتجات المستخدمة</h6>
-                            <div class="progress mb-4" style="height: 25px;">
-                                @php
-                                    $usagePercentage = min(100, ($usedProductsCount / Auth::user()->product_limit) * 100);
-                                @endphp
-                                <div class="progress-bar bg-{{ $usagePercentage >= 90 ? 'danger' : ($usagePercentage >= 70 ? 'warning' : 'success') }}" 
-                                     role="progressbar" 
-                                     style="width: {{ $usagePercentage }}%"
-                                     aria-valuenow="{{ $usagePercentage }}" 
-                                     aria-valuemin="0" 
-                                     aria-valuemax="100">
-                                    {{ $usedProductsCount }}/{{ Auth::user()->product_limit }}
-                                </div>
-                            </div>
-                            <p class="text-muted">
-                                @if($usagePercentage >= 90)
-                                    <i class="fas fa-exclamation-triangle text-warning me-1"></i>
-                                    قريباً من الوصول للحد الأقصى
-                                @elseif($usagePercentage >= 70)
-                                    <i class="fas fa-info-circle text-info me-1"></i>
-                                    استخدمت {{ round($usagePercentage) }}% من المساحة المتاحة
-                                @else
-                                    <i class="fas fa-check-circle text-success me-1"></i>
-                                    لديك مساحة كافية لإضافة المزيد من المنتجات
-                                @endif
-                            </p>
+            <!-- الإجراءات السريعة -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="modern-card actions-card animate-fade-in" style="animation-delay: 0.7s;">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-bolt me-2"></i>
+                                الإجراءات السريعة
+                            </h5>
                         </div>
-                        <div class="col-md-6">
-                            <h6 class="text-light mb-3">نشاط الحساب</h6>
-                            <div class="activity-stats">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="text-light">المشاهدات الإجمالية:</span>
-                                    <span class="text-aqua">{{ $viewsCount }}</span>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <a href="{{ route('user.products.create') }}" class="action-btn primary animate-pop">
+                                        <div class="action-icon">
+                                            <i class="fas fa-plus-circle"></i>
+                                        </div>
+                                        <div class="action-content">
+                                            <h6>إضافة منتج مستعمل</h6>
+                                            <p>أضف منتجاً مستعملاً للبيع</p>
+                                        </div>
+                                        <div class="action-arrow">
+                                            <i class="fas fa-arrow-left"></i>
+                                        </div>
+                                    </a>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="text-light">نسبة النجاح:</span>
-                                    <span class="text-success">
-                                        @php
-                                            $successRate = $usedProductsCount > 0 ? ($activeProductsCount / $usedProductsCount) * 100 : 0;
-                                        @endphp
-                                        {{ round($successRate) }}%
-                                    </span>
+                                <div class="col-md-4">
+                                    <a href="{{ route('user.products') }}" class="action-btn success animate-pop" style="animation-delay: 0.1s;">
+                                        <div class="action-icon">
+                                            <i class="fas fa-boxes"></i>
+                                        </div>
+                                        <div class="action-content">
+                                            <h6>إدارة المنتجات</h6>
+                                            <p>عرض وتعديل منتجاتك</p>
+                                        </div>
+                                        <div class="action-arrow">
+                                            <i class="fas fa-arrow-left"></i>
+                                        </div>
+                                    </a>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="text-light">حالة الحساب:</span>
-                                    <span class="badge bg-{{ Auth::user()->is_active ? 'success' : 'secondary' }}">
-                                        {{ Auth::user()->is_active ? 'نشط' : 'غير نشط' }}
-                                    </span>
+                                <div class="col-md-4">
+                                    <a href="{{ route('products.used') }}" class="action-btn info animate-pop" style="animation-delay: 0.2s;">
+                                        <div class="action-icon">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                        <div class="action-content">
+                                            <h6>تصفح المنتجات</h6>
+                                            <p>اكتشف منتجات مستعملة أخرى</p>
+                                        </div>
+                                        <div class="action-arrow">
+                                            <i class="fas fa-arrow-left"></i>
+                                        </div>
+                                    </a>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المنتجات الحديثة -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="modern-card products-card animate-fade-in" style="animation-delay: 0.8s;">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-clock me-2"></i>
+                                أحدث المنتجات
+                            </h5>
+                            <a href="{{ route('user.products') }}" class="view-all-btn">
+                                عرض الكل
+                                <i class="fas fa-arrow-left ms-2"></i>
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            @if($recentProducts->count() > 0)
+                                <div class="table-modern">
+                                    <div class="table-header">
+                                        <div class="table-row">
+                                            <div class="table-cell">المنتج</div>
+                                            <div class="table-cell">السعر</div>
+                                            <div class="table-cell">المشاهدات</div>
+                                            <div class="table-cell">الحالة</div>
+                                            <div class="table-cell">الإجراءات</div>
+                                        </div>
+                                    </div>
+                                    <div class="table-body">
+                                        @foreach($recentProducts as $product)
+                                        <div class="table-row animate-fade-in">
+                                            <div class="table-cell">
+                                                <div class="product-info">
+                                                    @if($product->images)
+                                                        @php
+                                                            $images = json_decode($product->images);
+                                                            $firstImage = $images[0] ?? null;
+                                                        @endphp
+                                                        @if($firstImage)
+                                                            <img src="{{ asset('storage/' . $firstImage) }}" 
+                                                                 class="product-thumb" 
+                                                                 alt="{{ $product->name }}">
+                                                        @else
+                                                            <div class="no-image-thumb">
+                                                                <i class="fas fa-image"></i>
+                                                            </div>
+                                                        @endif
+                                                    @else
+                                                        <div class="no-image-thumb">
+                                                            <i class="fas fa-image"></i>
+                                                        </div>
+                                                    @endif
+                                                    <div class="product-details">
+                                                        <h6 class="product-name">{{ $product->name }}</h6>
+                                                        <small class="product-category">{{ $product->category->name ?? 'بدون تصنيف' }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="table-cell">
+                                                <div class="price-display">
+                                                    <span class="price">{{ number_format($product->price, 2) }} TL</span>
+                                                    @if($product->discount_percentage > 0)
+                                                        <span class="discount-badge">-{{ $product->discount_percentage }}%</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="table-cell">
+                                                <div class="views-display">
+                                                    <i class="fas fa-eye me-1"></i>
+                                                    <span>{{ $product->views }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="table-cell">
+                                                <span class="status-badge {{ $product->status === 'active' ? 'active' : 'inactive' }}">
+                                                    {{ $product->status === 'active' ? 'نشط' : 'غير نشط' }}
+                                                </span>
+                                            </div>
+                                            <div class="table-cell">
+                                                <div class="action-buttons">
+                                                    <a href="{{ route('products.show', $product->id) }}" 
+                                                       class="btn-action view" title="عرض المنتج">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="{{ route('products.edit', $product->id) }}" 
+                                                       class="btn-action edit" title="تعديل المنتج">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @else
+                                <div class="empty-state text-center py-5">
+                                    <div class="empty-icon mb-4">
+                                        <i class="fas fa-box fa-4x text-muted"></i>
+                                    </div>
+                                    <h4 class="text-muted mb-3">لا توجد منتجات حتى الآن</h4>
+                                    <p class="text-muted mb-4">ابدأ بإضافة أول منتج مستعمل للبيع</p>
+                                    <a href="{{ route('user.products.create') }}" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-plus me-2"></i>إضافة أول منتج
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -292,45 +375,670 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // تبديل الوضع المظلم
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    
+    // التحقق من التفضيل المحفوظ
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+    
+    themeToggle.addEventListener('click', function() {
+        body.classList.toggle('dark-mode');
+        
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            localStorage.setItem('theme', 'light');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+    });
+    
+    // عرض التاريخ الحالي
+    const currentDate = document.getElementById('currentDate');
+    const now = new Date();
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        timeZone: 'Asia/Riyadh'
+    };
+    currentDate.textContent = now.toLocaleDateString('ar-SA', options);
+    
+    // إضافة تأثيرات للبطاقات
+    const cards = document.querySelectorAll('.modern-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // تأثيرات للأزرار
+    const actionButtons = document.querySelectorAll('.action-btn');
+    actionButtons.forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(-5px)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+});
+
+// إضافة الحركات
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+            observer.unobserve(entry.target);
+        }
+    });
+}, observerOptions);
+
+document.addEventListener('DOMContentLoaded', function() {
+    const animatedElements = document.querySelectorAll('.animate-fade-in, .animate-pop');
+    animatedElements.forEach(el => {
+        el.style.animationPlayState = 'paused';
+        observer.observe(el);
+    });
+});
+</script>
+
 <style>
-.stats-card {
-    transition: transform 0.3s ease;
-    border: 1px solid var(--dark-border);
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3a0ca3;
+    --success-color: #4cc9f0;
+    --info-color: #4895ef;
+    --warning-color: #f72585;
+    --light-bg: #f8f9fa;
+    --dark-bg: #1a1a2e;
+    --card-bg: #ffffff;
+    --text-primary: #2d3748;
+    --text-secondary: #718096;
+    --border-color: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.stats-card:hover {
-    transform: translateY(-5px);
+.dark-mode {
+    --light-bg: #1a1a2e;
+    --card-bg: #16213e;
+    --text-primary: #e2e8f0;
+    --text-secondary: #a0aec0;
+    --border-color: #2d3748;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
 }
 
-.btn-aqua {
-    background: linear-gradient(135deg, var(--aqua-primary), var(--aqua-secondary));
+body {
+    background: var(--light-bg);
+    transition: all 0.3s ease;
+}
+
+/* البطاقات الحديثة */
+.modern-card {
+    background: var(--card-bg);
     border: none;
-    color: #000;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.modern-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.profile-card {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.profile-card .text-primary,
+.profile-card .text-muted {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* الصورة الشخصية */
+.user-avatar {
+    position: relative;
+    display: inline-block;
+}
+
+.user-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.user-img:hover {
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.online-status {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+/* الإحصائيات */
+.user-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* التنقل */
+.modern-nav .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.modern-nav .nav-link:hover,
+.modern-nav .nav-link.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    transform: translateX(5px);
+}
+
+.nav-icon {
+    width: 24px;
+    text-align: center;
+    margin-left: 12px;
+}
+
+.nav-text {
+    flex: 1;
+    font-weight: 500;
+}
+
+.nav-badge {
+    background: var(--success-color);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.75rem;
     font-weight: 600;
 }
 
-.btn-aqua:hover {
-    background: linear-gradient(135deg, var(--aqua-secondary), var(--aqua-primary));
-    color: #000;
-    transform: translateY(-2px);
+.nav-badge.new {
+    background: var(--warning-color);
 }
 
-.progress {
-    background: var(--dark-surface);
-    border-radius: 10px;
+/* بطاقات الإحصائيات */
+.stat-card .card-body {
+    padding: 24px;
+}
+
+.stat-main {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-title {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.stat-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.stat-trend.up {
+    background: rgba(72, 187, 120, 0.1);
+    color: #48bb78;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.stat-footer {
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+}
+
+.stat-change {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* أزرار الإجراءات */
+.action-btn {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    position: relative;
     overflow: hidden;
 }
 
-.progress-bar {
-    border-radius: 10px;
+.action-btn:hover {
+    transform: translateX(-5px);
+    border-color: var(--primary-color);
+}
+
+.action-btn.primary:hover {
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(58, 12, 163, 0.1));
+}
+
+.action-btn.success:hover {
+    background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(72, 149, 239, 0.1));
+}
+
+.action-btn.info:hover {
+    background: linear-gradient(135deg, rgba(247, 37, 133, 0.1), rgba(76, 201, 240, 0.1));
+}
+
+.action-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    margin-left: 15px;
+}
+
+.action-btn.success .action-icon {
+    background: linear-gradient(135deg, var(--success-color), var(--info-color));
+}
+
+.action-btn.info .action-icon {
+    background: linear-gradient(135deg, var(--warning-color), var(--success-color));
+}
+
+.action-content {
+    flex: 1;
+}
+
+.action-content h6 {
+    margin-bottom: 4px;
     font-weight: 600;
 }
 
-.activity-stats {
-    background: var(--dark-surface);
+.action-content p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 0;
+}
+
+.action-arrow {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover .action-arrow {
+    transform: translateX(-3px);
+    color: var(--primary-color);
+}
+
+/* الجدول الحديث */
+.table-modern {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.table-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 20px;
     padding: 20px;
-    border-radius: 10px;
-    border: 1px solid var(--dark-border);
+    align-items: center;
+}
+
+.table-header .table-row {
+    padding: 15px 20px;
+    font-weight: 600;
+}
+
+.table-body .table-row {
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.table-body .table-row:hover {
+    background: rgba(67, 97, 238, 0.05);
+    transform: translateX(5px);
+}
+
+.table-body .table-row:last-child {
+    border-bottom: none;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.product-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.no-image-thumb {
+    width: 50px;
+    height: 50px;
+    background: var(--border-color);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+}
+
+.product-details h6 {
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.product-category {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.price-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.price {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.discount-badge {
+    background: var(--warning-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.views-display {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-secondary);
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background: rgba(72, 187, 120, 0.1);
+    color: #48bb78;
+}
+
+.status-badge.inactive {
+    background: rgba(237, 137, 54, 0.1);
+    color: #ed8936;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-action.view {
+    background: var(--info-color);
+}
+
+.btn-action.edit {
+    background: var(--primary-color);
+}
+
+.btn-action:hover {
+    transform: scale(1.1);
+}
+
+/* الحركات */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+.animate-pop {
+    animation: pop 0.5s ease-out forwards;
+}
+
+/* الحالة الفارغة */
+.empty-state {
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    opacity: 0.5;
+}
+
+/* رأس الصفحة */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#themeToggle {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.date-display {
+    background: var(--card-bg);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    box-shadow: var(--shadow);
+}
+
+.view-all-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.view-all-btn:hover {
+    background: var(--secondary-color);
+    color: white;
+    transform: translateX(-3px);
+}
+
+/* تحسينات للاستجابة */
+@media (max-width: 768px) {
+    .table-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .product-info {
+        justify-content: center;
+        text-align: center;
+    }
+    
+    .action-btn {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .action-icon {
+        margin-left: 0;
+        margin-bottom: 10px;
+    }
+    
+    .stat-main {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .stat-icon {
+        margin-top: 10px;
+    }
 }
 </style>
 @endsection

@@ -43,7 +43,6 @@ class MerchantDiscountController extends Controller
             'products' => 'required|array|min:1',
             'products.*' => 'exists:products,id',
             'discount_percentage' => 'required|numeric|min:1|max:100',
-            'discount_duration' => 'required|integer|min:0',
             'discount_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -66,12 +65,18 @@ class MerchantDiscountController extends Controller
         }
 
         // تطبيق التخفيض على المنتجات المختارة
-        $updatedCount = Product::whereIn('id', $request->products)
-               ->update([
-                   'discount_percentage' => $request->discount_percentage,
-                   'discount_images' => !empty($discountImages) ? json_encode($discountImages) : null,
-                   'updated_at' => now()
-               ]);
+        $updatedCount = 0;
+        foreach ($request->products as $productId) {
+            $product = Product::find($productId);
+            if ($product && $product->user_id === Auth::id()) {
+                $product->update([
+                    'discount_percentage' => $request->discount_percentage,
+                    'discount_images' => !empty($discountImages) ? json_encode($discountImages) : null,
+                    'updated_at' => now()
+                ]);
+                $updatedCount++;
+            }
+        }
 
         if ($updatedCount > 0) {
             return redirect('/merchant/discounts')->with('success', 'تم تطبيق التخفيض بنجاح على ' . $updatedCount . ' منتج!');
@@ -122,7 +127,6 @@ class MerchantDiscountController extends Controller
 
         $request->validate([
             'discount_percentage' => 'required|numeric|min:1|max:100',
-            'discount_duration' => 'required|integer|min:0',
             'discount_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -149,6 +153,7 @@ class MerchantDiscountController extends Controller
             }
         }
 
+        // تحديث التخفيض
         $product->update([
             'discount_percentage' => $request->discount_percentage,
             'discount_images' => !empty($discountImages) ? json_encode($discountImages) : null,
@@ -167,6 +172,14 @@ class MerchantDiscountController extends Controller
             ->where('id', $id)
             ->where('discount_percentage', '>', 0)
             ->firstOrFail();
+
+        // حذف الصور المرتبطة بالتخفيض
+        if ($product->discount_images) {
+            $images = json_decode($product->discount_images);
+            foreach ($images as $image) {
+                Storage::disk('public')->delete($image);
+            }
+        }
 
         $product->update([
             'discount_percentage' => 0,

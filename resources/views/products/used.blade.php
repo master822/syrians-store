@@ -1,25 +1,30 @@
 @extends('layouts.app')
 
-@section('title', 'المنتجات المستعملة')
+@section('title', 'المنتجات المستعملة - متجر التخفيضات')
 
 @section('content')
-<div class="container py-4 fade-in">
+<div class="container py-5">
     <div class="row">
         <div class="col-12">
+            <!-- رأس الصفحة -->
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="section-title gradient-text">🔄 المنتجات المستعملة</h1>
-                <div class="d-flex gap-2 flex-wrap">
-                    <a href="{{ route('products.index') }}" class="btn btn-outline-primary btn-sm">
-                        جميع المنتجات
-                    </a>
-                    <a href="{{ route('products.new') }}" class="btn btn-outline-success btn-sm">
-                        المنتجات الجديدة
-                    </a>
-                    @auth
-                        <a href="{{ route('products.create') }}" class="btn btn-primary btn-sm">
-                            <i class="fas fa-plus me-1"></i>إضافة منتج مستعمل
+                <div>
+                    <h1 class="text-primary mb-2">🔄 المنتجات المستعملة</h1>
+                    <div class="btn-group" role="group">
+                        <a href="{{ route('products.index') }}" class="btn btn-outline-secondary btn-sm">
+                            جميع المنتجات
                         </a>
-                    @endauth
+                        <a href="{{ route('products.new') }}" class="btn btn-outline-success btn-sm">
+                            المنتجات الجديدة
+                        </a>
+                        @auth
+                            @if(Auth::user()->user_type === 'user')
+                                <a href="{{ route('user.products.create') }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus me-1"></i>إضافة منتج مستعمل
+                                </a>
+                            @endif
+                        @endauth
+                    </div>
                 </div>
             </div>
             <p class="text-muted mb-4">منتجات مستعملة بحالة جيدة من مستخدمين موثوقين - فرص رائعة بأسعار مناسبة</p>
@@ -28,106 +33,108 @@
                 <div class="row">
                     @foreach($products as $product)
                         <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                            <div class="card product-card h-100">
-                                @if($product->images)
-                                    @php
-                                        $images = json_decode($product->images);
-                                        $firstImage = $images[0] ?? null;
-                                    @endphp
-                                    @if($firstImage)
-                                        <img src="{{ asset('storage/' . $firstImage) }}" class="card-img-top" alt="{{ $product->name }}" style="height: 200px; object-fit: cover;">
-                                    @else
-                                        <div class="card-img-top bg-dark d-flex align-items-center justify-content-center" style="height: 200px;">
-                                            <span class="text-muted">لا توجد صورة</span>
-                                        </div>
-                                    @endif
-                                @else
-                                    <div class="card-img-top bg-dark d-flex align-items-center justify-content-center" style="height: 200px;">
-                                        <span class="text-muted">لا توجد صورة</span>
+                            <div class="modern-card product-card h-100">
+                                @if($product->discount_percentage > 0)
+                                    <div class="position-absolute top-0 start-0 m-3">
+                                        <span class="badge bg-danger fs-7">خصم {{ $product->discount_percentage }}%</span>
                                     </div>
                                 @endif
                                 
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title">{{ $product->name }}</h5>
-                                    <p class="card-text text-muted small flex-grow-1">
-                                        {{ Str::limit($product->description, 80) }}
-                                    </p>
-                                    
-                                    <div class="mt-auto">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="h5 text-success">{{ number_format($product->price) }} ل.س</span>
-                                            <span class="badge bg-warning">🔄 مستعمل</span>
-                                        </div>
-                                        
-                                        @if($product->condition)
-                                            <div class="mb-2">
-                                                <small class="text-muted"><strong>الحالة:</strong> {{ $product->condition }}</small>
+                                <div class="used-badge">مستعمل</div>
+                                
+                                <div class="card-img-container">
+                                    @if($product->images)
+                                        @php
+                                            $images = json_decode($product->images);
+                                            $firstImage = $images[0] ?? null;
+                                        @endphp
+                                        @if($firstImage)
+                                            <img src="{{ asset('storage/' . $firstImage) }}" 
+                                                 class="card-product-image" 
+                                                 alt="{{ $product->name }}">
+                                        @else
+                                            <div class="no-image-placeholder">
+                                                <i class="fas fa-image fa-2x text-muted"></i>
                                             </div>
                                         @endif
-
-                                        <div class="mb-2">
-                                            <small class="text-muted">
-                                                <i class="fas fa-tag me-1"></i>
-                                                @if($product->category)
-                                                    {{ $product->category->name }}
-                                                @else
-                                                    غير مصنف
-                                                @endif
-                                            </small>
+                                    @else
+                                        <div class="no-image-placeholder">
+                                            <i class="fas fa-image fa-2x text-muted"></i>
                                         </div>
-                                        
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <small class="text-muted">
-                                                <i class="fas fa-user me-1"></i>
+                                    @endif
+                                </div>
+                                
+                                <div class="card-body">
+                                    <h5 class="card-title text-dark">{{ $product->name }}</h5>
+                                    <p class="card-text text-secondary">{{ Str::limit($product->description, 60) }}</p>
+                                    
+                                    <div class="price-section mb-2">
+                                        @if($product->discount_percentage > 0)
+                                            @php
+                                                $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
+                                            @endphp
+                                            <span class="text-danger fw-bold fs-5">{{ number_format($discountedPrice, 2) }} TL</span>
+                                            <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} TL</small>
+                                        @else
+                                            <span class="fw-bold text-primary fs-5">{{ number_format($product->price, 2) }} TL</span>
+                                        @endif
+                                    </div>
+                                    
+                                    <div class="product-meta">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="text-muted small">
+                                                <i class="fas fa-store me-1"></i>
                                                 {{ $product->user->name }}
-                                            </small>
-                                            <small class="text-muted">
+                                            </span>
+                                            <span class="text-muted small">
                                                 <i class="fas fa-eye me-1"></i>
                                                 {{ $product->views }}
-                                            </small>
+                                            </span>
                                         </div>
-                                        
-                                        <div class="d-flex gap-2">
-                                            <a href="{{ route('products.show', $product->id) }}" class="btn btn-primary btn-sm flex-fill">
-                                                <i class="fas fa-eye me-1"></i>عرض
-                                            </a>
-                                            @auth
-                                                @if(Auth::id() === $product->user_id)
-                                                    <a href="{{ route('products.edit', $product->id) }}" class="btn btn-outline-warning btn-sm">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                @endif
-                                            @endauth
+                                        <div class="condition-badge">
+                                            <small class="text-dark"><strong>الحالة:</strong> {{ $product->condition }}</small>
                                         </div>
                                     </div>
+                                </div>
+                                
+                                <div class="card-action">
+                                    <a href="{{ route('products.show', $product->id) }}" class="btn btn-primary w-100 btn-view-product">
+                                        <i class="fas fa-eye me-2"></i>عرض المنتج
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
 
-                <div class="d-flex justify-content-center mt-4">
-                    {{ $products->links() }}
+                <!-- التصفح -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-center">
+                            {{ $products->links() }}
+                        </div>
+                    </div>
                 </div>
             @else
                 <div class="text-center py-5">
                     <div class="empty-state">
-                        <i class="fas fa-recycle fa-4x text-muted mb-3"></i>
-                        <h3 class="text-muted">لا توجد منتجات مستعملة حالياً</h3>
-                        <p class="text-muted mb-4">كن أول من يعرض منتجات مستعملة للبيع في منصتنا!</p>
+                        <i class="fas fa-box fa-4x text-muted mb-4"></i>
+                        <h4 class="text-muted mb-3">لا توجد منتجات مستعملة حالياً</h4>
+                        <p class="text-muted mb-4">كن أول من يضيف منتجاً مستعملاً للبيع</p>
                         @auth
-                            <a href="{{ route('products.create') }}" class="btn btn-primary btn-lg">
-                                <i class="fas fa-plus me-2"></i>أضف منتجك المستعمل
-                            </a>
-                        @else
-                            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                            @if(Auth::user()->user_type === 'user')
+                                <a href="{{ route('user.products.create') }}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-plus me-2"></i>إضافة منتج مستعمل
+                                </a>
+                            @else
                                 <a href="{{ route('register') }}" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-user-plus me-2"></i>سجل الآن
+                                    <i class="fas fa-user-plus me-2"></i>انضم كـ مستخدم عادي
                                 </a>
-                                <a href="{{ route('login') }}" class="btn btn-outline-primary btn-lg">
-                                    <i class="fas fa-sign-in-alt me-2"></i>تسجيل الدخول
-                                </a>
-                            </div>
+                            @endif
+                        @else
+                            <a href="{{ route('register') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>انضم كـ مستخدم عادي
+                            </a>
                         @endauth
                     </div>
                 </div>
@@ -137,29 +144,119 @@
 </div>
 
 <style>
-.product-card {
+.modern-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
-    border: 1px solid var(--border-color);
+    overflow: hidden;
+    position: relative;
 }
 
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    border-color: var(--primary-red);
+.modern-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.used-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #f59e0b;
+    color: white;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 2;
+}
+
+.card-img-container {
+    position: relative;
+    overflow: hidden;
+    height: 220px;
+    border-radius: 12px 12px 0 0;
+}
+
+.card-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.modern-card:hover .card-product-image {
+    transform: scale(1.1);
+}
+
+.no-image-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+}
+
+.card-title {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    color: #2d3748 !important;
+}
+
+.card-text {
+    color: #64748b !important;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.price-section {
+    margin: 1rem 0;
+}
+
+.condition-badge {
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.btn-view-product {
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-view-product:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
 }
 
 .empty-state {
-    padding: 3rem 1rem;
+    padding: 60px 20px;
 }
 
+.product-meta {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+/* تحسينات للاستجابة */
 @media (max-width: 768px) {
-    .container {
-        padding: 0.5rem;
+    .modern-card:hover {
+        transform: translateY(-5px);
     }
     
-    .section-title {
-        font-size: 1.4rem;
-        text-align: center;
+    .card-img-container {
+        height: 180px;
     }
     
     .btn-group {
@@ -167,42 +264,50 @@
         gap: 10px;
     }
     
-    .btn {
+    .btn-group .btn {
         width: 100%;
-        margin-bottom: 0.5rem;
-    }
-    
-    .product-card .card-body {
-        padding: 1rem;
     }
 }
 
-@media (max-width: 576px) {
-    .d-flex.justify-content-between {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-    
-    .btn-sm {
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
-    }
+/* التصفح */
+.pagination {
+    justify-content: center;
 }
 
-@media (max-width: 360px) {
-    .container {
-        padding: 0.25rem;
-    }
-    
-    .card-body {
-        padding: 0.75rem;
-    }
-    
-    .btn {
-        font-size: 0.75rem;
-        padding: 0.4rem 0.8rem;
-    }
+.page-link {
+    border: none;
+    color: #4361ee;
+    padding: 10px 18px;
+    border-radius: 8px;
+    margin: 0 4px;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background: #4361ee;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.page-item.active .page-link {
+    background: #4361ee;
+    border-color: #4361ee;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // إضافة تأثيرات للبطاقات
+    const cards = document.querySelectorAll('.modern-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
 @endsection

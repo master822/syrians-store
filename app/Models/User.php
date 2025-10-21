@@ -127,4 +127,11 @@ class User extends Authenticatable
 
         return $this->subscription_ends_at && $this->subscription_ends_at->isFuture();
     }
+
+    // نطاق للتجار النشطين فقط
+    public function scopeActiveMerchants($query)
+    {
+        return $query->where('user_type', 'merchant')
+                    ->where('is_active', true);
+    }
 }

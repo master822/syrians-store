@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Rating;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class RatingController extends Controller
 {
@@ -17,22 +18,41 @@ class RatingController extends Controller
 
     public function store(Request $request)
     {
+        // التحقق من أن المستخدم عادي وليس تاجر
+        if (Auth::user()->user_type !== 'user') {
+            return back()->with('error', 'يمكن للمستخدمين العاديين فقط تقييم المتاجر.');
+        }
+
         $request->validate([
             'merchant_id' => 'required|exists:users,id',
             'rating' => 'required|integer|between:1,5',
             'comment' => 'required|string|min:5|max:500'
         ]);
 
+        // التحقق من أن التاجر موجود وهو تاجر بالفعل
+        $merchant = User::where('id', $request->merchant_id)
+                       ->where('user_type', 'merchant')
+                       ->first();
+
+        if (!$merchant) {
+            return back()->with('error', 'التاجر غير موجود.');
+        }
+
+        // التحقق إذا كان المستخدم قد قيم هذا التاجر من قبل
+        $existingRating = Rating::where('user_id', Auth::id())
+                               ->where('merchant_id', $request->merchant_id)
+                               ->first();
+
+        if ($existingRating) {
+            return back()->with('error', 'لقد قمت بتقييم هذا التاجر مسبقاً.');
+        }
+
         // فحص التعليق بحثاً عن كلمات ممنوعة
         $moderationResult = $this->moderateComment($request->comment);
 
-        if (!$moderationResult['approved']) {
-            return back()->with('error', 'التعليق يحتوي على كلمات غير لائقة: ' . $moderationResult['reason']);
-        }
-
         // إنشاء التقييم
         $rating = Rating::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'merchant_id' => $request->merchant_id,
             'rating' => $request->rating,
             'comment' => $request->comment,
@@ -88,5 +108,24 @@ class RatingController extends Controller
             'average' => round($average, 1),
             'count' => $ratings->count()
         ]);
+    }
+
+    // دالة جديدة للحصول على تقييمات التاجر
+    public function getMerchantRatings($merchantId)
+    {
+        $ratings = Rating::where('merchant_id', $merchantId)
+            ->approved()
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $averageRating = $ratings->avg('rating');
+        $totalRatings = $ratings->count();
+
+        return [
+            'ratings' => $ratings,
+            'average_rating' => round($averageRating, 1),
+            'total_ratings' => $totalRatings
+        ];
     }
 }

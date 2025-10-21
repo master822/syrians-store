@@ -19,13 +19,16 @@ class Product extends Model
         'condition',
         'status',
         'images',
-        'views'
+        'views',
+        'discount_percentage',
+        'discount_images'
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'is_used' => 'boolean',
-        'images' => 'array'
+        'images' => 'array',
+        'discount_images' => 'array'
     ];
 
     // العلاقة مع المستخدم
@@ -34,16 +37,10 @@ class Product extends Model
         return $this->belongsTo(User::class);
     }
 
-    // العلاقة مع التصنيف - هذه كانت مفقودة
+    // العلاقة مع التصنيف
     public function category()
     {
         return $this->belongsTo(Category::class);
-    }
-
-    // العلاقة مع التخفيضات
-    public function discounts()
-    {
-        return $this->hasMany(Discount::class);
     }
 
     // العلاقة مع التقييمات
@@ -68,5 +65,26 @@ class Product extends Model
     public function scopeNew($query)
     {
         return $query->where('is_used', false);
+    }
+
+    // نطاق للمنتجات المخفضة
+    public function scopeDiscounted($query)
+    {
+        return $query->where('discount_percentage', '>', 0);
+    }
+
+    // حساب السعر بعد الخصم
+    public function getDiscountedPriceAttribute()
+    {
+        if ($this->discount_percentage > 0) {
+            return $this->price - ($this->price * $this->discount_percentage / 100);
+        }
+        return $this->price;
+    }
+
+    // التحقق مما إذا كان المنتج مخفضاً
+    public function getIsDiscountedAttribute()
+    {
+        return $this->discount_percentage > 0;
     }
 }

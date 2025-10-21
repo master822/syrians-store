@@ -248,7 +248,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label for="price" class="form-label">السعر (ل.س) *</label>
+                                <label for="price" class="form-label">السعر (TL) *</label>
                                 <input type="number" class="form-control" id="price" name="price" 
                                        value="{{ old('price') }}" min="1" required placeholder="أدخل السعر">
                             </div>

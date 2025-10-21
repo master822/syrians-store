@@ -70,8 +70,10 @@ class MerchantController extends Controller
         $averageRating = $merchant->ratings->avg('rating') ?? 0;
         $totalRatings = $merchant->ratings->count();
 
+        // الحصول على منتجات التاجر فقط (المنتجات الجديدة)
         $products = Product::where('user_id', $id)
                           ->where('status', 'active')
+                          ->where('is_used', false) // منتجات جديدة فقط
                           ->with('category')
                           ->paginate(12);
 

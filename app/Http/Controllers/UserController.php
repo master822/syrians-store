@@ -27,10 +27,11 @@ class UserController extends Controller
         $recentProducts = Product::where('user_id', $user->id)
                                 ->where('is_used', true)
                                 ->orderBy('created_at', 'desc')
-                                ->limit(3)
+                                ->limit(5)
                                 ->get();
 
         return view('user.dashboard', compact(
+            'user',
             'usedProductsCount',
             'activeProductsCount', 
             'viewsCount',
@@ -46,6 +47,6 @@ class UserController extends Controller
                           ->orderBy('created_at', 'desc')
                           ->get();
 
-        return view('user.my-products', compact('products'));
+        return view('user.my-products', compact('user', 'products'));
     }
 }
