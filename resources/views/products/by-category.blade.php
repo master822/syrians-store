@@ -1,28 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'منتجات ' . $category->name)
+@section('title', $category->name . ' - التصنيفات')
 
 @section('content')
-<div class="container py-5">
+<div class="container py-4">
+    <!-- رأس الصفحة -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="section-title gradient-text">
-                        <i class="{{ $category->icon }} me-2"></i>{{ $category->name }}
-                    </h1>
-                    <p class="text-muted">استعرض جميع المنتجات في تصنيف {{ $category->name }}</p>
+                    <h1 class="text-primary">{{ $category->name }}</h1>
+                    <p class="text-muted">{{ $category->description }}</p>
                 </div>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('products.index') }}" class="btn btn-outline-primary">
-                        جميع المنتجات
-                    </a>
-                    <a href="{{ route('products.new') }}" class="btn btn-outline-success">
-                        منتجات جديدة
-                    </a>
-                    <a href="{{ route('products.used') }}" class="btn btn-outline-warning">
-                        منتجات مستعملة
-                    </a>
+                <div class="text-end">
+                    <span class="badge bg-primary fs-6">{{ $products->total() }} منتج</span>
                 </div>
             </div>
         </div>
@@ -33,6 +24,18 @@
             @foreach($products as $product)
                 <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
                     <div class="card product-card h-100">
+                        @if($product->discount_percentage > 0)
+                            <div class="position-absolute top-0 start-0 m-2">
+                                <span class="badge bg-danger">خصم {{ $product->discount_percentage }}%</span>
+                            </div>
+                        @endif
+                        
+                        @if($product->is_used)
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-warning text-dark">مستعمل</span>
+                            </div>
+                        @endif
+                        
                         @if($product->images)
                             @php
                                 $images = json_decode($product->images);
@@ -42,101 +45,91 @@
                                 <img src="{{ asset('storage/' . $firstImage) }}" class="card-img-top" alt="{{ $product->name }}" style="height: 200px; object-fit: cover;">
                             @else
                                 <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                    <span class="text-muted">لا توجد صورة</span>
+                                    <i class="fas fa-image fa-2x text-muted"></i>
                                 </div>
                             @endif
                         @else
                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                <span class="text-muted">لا توجد صورة</span>
+                                <i class="fas fa-image fa-2x text-muted"></i>
                             </div>
                         @endif
                         
-                        <div class="card-body d-flex flex-column">
+                        <div class="card-body">
                             <h5 class="card-title">{{ $product->name }}</h5>
-                            <p class="card-text text-muted small flex-grow-1">
-                                {{ Str::limit($product->description, 80) }}
-                            </p>
+                            <p class="card-text text-muted small">{{ Str::limit($product->description, 60) }}</p>
                             
-                            <div class="mt-auto">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="h5 text-success">{{ number_format($product->price) }} ل.س</span>
-                                    <span class="badge {{ $product->is_used ? 'bg-warning' : 'bg-success' }}">
-                                        {{ $product->is_used ? '🔄 مستعمل' : '🆕 جديد' }}
-                                    </span>
-                                </div>
-                                
-                                @if($product->is_used && $product->condition)
-                                    <div class="mb-2">
-                                        <small class="text-muted">الحالة: {{ $product->condition }}</small>
-                                    </div>
+                            <div class="price-section mb-2">
+                                @if($product->discount_percentage > 0)
+                                    @php
+                                        $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
+                                    @endphp
+                                    <span class="text-danger fw-bold fs-5">{{ number_format($discountedPrice, 2) }} ر.س</span>
+                                    <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} ر.س</small>
+                                @else
+                                    <span class="fw-bold text-primary fs-5">{{ number_format($product->price, 2) }} ر.س</span>
                                 @endif
-                                
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <small class="text-muted">
-                                        {{ $product->user->name }}
-                                    </small>
-                                    <small class="text-muted">
-                                        {{ $product->created_at->diffForHumans() }}
-                                    </small>
-                                </div>
-                                
-                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-primary btn-sm w-100 mt-2">
-                                    عرض التفاصيل
-                                </a>
                             </div>
+                            
+                            <div class="product-meta">
+                                <small class="text-muted">
+                                    <i class="fas fa-store me-1"></i>{{ $product->user->name }}
+                                </small>
+                                @if($product->is_used && $product->condition)
+                                    <small class="text-muted ms-2">
+                                        <i class="fas fa-info-circle me-1"></i>{{ $product->condition }}
+                                    </small>
+                                @endif
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <a href="{{ route('products.show', $product->id) }}" class="btn btn-primary w-100">
+                                <i class="fas fa-eye me-2"></i>عرض المنتج
+                            </a>
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
-
+        
+        <!-- الترقيم -->
         <div class="d-flex justify-content-center mt-4">
             {{ $products->links() }}
         </div>
     @else
         <div class="text-center py-5">
-            <div class="empty-state">
-                <i class="{{ $category->icon }} fa-4x text-muted mb-3"></i>
-                <h3 class="text-muted">لا توجد منتجات في هذا التصنيف</h3>
-                <p class="text-muted">كن أول من يضيف منتج في تصنيف {{ $category->name }}</p>
-                @auth
-                    <a href="{{ route('products.create') }}" class="btn btn-primary">
-                        أضف منتج جديد
-                    </a>
-                @else
-                    <a href="{{ route('register') }}" class="btn btn-primary">
-                        سجل الآن وأضف منتجك
-                    </a>
-                @endauth
-            </div>
+            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">لا توجد منتجات في هذا التصنيف</h4>
+            <p class="text-muted mb-4">يمكنك استعراض التصنيفات الأخرى أو البحث عن منتجات</p>
+            <a href="{{ route('products.index') }}" class="btn btn-primary me-2">
+                <i class="fas fa-arrow-right me-2"></i>استعراض جميع المنتجات
+            </a>
+            <a href="{{ route('products.search') }}" class="btn btn-outline-primary">
+                <i class="fas fa-search me-2"></i>البحث عن منتجات
+            </a>
         </div>
     @endif
 </div>
 
 <style>
 .product-card {
-    transition: all 0.3s ease;
-    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e9ecef;
 }
 
 .product-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-    border-color: var(--accent-color);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
-.empty-state {
-    padding: 3rem 1rem;
+.price-section {
+    margin: 15px 0;
 }
 
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-    
-    .section-title {
-        font-size: 1.5rem;
-    }
+.product-meta {
+    border-top: 1px solid #e9ecef;
+    padding-top: 10px;
+    margin-top: 10px;
 }
 </style>
 @endsection

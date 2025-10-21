@@ -20,7 +20,7 @@ return new class extends Migration
             
             // حقول إضافية للتجار
             $table->string('store_name')->nullable();
-            $table->enum('store_category', ['clothes', 'electronics', 'home', 'food'])->nullable();
+            $table->enum('store_category', ['clothes', 'electronics', 'home', 'grocery'])->nullable(); // أضفنا grocery هنا
             $table->text('store_description')->nullable();
             $table->string('store_phone')->nullable();
             $table->string('store_city')->nullable();

@@ -19,23 +19,84 @@ class ProductController extends Controller
         $user = Auth::user();
         $categories = Category::where('is_active', true)->get();
 
+        // تحقق من نوع المستخدم وعرض النموذج المناسب
         if ($user->user_type === 'user') {
             return view('products.create-used', compact('categories'));
         } elseif ($user->user_type === 'merchant') {
-            return view('merchant.create-product', compact('categories'));
+            return view('products.create-new', compact('categories'));
         } else {
             return redirect()->back()->with('error', 'ليس لديك صلاحية لإضافة منتجات.');
         }
+    }
+
+    public function store(Request $request)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $user = Auth::user();
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_used' => 'required|boolean',
+            'condition' => 'required_if:is_used,true|string|max:255',
+        ]);
+
+        // التحقق من نوع المستخدم ونوع المنتج
+        if ($user->user_type === 'user' && $request->is_used == false) {
+            return redirect()->back()->with('error', 'المستخدمون العاديون يمكنهم فقط إضافة منتجات مستعملة.');
+        }
+
+        if ($user->user_type === 'merchant' && $request->is_used == true) {
+            return redirect()->back()->with('error', 'التجار يمكنهم فقط إضافة منتجات جديدة.');
+        }
+
+        // التحقق من الحد الأقصى للمنتجات
+        $userProductsCount = Product::where('user_id', $user->id)->count();
+        if ($userProductsCount >= $user->product_limit) {
+            return redirect()->back()->with('error', 'لقد وصلت إلى الحد الأقصى للمنتجات المسموح بها.');
+        }
+
+        $product = new Product();
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->category_id = $request->category_id;
+        $product->user_id = $user->id;
+        $product->is_used = $request->is_used;
+        $product->condition = $request->is_used ? $request->condition : null;
+        $product->status = 'active';
+
+        // معالجة الصور
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('products', 'public');
+                $imagePaths[] = $path;
+            }
+            $product->images = json_encode($imagePaths);
+        }
+
+        $product->save();
+
+        // التوجيه إلى الصفحة المناسبة حسب نوع المستخدم
+        $redirectRoute = $user->user_type === 'user' ? 'user.products' : 'merchant.products';
+        return redirect()->route($redirectRoute)
+                        ->with('success', 'تم إضافة المنتج بنجاح.');
     }
 
     public function edit($id)
     {
         $product = Product::findOrFail($id);
         
-        // التحقق من أن المستخدم هو مالك المنتج
         if ($product->user_id !== Auth::id()) {
             return redirect()->route('products.show', $product->id)
-                           ->with('error', 'ليس لديك صلاحية لتعديل هذا المنتج. يمكنك فقط تعديل المنتجات التي تضيفها.');
+                           ->with('error', 'ليس لديك صلاحية لتعديل هذا المنتج.');
         }
         
         $categories = Category::where('is_active', true)->get();
@@ -57,7 +118,6 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'is_used' => 'required|boolean',
             'condition' => $product->is_used ? 'required|string|max:255' : 'nullable',
         ]);
 
@@ -65,9 +125,6 @@ class ProductController extends Controller
         $product->description = $request->description;
         $product->price = $request->price;
         $product->category_id = $request->category_id;
-        
-        // لا يمكن تغيير نوع المنتج بعد الإنشاء
-        // $product->is_used = $request->is_used; 
         
         $product->condition = $product->is_used ? $request->condition : null;
 
@@ -77,13 +134,12 @@ class ProductController extends Controller
                 Storage::disk('public')->delete($imageToDelete);
             }
             
-            // تحديث قائمة الصور بعد الحذف
             $currentImages = json_decode($product->images, true) ?? [];
             $remainingImages = array_diff($currentImages, $request->delete_images);
             $product->images = !empty($remainingImages) ? json_encode(array_values($remainingImages)) : null;
         }
 
-        // إضافة صور جديدة
+        // معالجة إضافة صور جديدة
         if ($request->hasFile('images')) {
             $currentImages = json_decode($product->images, true) ?? [];
             $newImages = [];
@@ -93,7 +149,6 @@ class ProductController extends Controller
                 $newImages[] = $path;
             }
             
-            // دمج الصور القديمة والجديدة
             $allImages = array_merge($currentImages, $newImages);
             $product->images = json_encode($allImages);
         }
@@ -104,7 +159,6 @@ class ProductController extends Controller
                         ->with('success', 'تم تحديث المنتج بنجاح.');
     }
 
-    // ... باقي الدوال بنفس الشكل
     public function index()
     {
         $products = Product::where('status', 'active')
@@ -234,67 +288,9 @@ class ProductController extends Controller
         $product = Product::with(['user', 'category'])->findOrFail($id);
         $product->increment('views');
         
-        // إخفاء أزرار التعديل والحذف إذا لم يكن المستخدم هو المالك
         $canEdit = Auth::check() && Auth::id() === $product->user_id;
         
         return view('products.show', compact('product', 'canEdit'));
-    }
-
-    public function store(Request $request)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        $user = Auth::user();
-        
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'is_used' => 'required|boolean',
-            'condition' => 'required_if:is_used,true|string|max:255',
-        ]);
-
-        if ($user->user_type === 'user' && $request->is_used == false) {
-            return redirect()->back()->with('error', 'المستخدمون العاديون يمكنهم فقط إضافة منتجات مستعملة.');
-        }
-
-        if ($user->user_type === 'merchant' && $request->is_used == true) {
-            return redirect()->back()->with('error', 'التجار يمكنهم فقط إضافة منتجات جديدة.');
-        }
-
-        $userProductsCount = Product::where('user_id', $user->id)->count();
-        if ($userProductsCount >= $user->product_limit) {
-            return redirect()->back()->with('error', 'لقد وصلت إلى الحد الأقصى للمنتجات المسموح بها.');
-        }
-
-        $product = new Product();
-        $product->name = $request->name;
-        $product->description = $request->description;
-        $product->price = $request->price;
-        $product->category_id = $request->category_id;
-        $product->user_id = $user->id;
-        $product->is_used = $request->is_used;
-        $product->condition = $request->is_used ? $request->condition : null;
-        $product->status = 'active';
-
-        $imagePaths = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('products', 'public');
-                $imagePaths[] = $path;
-            }
-            $product->images = json_encode($imagePaths);
-        }
-
-        $product->save();
-
-        $redirectRoute = $user->user_type === 'user' ? 'user.products' : 'merchant.products';
-        return redirect()->route($redirectRoute)
-                        ->with('success', 'تم إضافة المنتج بنجاح.');
     }
 
     public function destroy($id)
@@ -306,6 +302,7 @@ class ProductController extends Controller
                            ->with('error', 'ليس لديك صلاحية لحذف هذا المنتج.');
         }
 
+        // حذف الصور من التخزين
         if ($product->images) {
             $images = json_decode($product->images);
             foreach ($images as $image) {

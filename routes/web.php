@@ -34,11 +34,19 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('products
 
 // المنتجات (تحتاج مصادقة)
 Route::middleware(['auth'])->group(function () {
-    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+    // روابط إضافة المنتج - سنغيرها إلى روابط مختلفة
+    Route::get('/merchant/products/create', [ProductController::class, 'create'])->name('merchant.products.create');
+    Route::get('/user/products/create', [ProductController::class, 'create'])->name('user.products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+});
+
+// التقييمات
+Route::middleware(['auth'])->group(function () {
+    Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
+    Route::get('/ratings/{merchantId}', [RatingController::class, 'index'])->name('ratings.index');
 });
 
 // الرسائل
@@ -58,6 +66,7 @@ Route::get('/merchants/category/{category}', [MerchantController::class, 'byCate
 Route::middleware(['auth'])->prefix('merchant')->group(function () {
     Route::get('/dashboard', [MerchantController::class, 'dashboard'])->name('merchant.dashboard');
     Route::get('/products', [MerchantController::class, 'myProducts'])->name('merchant.products');
+    Route::get('/products/create', [ProductController::class, 'create'])->name('merchant.products.create');
     
     // تخفيضات التاجر
     Route::get('/discounts', [MerchantDiscountController::class, 'showDiscounts'])->name('merchant.discounts');
@@ -72,10 +81,11 @@ Route::middleware(['auth'])->prefix('merchant')->group(function () {
     Route::post('/subscription/{plan}', [MerchantSubscriptionController::class, 'subscribe'])->name('merchant.subscribe');
 });
 
-// لوحة تحكم المستخدم
+// لوحة تحكم المستخدم العادي
 Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
     Route::get('/products', [UserController::class, 'myProducts'])->name('user.products');
+    Route::get('/products/create', [ProductController::class, 'create'])->name('user.products.create');
 });
 
 // لوحة تحكم المدير
@@ -104,12 +114,6 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 // التخفيضات
 Route::get('/discounts', [DiscountController::class, 'discounts'])->name('discounts');
 
-// التقييمات
-Route::middleware(['auth'])->group(function () {
-    Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
-    Route::get('/ratings/{merchantId}', [RatingController::class, 'index'])->name('ratings.index');
-});
-
 // الملف الشخصي وإدارة الحساب
 Route::middleware(['auth'])->group(function () {
     // الملف الشخصي
@@ -129,11 +133,3 @@ Route::view('/about', 'about')->name('about');
 Route::view('/contact', 'contact')->name('contact');
 Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/terms', 'terms')->name('terms');
-
-// Ensure the working route exists
-Route::get('/merchant/products/create', [ProductController::class, 'create'])->name('merchant.products.create');
-
-// Simple create page with static categories
-Route::get('/merchant/create-simple', function() {
-    return view('merchant.create-product-simple');
-})->name('merchant.create.simple');
