@@ -3,215 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'متجر التخفيضات')</title>
+    <title>@yield('title', 'Merchanta')</title>
+    
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    
     <style>
-        :root {
-            --primary-color: #6366f1;
-            --secondary-color: #8b5cf6;
-            --gold-color: #f59e0b;
-            --dark-color: #1f2937;
-        }
-        
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #000000 !important;
-            min-height: 100vh;
-        }
-        
-        .navbar {
-            background: rgba(31, 41, 55, 0.95) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .navbar-nav .nav-link {
-            color: #ffffff !important;
-        }
-        
-        .navbar-nav .nav-link:hover {
-            color: var(--gold-color) !important;
-        }
-        
-        .dropdown-menu {
-            background: rgba(31, 41, 55, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-        
-        .dropdown-item {
-            color: #000000 !important;
-            transition: all 0.3s ease;
-        }
-        
-        .dropdown-item:hover {
-            background: var(--primary-color);
-            color: white !important;
-        }
-        
-        .search-icon {
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .search-icon:hover {
-            color: var(--gold-color) !important;
-        }
-        
-        .search-modal .modal-content {
-            background: rgba(31, 41, 55, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #ef4444;
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* بطاقات حديثة */
-        .modern-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-            border: none !important;
-            border-radius: 20px !important;
-            color: #000000 !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
-            transition: all 0.4s ease !important;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .modern-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        }
-        
-        .modern-card:hover {
-            transform: translateY(-10px) scale(1.02) !important;
-            box-shadow: 0 20px 50px rgba(99, 102, 241, 0.3) !important;
-        }
-        
-        .form-control, .form-select {
-            border: 2px solid #d1d5db !important;
-            color: #000000 !important;
-            background-color: #ffffff !important;
-            border-radius: 12px !important;
-        }
-        
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color) !important;
-            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
-        }
-        
-        .chat-badge {
-            background: #10b981;
-            color: white;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            font-size: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: -2px;
-            right: -2px;
-        }
-        
-        .cursor-pointer {
-            cursor: pointer;
-        }
-        
-        /* شات جانبي */
-        .side-chat {
+        /* تصميم زر الشات العائم */
+        .chat-floating-btn {
             position: fixed;
-            top: 50%;
-            right: -400px;
-            transform: translateY(-50%);
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .chat-floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        }
+
+        .chat-floating-btn i {
+            font-size: 1.5rem;
+        }
+
+        /* تصميم نافذة الشات */
+        .chat-window {
+            position: fixed;
+            bottom: 90px;
+            left: 20px;
             width: 350px;
             height: 500px;
-            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px 0 0 20px;
-            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.3);
-            transition: right 0.4s ease;
-            z-index: 1000;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1001;
+            display: none;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
         }
-        
-        .side-chat.open {
-            right: 0;
+
+        .chat-window.active {
+            display: flex;
         }
-        
-        .side-chat-header {
-            background: rgba(31, 41, 55, 0.9);
+
+        .chat-header {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
             padding: 15px;
-            border-radius: 20px 0 0 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        
-        .side-chat-body {
-            height: 380px;
+
+        .chat-header h6 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .chat-controls button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chat-controls button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .chat-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+        }
+
+        .chat-messages {
+            flex: 1;
             overflow-y: auto;
             padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        
-        .side-chat-footer {
-            padding: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            position: relative;
         }
-        
-        .chat-toggle-btn {
-            position: fixed;
-            top: 50%;
-            right: 0;
-            transform: translateY(-50%);
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+
+        .message.own {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
-            border: none;
-            border-radius: 20px 0 0 20px;
-            padding: 15px 10px;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.other {
+            align-self: flex-start;
+            background: white;
+            color: #333;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-sender {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .chat-input {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .chat-input .input-group {
+            gap: 10px;
+        }
+
+        .chat-input input {
+            border-radius: 25px;
+            padding: 10px 15px;
+        }
+
+        .chat-input button {
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* الوضع المظلم */
+        .dark-mode {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+
+        .dark-mode .navbar {
+            background-color: #2d3748 !important;
+        }
+
+        .dark-mode .card {
+            background-color: #2d3748;
+            border-color: #4a5568;
+        }
+
+        .dark-mode .text-dark {
+            color: #e2e8f0 !important;
+        }
+
+        .dark-mode .text-muted {
+            color: #a0aec0 !important;
+        }
+
+        .dark-mode .bg-light {
+            background-color: #2d3748 !important;
+        }
+
+        .dark-mode .chat-window {
+            background: #2d3748;
+            border-color: #4a5568;
+        }
+
+        .dark-mode .chat-body {
+            background: #1a202c;
+        }
+
+        .dark-mode .chat-messages {
+            background: #2d3748;
+        }
+
+        .dark-mode .message.other {
+            background: #4a5568;
+            color: #e2e8f0;
+            border-color: #718096;
+        }
+
+        .dark-mode .chat-input {
+            background: #2d3748;
+            border-color: #4a5568;
+        }
+
+        .dark-mode .chat-input input {
+            background: #4a5568;
+            border-color: #718096;
+            color: #e2e8f0;
+        }
+
+        .dark-mode .chat-input input::placeholder {
+            color: #a0aec0;
+        }
+
+        .dark-mode footer {
+            background-color: #2d3748 !important;
+        }
+
+        /* تحسينات للشريط العلوي */
+        .navbar-nav .dropdown-menu {
+            text-align: right;
+        }
+
+        .dark-mode-toggle {
+            background: none;
+            border: 2px solid rgba(255,255,255,0.5);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            z-index: 999;
-            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
         }
 
-        /* تحسينات النصوص */
-        .text-primary {
-            color: #1e293b !important;
+        .dark-mode-toggle:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.1);
         }
 
-        .text-dark {
-            color: #000000 !important;
-        }
-
-        .text-muted {
-            color: #64748b !important;
+        .logo-img {
+            height: 40px;
+            width: auto;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- شريط التنقل -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <!-- الشريط العلوي -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('home') }}">
-                متجر التخفيضات
+            <a class="navbar-brand" href="{{ route('home') }}">
+                <img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Merchanta" class="logo-img">
+                Merchanta
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -219,352 +287,303 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- القائمة الرئيسية -->
                 <ul class="navbar-nav me-auto">
-                    <!-- المنتجات مع dropdown -->
+                    <!-- المنتجات -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             المنتجات
                         </a>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('products.index') }}">جميع المنتجات</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ route('products.byCategory', 'clothes') }}">ملابس</a></li>
                             <li><a class="dropdown-item" href="{{ route('products.byCategory', 'electronics') }}">إلكترونيات</a></li>
                             <li><a class="dropdown-item" href="{{ route('products.byCategory', 'home') }}">أدوات منزلية</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.byCategory', 'grocery') }}">بقالة</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ route('products.index') }}">جميع المنتجات</a></li>
+                            <li><a class="dropdown-item" href="{{ route('products.byCategory', 'grocery') }}">البقالة</a></li>
                         </ul>
                     </li>
                     
-                    <!-- التجار مع dropdown -->
+                    <!-- التجار -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             التجار
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'clothes') }}">ملابس</a></li>
-                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'electronics') }}">إلكترونيات</a></li>
-                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'home') }}">أدوات منزلية</a></li>
-                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'grocery') }}">بقالة</a></li>
-                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ route('merchants.index') }}">جميع التجار</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'clothes') }}">تجار الملابس</a></li>
+                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'electronics') }}">تجار الإلكترونيات</a></li>
+                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'home') }}">تجار الأدوات المنزلية</a></li>
+                            <li><a class="dropdown-item" href="{{ route('merchants.byCategory', 'grocery') }}">تجار البقالة</a></li>
                         </ul>
                     </li>
                     
-                    <!-- المنتجات المستعملة -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('products.used') }}">
-                            منتجات مستعملة
-                        </a>
-                    </li>
-                    
-                    <!-- التخفيضات مع dropdown -->
+                    <!-- التخفيضات -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             التخفيضات
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('products.search') }}?product_type=new&category=clothes">ملابس</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.search') }}?product_type=new&category=electronics">إلكترونيات</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.search') }}?product_type=new&category=home">أدوات منزلية</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.search') }}?product_type=new&category=grocery">بقالة</a></li>
-                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ route('discounts') }}">جميع التخفيضات</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ route('discounts.category', 'clothes') }}">تخفيضات الملابس</a></li>
+                            <li><a class="dropdown-item" href="{{ route('discounts.category', 'electronics') }}">تخفيضات الإلكترونيات</a></li>
+                            <li><a class="dropdown-item" href="{{ route('discounts.category', 'home') }}">تخفيضات الأدوات المنزلية</a></li>
+                            <li><a class="dropdown-item" href="{{ route('discounts.category', 'grocery') }}">تخفيضات البقالة</a></li>
                         </ul>
+                    </li>
+                    
+                    <!-- متجر المستعمل -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('products.used') }}">
+                            متجر المستعمل
+                        </a>
                     </li>
                 </ul>
                 
-                <!-- الأيقونات -->
-                <ul class="navbar-nav">
-                    <!-- البحث -->
+                <!-- الجزء الأيمن من الشريط -->
+                <ul class="navbar-nav ms-auto">
+                    <!-- زر الوضع المظلم -->
                     <li class="nav-item">
-                        <a class="nav-link search-icon" data-bs-toggle="modal" data-bs-target="#searchModal">
-                            <i class="fas fa-search"></i>
-                        </a>
-                    </li>
-                    
-                    <!-- الإشعارات -->
-                    <li class="nav-item">
-                        <a class="nav-link position-relative" href="#" data-bs-toggle="modal" data-bs-target="#notificationsModal">
-                            <i class="fas fa-bell"></i>
-                            <span class="notification-badge" id="notificationCount">3</span>
-                        </a>
+                        <button class="dark-mode-toggle me-3" onclick="toggleDarkMode()">
+                            <i class="fas fa-moon"></i>
+                        </button>
                     </li>
                     
                     @auth
-                    <!-- القائمة المنسدلة للمستخدم -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" 
-                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ Auth::user()->name }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            @if(Auth::user()->isRegularUser())
-                            <li><a class="dropdown-item" href="{{ route('user.dashboard') }}">
-                                لوحة التحكم
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('user.products') }}">
-                                منتجاتي
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('messages.inbox') }}">
-                                الرسائل
-                            </a></li>
-                            @endif
-
-                            @if(Auth::user()->isMerchant())
-                            <li><a class="dropdown-item" href="{{ route('merchant.dashboard') }}">
-                                لوحة المتجر
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('merchant.products') }}">
-                                منتجاتي
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('merchant.discounts') }}">
-                                التخفيضات
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('merchant.subscription.plans') }}">
-                                خطط الاشتراك
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('messages.inbox') }}">
-                                الرسائل
-                            </a></li>
-                            @endif
-
-                            @if(Auth::user()->isAdmin())
-                            <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">
-                                لوحة الإدارة
-                            </a></li>
-                            @endif
-
-                            <li><a class="dropdown-item" href="{{ route('profile') }}">
-                                الملف الشخصي
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}" id="logout-form">
-                                    @csrf
-                                    <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        تسجيل الخروج
-                                    </a>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                {{ Auth::user()->name }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                @if(Auth::user()->user_type === 'admin')
+                                    <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">لوحة التحكم</a></li>
+                                @elseif(Auth::user()->user_type === 'merchant')
+                                    <li><a class="dropdown-item" href="{{ route('merchant.dashboard') }}">لوحة التحكم</a></li>
+                                @else
+                                    <li><a class="dropdown-item" href="{{ route('user.dashboard') }}">لوحة التحكم</a></li>
+                                @endif
+                                <li><a class="dropdown-item" href="{{ route('profile') }}">الملف الشخصي</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">تسجيل الخروج</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
                     @else
-                    <!-- روابط الزوار -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">تسجيل الدخول</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-warning" href="{{ route('register') }}">إنشاء حساب</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('login') }}">تسجيل الدخول</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('register') }}">إنشاء حساب</a>
+                        </li>
                     @endauth
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- محتوى الصفحة -->
-    <main style="padding-top: 80px;">
+    <!-- المحتوى الرئيسي -->
+    <main>
         @yield('content')
     </main>
 
-    <!-- زر فتح الشات الجانبي -->
-    <button class="chat-toggle-btn" onclick="toggleChat()">
+    <!-- الفوتر -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Merchanta</h5>
+                    <p>منصة شاملة لبيع وشراء المنتجات الجديدة والمستعملة مع أفضل العروض والتخفيضات</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>روابط سريعة</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ route('about') }}" class="text-light">عن الموقع</a></li>
+                        <li><a href="{{ route('contact') }}" class="text-light">اتصل بنا</a></li>
+                        <li><a href="{{ route('privacy') }}" class="text-light">الخصوصية</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>التواصل</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone me-2"></i> +90 555 123 4567</li>
+                        <li><i class="fas fa-envelope me-2"></i> info@merchanta.com</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- زر الشات العائم -->
+    @auth
+    <button class="chat-floating-btn" onclick="toggleChatWindow()">
         <i class="fas fa-comments"></i>
     </button>
 
-    <!-- الشات الجانبي -->
-    <div class="side-chat" id="sideChat">
-        <div class="side-chat-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <h6 class="text-light mb-0">المحادثة العامة</h6>
-                <button class="btn btn-sm btn-outline-light" onclick="toggleChat()">
+    <!-- نافذة الشات -->
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <h6>الشات العالمي</h6>
+            <div class="chat-controls">
+                <button onclick="minimizeChat()">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button onclick="closeChat()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
         </div>
-        <div class="side-chat-body">
-            <div class="message mb-3">
-                <div class="d-flex align-items-start">
-                    <img src="https://ui-avatars.com/api/?name=أحمد&background=6366f1&color=fff" 
-                         class="rounded-circle me-2" width="30" height="30">
-                    <div>
-                        <small class="text-light">أحمد - منذ دقيقتين</small>
-                        <p class="mb-0 text-light">مرحباً بالجميع! هل هناك عروض جديدة اليوم؟</p>
-                    </div>
+        <div class="chat-body">
+            <div class="chat-messages" id="chatMessages">
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-comments fa-2x mb-3"></i>
+                    <p>مرحباً في الشات العالمي</p>
+                    <small>ابدأ المحادثة مع المستخدمين الآخرين</small>
                 </div>
             </div>
-            <div class="message mb-3">
-                <div class="d-flex align-items-start">
-                    <img src="https://ui-avatars.com/api/?name=محمد&background=8b5cf6&color=fff" 
-                         class="rounded-circle me-2" width="30" height="30">
-                    <div>
-                        <small class="text-light">محمد - منذ دقيقة</small>
-                        <p class="mb-0 text-light">نعم، هناك تخفيضات رائعة على الإلكترونيات!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="side-chat-footer">
-            @auth
-            <form class="chat-form">
+            <div class="chat-input">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="اكتب رسالتك...">
-                    <button class="btn btn-primary" type="submit">
+                    <input type="text" class="form-control" placeholder="اكتب رسالتك..." id="chatMessageInput">
+                    <button class="btn btn-primary" onclick="sendMessage()">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
-            </form>
-            @else
-            <div class="alert alert-info text-center py-2">
-                <a href="{{ route('login') }}" class="text-primary">سجل الدخول</a> للمشاركة
-            </div>
-            @endauth
-        </div>
-    </div>
-
-    <!-- نافذة البحث -->
-    <div class="modal fade search-modal" id="searchModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-dark">بحث متقدم</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('products.search') }}" method="GET">
-                        <div class="mb-3">
-                            <label class="form-label text-dark">كلمة البحث</label>
-                            <input type="text" name="query" class="form-control" placeholder="ابحث عن منتج...">
-                        </div>
-                        
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <label class="form-label text-dark">الحد الأدنى للسعر</label>
-                                <input type="number" name="min_price" class="form-control" placeholder="أدنى سعر">
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label text-dark">الحد الأقصى للسعر</label>
-                                <input type="number" name="max_price" class="form-control" placeholder="أقصى سعر">
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label text-dark">التصنيف</label>
-                            <select name="category_id" class="form-select">
-                                <option value="">جميع التصنيفات</option>
-                                @foreach(\App\Models\Category::where('is_active', true)->get() as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label text-dark">نوع المنتج</label>
-                            <select name="product_type" class="form-select">
-                                <option value="">جميع المنتجات</option>
-                                <option value="new">منتجات جديدة</option>
-                                <option value="used">منتجات مستعملة</option>
-                            </select>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary w-100">بحث</button>
-                    </form>
-                </div>
             </div>
         </div>
     </div>
+    @endauth
 
-    <!-- نافذة الإشعارات -->
-    <div class="modal fade" id="notificationsModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-dark">الإشعارات</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    @auth
-                        @if(Auth::user()->isMerchant())
-                        <!-- إشعارات التاجر -->
-                        <div class="notification-item mb-3 p-3 border rounded cursor-pointer" onclick="window.location.href='{{ route('messages.inbox') }}'">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-envelope text-primary me-3"></i>
-                                <div>
-                                    <h6 class="mb-1 text-dark">رسالة جديدة من عميل</h6>
-                                    <p class="mb-0 text-muted">لديك رسالة جديدة بخصوص منتجك</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="notification-item mb-3 p-3 border rounded cursor-pointer" onclick="window.location.href='{{ route('merchant.subscription.plans') }}'">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-crown text-warning me-3"></i>
-                                <div>
-                                    <h6 class="mb-1 text-dark">ترقية متجرك</h6>
-                                    <p class="mb-0 text-muted">قم بترقية متجرك للحصول على ميزات أكثر</p>
-                                </div>
-                            </div>
-                        </div>
-                        @elseif(Auth::user()->isRegularUser())
-                        <!-- إشعارات المستخدم العادي -->
-                        <div class="notification-item mb-3 p-3 border rounded cursor-pointer" onclick="window.location.href='{{ route('merchants.index') }}'">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-store text-success me-3"></i>
-                                <div>
-                                    <h6 class="mb-1 text-dark">تاجر جديد</h6>
-                                    <p class="mb-0 text-muted">تاجر جديد انضم إلى المنصة</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="notification-item mb-3 p-3 border rounded cursor-pointer" onclick="window.location.href='{{ route('user.products') }}'">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-box text-info me-3"></i>
-                                <div>
-                                    <h6 class="mb-1 text-dark">رسالة عن منتجك</h6>
-                                    <p class="mb-0 text-muted">هناك تفاعل جديد على منتجك المستعمل</p>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                        
-                        <!-- إشعارات عامة -->
-                        <div class="notification-item p-3 border rounded cursor-pointer" onclick="window.location.href='{{ route('profile') }}'">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-bell text-success me-3"></i>
-                                <div>
-                                    <h6 class="mb-1 text-dark">تحديث الحساب</h6>
-                                    <p class="mb-0 text-muted">يمكنك تحديث معلومات حسابك</p>
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <div class="text-center py-3">
-                            <p class="text-muted">سجل الدخول لمشاهدة الإشعارات</p>
-                            <a href="{{ route('login') }}" class="btn btn-primary">تسجيل الدخول</a>
-                        </div>
-                    @endauth
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- السكريبتات -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
-        // التحكم في الشات الجانبي
-        function toggleChat() {
-            const chat = document.getElementById('sideChat');
-            chat.classList.toggle('open');
+        // إدارة نافذة الشات
+        let isChatOpen = false;
+        let isChatMinimized = false;
+
+        function toggleChatWindow() {
+            const chatWindow = document.getElementById('chatWindow');
+            if (isChatOpen && !isChatMinimized) {
+                closeChat();
+            } else {
+                openChat();
+            }
         }
 
-        // جعل عناصر الإشعارات قابلة للنقر
+        function openChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.add('active');
+            isChatOpen = true;
+            isChatMinimized = false;
+        }
+
+        function minimizeChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.remove('active');
+            isChatMinimized = true;
+        }
+
+        function closeChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.remove('active');
+            isChatOpen = false;
+            isChatMinimized = false;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatMessageInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                // إرسال الرسالة
+                console.log('إرسال رسالة:', message);
+                
+                // إضافة الرسالة للشات
+                addMessageToChat('أنت', message, true);
+                input.value = '';
+                
+                // محاكاة رد تلقائي بعد ثانية
+                setTimeout(() => {
+                    const responses = [
+                        'مرحباً! كيف يمكنني مساعدتك؟',
+                        'شكراً على رسالتك!',
+                        'هذا رائع!',
+                        'أهلاً وسهلاً بك في الشات العالمي'
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    addMessageToChat('مستخدم آخر', randomResponse, false);
+                }, 1000);
+            }
+        }
+
+        function addMessageToChat(sender, message, isOwn = false) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // إزالة الرسالة الترحيبية إذا كانت موجودة
+            if (chatMessages.children.length === 1 && chatMessages.children[0].classList.contains('text-center')) {
+                chatMessages.innerHTML = '';
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
+            
+            const now = new Date();
+            const time = now.getHours() + ':' + now.getMinutes().toString().padStart(2, '0');
+            
+            messageDiv.innerHTML = `
+                ${!isOwn ? `<div class="message-sender">${sender}</div>` : ''}
+                <div>${message}</div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // إدارة الوضع المظلم
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            
+            // حفظ التفضيل في localStorage
+            const isDarkMode = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            
+            // تحديث أيقونة الوضع المظلم
+            const darkModeIcon = document.querySelector('.dark-mode-toggle i');
+            if (darkModeIcon) {
+                if (isDarkMode) {
+                    darkModeIcon.className = 'fas fa-sun';
+                } else {
+                    darkModeIcon.className = 'fas fa-moon';
+                }
+            }
+        }
+
+        // تحميل الوضع المظلم من التخزين المحلي
         document.addEventListener('DOMContentLoaded', function() {
-            const notificationItems = document.querySelectorAll('.notification-item');
-            notificationItems.forEach(item => {
-                item.style.cursor = 'pointer';
+            const savedDarkMode = localStorage.getItem('darkMode');
+            const body = document.body;
+            const darkModeIcon = document.querySelector('.dark-mode-toggle i');
+            
+            if (savedDarkMode === 'true') {
+                body.classList.add('dark-mode');
+                if (darkModeIcon) {
+                    darkModeIcon.className = 'fas fa-sun';
+                }
+            }
+
+            // إدخال الرسالة بالزر Enter
+            document.getElementById('chatMessageInput')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
             });
         });
     </script>
+    @stack('scripts')
 </body>
 </html>

@@ -12,7 +12,6 @@ class DiscountSeeder extends Seeder
     {
         echo "🎯 بدء إضافة التخفيضات...\n";
 
-        // الحصول على التاجر
         $merchant = User::where('email', 'merchant@example.com')->first();
         
         if (!$merchant) {
@@ -20,7 +19,6 @@ class DiscountSeeder extends Seeder
             return;
         }
 
-        // الحصول على منتجات التاجر
         $products = Product::where('user_id', $merchant->id)
                           ->where('is_used', false)
                           ->get();
@@ -30,11 +28,10 @@ class DiscountSeeder extends Seeder
             return;
         }
 
-        // تطبيق تخفيضات على بعض المنتجات
-        $discountedProducts = $products->take(2);
+        $discountedProducts = $products->take(3);
         
         foreach ($discountedProducts as $index => $product) {
-            $discountPercentage = $index == 0 ? 15 : 25; // 15% و 25%
+            $discountPercentage = [15, 25, 30][$index] ?? 20;
             
             $product->update([
                 'discount_percentage' => $discountPercentage,
