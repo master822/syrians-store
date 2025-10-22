@@ -259,6 +259,7 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-left: 10px;
         }
 
         .dark-mode-toggle:hover {
@@ -270,6 +271,10 @@
             height: 40px;
             width: auto;
             margin-right: 10px;
+        }
+
+        .navbar-nav .nav-link {
+            padding: 8px 15px;
         }
     </style>
 </head>
@@ -345,7 +350,7 @@
                 <ul class="navbar-nav ms-auto">
                     <!-- زر الوضع المظلم -->
                     <li class="nav-item">
-                        <button class="dark-mode-toggle me-3" onclick="toggleDarkMode()">
+                        <button class="dark-mode-toggle" onclick="toggleDarkMode()">
                             <i class="fas fa-moon"></i>
                         </button>
                     </li>
@@ -427,7 +432,7 @@
     <!-- نافذة الشات -->
     <div class="chat-window" id="chatWindow">
         <div class="chat-header">
-            <h6>الشات العالمي</h6>
+            <h6>المجتمع </h6>
             <div class="chat-controls">
                 <button onclick="minimizeChat()">
                     <i class="fas fa-minus"></i>
@@ -441,7 +446,7 @@
             <div class="chat-messages" id="chatMessages">
                 <div class="text-center text-muted py-4">
                     <i class="fas fa-comments fa-2x mb-3"></i>
-                    <p>مرحباً في الشات العالمي</p>
+                    <p>مرحباً في  المجتمع</p>
                     <small>ابدأ المحادثة مع المستخدمين الآخرين</small>
                 </div>
             </div>

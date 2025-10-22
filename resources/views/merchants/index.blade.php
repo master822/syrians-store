@@ -19,7 +19,13 @@
                     <div class="merchant-avatar mb-3">
                         <div class="rounded-circle bg-primary-gradient d-inline-flex align-items-center justify-content-center"
                              style="width: 80px; height: 80px;">
-                            <i class="fas fa-store fa-2x text-white"></i>
+                            <i > <div class="merchant-avatar mb-3">
+                        <img src="{{ $merchant->getAvatarUrlAttribute() }}" 
+                             class="merchant-img , rounded-circle" 
+                             alt="{{ $merchant->name }}">
+                        <div class="online-status bg-success"></div>
+                    </div></i>
+                           
                         </div>
                     </div>
                     <h5 class="fw-bold text-dark mb-2">{{ $merchant->name }}</h5>

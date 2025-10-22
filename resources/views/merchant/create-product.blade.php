@@ -35,7 +35,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="price" class="form-label">السعر (ر.س) *</label>
+                            <label for="price" class="form-label">السعر (TL) *</label>
                             <input type="number" class="form-control" id="price" name="price" 
                                    value="{{ old('price') }}" min="0" step="0.01" required>
                             @error('price')

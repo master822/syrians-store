@@ -9,22 +9,7 @@
             <!-- رأس الصفحة -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="text-primary mb-2">🔄 المنتجات المستعملة</h1>
-                    <div class="btn-group" role="group">
-                        <a href="{{ route('products.index') }}" class="btn btn-outline-secondary btn-sm">
-                            جميع المنتجات
-                        </a>
-                        <a href="{{ route('products.new') }}" class="btn btn-outline-success btn-sm">
-                            المنتجات الجديدة
-                        </a>
-                        @auth
-                            @if(Auth::user()->user_type === 'user')
-                                <a href="{{ route('user.products.create') }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-plus me-1"></i>إضافة منتج مستعمل
-                                </a>
-                            @endif
-                        @endauth
-                    </div>
+                    <h1 class="text-primary mb-2"> المنتجات المستعملة</h1>
                 </div>
             </div>
             <p class="text-muted mb-4">منتجات مستعملة بحالة جيدة من مستخدمين موثوقين - فرص رائعة بأسعار مناسبة</p>

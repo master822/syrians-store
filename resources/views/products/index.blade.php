@@ -8,29 +8,10 @@
         <div class="col-12">
             <h1 class="text-center text-primary mb-3">جميع المنتجات</h1>
             
-            <!-- زر إضافة منتج للمستخدمين المسجلين -->
-            @auth
-                @if(auth()->user()->isMerchant() || auth()->user()->isRegularUser())
-                    <div class="text-center mb-4">
-                        <a href="{{ url('/products/create') }}" class="btn btn-primary btn-lg">
-                            <i class="fas fa-plus me-2"></i>إضافة منتج جديد
-                        </a>
-                    </div>
-                @endif
-            @endauth
+          
+
             
-            <!-- أزرار التصفية -->
-            <div class="d-flex justify-content-center gap-3 mb-4">
-                <a href="{{ route('products.new') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-tag me-2"></i>منتجات جديدة
-                </a>
-                <a href="{{ route('products.used') }}" class="btn btn-outline-success">
-                    <i class="fas fa-recycle me-2"></i>منتجات مستعملة
-                </a>
-                <a href="{{ route('discounts') }}" class="btn btn-outline-warning">
-                    <i class="fas fa-percentage me-2"></i>التخفيضات
-                </a>
-            </div>
+
         </div>
     </div>
 
@@ -76,10 +57,10 @@
                                 @php
                                     $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
                                 @endphp
-                                <span class="text-danger fw-bold">{{ number_format($discountedPrice, 2) }} ر.س</span>
+                                <span class="text-danger fw-bold">{{ number_format($discountedPrice, 2) }} TL</span>
                                 <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} ر.س</small>
                             @else
-                                <span class="fw-bold text-primary">{{ number_format($product->price, 2) }} ر.س</span>
+                                <span class="fw-bold text-primary">{{ number_format($product->price, 2) }} TL</span>
                             @endif
                         </div>
                         

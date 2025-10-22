@@ -102,8 +102,8 @@
             <!-- رأس الصفحة -->
             <div class="d-flex justify-content-between align-items-center mb-4 animate-fade-in" style="animation-delay: 0.2s;">
                 <div>
-                    <h2 class="text-primary mb-1 fw-bold">مرحباً بعودتك، {{ $user->name }}! 👋</h2>
-                    <p class="text-muted mb-0">هذه نظرة عامة على أداء متجرك</p>
+                    <h2 class="text-primary mb-1 fw-bold">مرحباً بعودتك، {{ $user->name }}! </h2>
+                    <p class="text-muted mb-0">هذه نظرة على أداء متجرك</p>
                 </div>
                 <div class="header-actions">
                     <button class="btn btn-outline-primary me-2" id="themeToggle">
