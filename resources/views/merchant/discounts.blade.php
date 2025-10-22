@@ -62,8 +62,8 @@
                                 @php
                                     $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
                                 @endphp
-                                <span class="text-danger fw-bold fs-5">{{ number_format($discountedPrice, 2) }} ر.س</span>
-                                <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} ر.س</small>
+                                <span class="text-danger fw-bold fs-5">{{ number_format($discountedPrice, 2) }} TL</span>
+                                <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} TL</small>
                             </div>
                             
                             <div class="product-meta mb-3">
@@ -73,7 +73,7 @@
                                         {{ $product->views }} مشاهدة
                                     </span>
                                     <span class="text-success">
-                                        وفر {{ number_format($product->price - $discountedPrice, 2) }} ر.س
+                                        وفر {{ number_format($product->price - $discountedPrice, 2) }} TL
                                     </span>
                                 </div>
                             </div>
