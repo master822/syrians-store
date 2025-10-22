@@ -84,9 +84,33 @@ class Product extends Model
         if ($this->images) {
             $imagesArray = json_decode($this->images, true);
             if (is_array($imagesArray) && count($imagesArray) > 0 && !empty($imagesArray[0])) {
-                return asset('storage/' . $imagesArray[0]);
+                // التحقق من وجود الصورة في التخزين
+                if (file_exists(storage_path('app/public/' . $imagesArray[0]))) {
+                    return asset('storage/' . $imagesArray[0]);
+                }
             }
         }
-        return 'https://via.placeholder.com/300x200/f8f9fa/6c757d?text=No+Image';
+        return asset('images/default-product.jpg');
+    }
+
+    public function getProductImagesAttribute()
+    {
+        $images = [];
+        if ($this->images) {
+            $imagesArray = json_decode($this->images, true);
+            if (is_array($imagesArray)) {
+                foreach ($imagesArray as $image) {
+                    if (!empty($image) && file_exists(storage_path('app/public/' . $image))) {
+                        $images[] = asset('storage/' . $image);
+                    }
+                }
+            }
+        }
+        
+        if (empty($images)) {
+            $images[] = asset('images/default-product.jpg');
+        }
+        
+        return $images;
     }
 }
