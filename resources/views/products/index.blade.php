@@ -27,7 +27,7 @@
                                 $images = json_decode($product->images);
                                 $firstImage = $images[0] ?? null;
                             @endphp
-                            @if($firstImage)
+                            @if($firstImage && file_exists(storage_path('app/public/' . $firstImage)))
                                 <img src="{{ asset('storage/' . $firstImage) }}" 
                                      class="card-product-image" 
                                      alt="{{ $product->name }}">
@@ -53,7 +53,7 @@
                                     $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
                                 @endphp
                                 <span class="text-danger fw-bold">{{ number_format($discountedPrice, 2) }} TL</span>
-                                <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} ر.س</small>
+                                <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} TL</small>
                             @else
                                 <span class="fw-bold text-primary">{{ number_format($product->price, 2) }} TL</span>
                             @endif
@@ -96,7 +96,7 @@
             <p class="text-muted">لم يتم إضافة أي منتجات بعد</p>
             @auth
                 @if(auth()->user()->isMerchant() || auth()->user()->isRegularUser())
-                    <a href="{{ url('/products/create') }}" class="btn btn-primary btn-lg mt-3">
+                    <a href="{{ auth()->user()->isMerchant() ? route('merchant.products.create') : route('user.products.create') }}" class="btn btn-primary btn-lg mt-3">
                         <i class="fas fa-plus me-2"></i>إضافة منتج جديد
                     </a>
                 @endif

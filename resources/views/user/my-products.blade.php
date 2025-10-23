@@ -1,83 +1,83 @@
 @extends('layouts.app')
 
-@section('title', 'منتجاتي المستعملة - متجر التخفيضات')
+@section('title', 'منتجاتي المستعملة')
 
 @section('content')
-<div class="container-fluid py-4">
+<div class="container py-4">
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h1 class="text-gold">
+                <h1 class="text-primary">
                     <i class="fas fa-boxes me-2"></i>منتجاتي المستعملة
                 </h1>
-                <a href="{{ route('products.create') }}" class="btn btn-gold">
+                <a href="{{ route('user.products.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus-circle me-2"></i>إضافة منتج مستعمل
                 </a>
             </div>
-            <p class="text-light">إدارة منتجاتك المستعملة المعروضة للبيع</p>
+            <p class="text-muted">إدارة منتجاتك المستعملة المعروضة للبيع</p>
         </div>
     </div>
 
     <!-- الإحصائيات -->
     <div class="row mb-5">
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="elite-card stats-card bg-dark-card h-100">
+            <div class="card bg-primary text-white h-100">
                 <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <h6 class="text-muted mb-2">إجمالي المنتجات</h6>
-                            <h4 class="text-aqua mb-0">{{ $products->count() }}</h4>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">إجمالي المنتجات</h6>
+                            <h3 class="mb-0">{{ $products->count() }}</h3>
                         </div>
-                        <div class="col-4 text-end">
-                            <i class="fas fa-boxes fa-2x text-aqua"></i>
+                        <div class="align-self-center">
+                            <i class="fas fa-box fa-2x opacity-50"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="elite-card stats-card bg-dark-card h-100">
+            <div class="card bg-success text-white h-100">
                 <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <h6 class="text-muted mb-2">المنتجات النشطة</h6>
-                            <h4 class="text-success mb-0">{{ $products->where('status', 'active')->count() }}</h4>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">المنتجات النشطة</h6>
+                            <h3 class="mb-0">{{ $products->where('status', 'active')->count() }}</h3>
                         </div>
-                        <div class="col-4 text-end">
-                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x opacity-50"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="elite-card stats-card bg-dark-card h-100">
+            <div class="card bg-info text-white h-100">
                 <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <h6 class="text-muted mb-2">إجمالي المشاهدات</h6>
-                            <h4 class="text-warning mb-0">{{ $products->sum('views') }}</h4>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">إجمالي المشاهدات</h6>
+                            <h3 class="mb-0">{{ $products->sum('views') }}</h3>
                         </div>
-                        <div class="col-4 text-end">
-                            <i class="fas fa-eye fa-2x text-warning"></i>
+                        <div class="align-self-center">
+                            <i class="fas fa-eye fa-2x opacity-50"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="elite-card stats-card bg-dark-card h-100">
+            <div class="card bg-warning text-white h-100">
                 <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <h6 class="text-muted mb-2">المنتجات المتبقية</h6>
-                            <h4 class="text-info mb-0">{{ Auth::user()->product_limit - $products->count() }}</h4>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">الحد المسموح</h6>
+                            <h3 class="mb-0">{{ Auth::user()->product_limit }}</h3>
                         </div>
-                        <div class="col-4 text-end">
-                            <i class="fas fa-layer-group fa-2x text-info"></i>
+                        <div class="align-self-center">
+                            <i class="fas fa-chart-line fa-2x opacity-50"></i>
                         </div>
                     </div>
                 </div>
@@ -85,224 +85,146 @@
         </div>
     </div>
 
-    <!-- قائمة المنتجات -->
-    <div class="row">
-        <div class="col-12">
-            <div class="elite-card">
-                <div class="card-header bg-dark-card py-3">
-                    <h5 class="text-gold mb-0">
-                        <i class="fas fa-list me-2"></i>قائمة منتجاتي المستعملة
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @if($products->count() > 0)
-                        <div class="table-responsive">
-                            <table class="table table-dark table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>الصورة</th>
-                                        <th>اسم المنتج</th>
-                                        <th>السعر</th>
-                                        <th>الحالة</th>
-                                        <th>التصنيف</th>
-                                        <th>المشاهدات</th>
-                                        <th>تاريخ الإضافة</th>
-                                        <th>الإجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($products as $product)
-                                    <tr>
-                                        <td>
-                                            @if($product->images)
-                                                @php
-                                                    $images = json_decode($product->images);
-                                                    $firstImage = $images[0] ?? null;
-                                                @endphp
-                                                @if($firstImage)
-                                                    <img src="{{ asset('storage/' . $firstImage) }}" 
-                                                         alt="{{ $product->name }}" 
-                                                         class="rounded" 
-                                                         style="width: 50px; height: 50px; object-fit: cover;">
-                                                @else
-                                                    <div class="bg-secondary rounded d-flex align-items-center justify-content-center" 
-                                                         style="width: 50px; height: 50px;">
-                                                        <i class="fas fa-image text-muted"></i>
-                                                    </div>
-                                                @endif
-                                            @else
-                                                <div class="bg-secondary rounded d-flex align-items-center justify-content-center" 
-                                                     style="width: 50px; height: 50px;">
-                                                    <i class="fas fa-image text-muted"></i>
-                                                </div>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <strong class="text-light">{{ $product->name }}</strong>
-                                            <br>
-                                            <small class="text-muted">{{ Str::limit($product->description, 50) }}</small>
-                                        </td>
-                                        <td>
-                                            <span class="text-aqua">{{ number_format($product->price) }} ل.س</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-{{ $product->condition == 'جديدة' ? 'success' : ($product->condition == 'جيدة جداً' ? 'info' : ($product->condition == 'جيدة' ? 'warning' : 'secondary')) }}">
-                                                {{ $product->condition }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-info">{{ $product->category->name ?? 'غير محدد' }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="text-warning">{{ $product->views }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="text-muted">{{ $product->created_at->format('Y-m-d') }}</span>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <a href="{{ route('products.show', $product->id) }}" 
-                                                   class="btn btn-sm btn-primary" title="عرض">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('products.edit', $product->id) }}" 
-                                                   class="btn btn-sm btn-warning" title="تعديل">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form action="{{ route('products.destroy', $product->id) }}" 
-                                                      method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" 
-                                                            onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟')"
-                                                            title="حذف">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- رسالة المساحة المتبقية -->
-                        @if($products->count() >= Auth::user()->product_limit)
-                        <div class="alert alert-warning mt-4">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>تنبيه:</strong> لقد وصلت إلى الحد الأقصى للمنتجات المسموح بها ({{ Auth::user()->product_limit }} منتج). 
-                            لا يمكنك إضافة المزيد من المنتجات.
-                        </div>
-                        @else
-                        <div class="alert alert-info mt-4">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>معلومات:</strong> يمكنك إضافة {{ Auth::user()->product_limit - $products->count() }} منتج إضافي.
-                        </div>
-                        @endif
-
-                    @else
-                        <div class="text-center py-5">
-                            <i class="fas fa-box-open fa-4x text-muted mb-4"></i>
-                            <h4 class="text-muted mb-3">لا توجد منتجات مستعملة حتى الآن</h4>
-                            <p class="text-muted mb-4">ابدأ بإضافة أول منتج مستعمل للبيع</p>
-                            <a href="{{ route('products.create') }}" class="btn btn-gold btn-lg">
-                                <i class="fas fa-plus-circle me-2"></i>إضافة أول منتج مستعمل
-                            </a>
+    @if($products->count() > 0)
+        <div class="row">
+            @foreach($products as $product)
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card product-card h-100">
+                    @if($product->discount_percentage > 0)
+                        <div class="position-absolute top-0 start-0 m-2">
+                            <span class="badge bg-danger">خصم {{ $product->discount_percentage }}%</span>
                         </div>
                     @endif
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- نصائح للبيع -->
-    @if($products->count() > 0)
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="elite-card">
-                <div class="card-header bg-dark-card py-3">
-                    <h5 class="text-gold mb-0">
-                        <i class="fas fa-lightbulb me-2"></i>نصائح لزيادة المبيعات
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <i class="fas fa-camera text-aqua fa-2x me-3"></i>
+                    
+                    <div class="card-img-container">
+                        @if($product->images)
+                            @php
+                                $images = json_decode($product->images);
+                                $firstImage = $images[0] ?? null;
+                            @endphp
+                            @if($firstImage && file_exists(storage_path('app/public/' . $firstImage)))
+                                <img src="{{ asset('storage/' . $firstImage) }}" 
+                                     class="card-product-image" 
+                                     alt="{{ $product->name }}">
+                            @else
+                                <div class="no-image-placeholder">
+                                    <i class="fas fa-image fa-2x text-muted"></i>
                                 </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="text-light mb-1">صور واضحة</h6>
-                                    <p class="text-muted mb-0">استخدم صور عالية الجودة من زوايا متعددة</p>
-                                </div>
+                            @endif
+                        @else
+                            <div class="no-image-placeholder">
+                                <i class="fas fa-image fa-2x text-muted"></i>
                             </div>
+                        @endif
+                    </div>
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $product->name }}</h5>
+                        <p class="card-text text-muted">{{ Str::limit($product->description, 60) }}</p>
+                        
+                        <div class="price-section mb-2">
+                            @if($product->discount_percentage > 0)
+                                @php
+                                    $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
+                                @endphp
+                                <span class="text-danger fw-bold">{{ number_format($discountedPrice, 2) }} TL</span>
+                                <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} TL</small>
+                            @else
+                                <span class="fw-bold text-primary">{{ number_format($product->price, 2) }} TL</span>
+                            @endif
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <i class="fas fa-file-alt text-warning fa-2x me-3"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="text-light mb-1">وصف دقيق</h6>
-                                    <p class="text-muted mb-0">اذكر جميع العيوب والمميزات بصراحة</p>
-                                </div>
+                        
+                        <div class="product-info mb-3">
+                            <small class="text-muted d-block">
+                                <i class="fas fa-eye me-1"></i>
+                                {{ $product->views }} مشاهدة
+                            </small>
+                            <small class="text-muted d-block">
+                                <i class="fas fa-calendar me-1"></i>
+                                {{ $product->created_at->diffForHumans() }}
+                            </small>
+                            <span class="badge bg-info mt-1">{{ $product->condition }}</span>
+                            <span class="badge bg-{{ $product->status === 'active' ? 'success' : 'secondary' }} mt-1">
+                                {{ $product->status === 'active' ? 'نشط' : 'غير نشط' }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-transparent">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-primary w-100 btn-sm">
+                                    <i class="fas fa-eye me-1"></i>عرض
+                                </a>
                             </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <i class="fas fa-tag text-success fa-2x me-3"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="text-light mb-1">سعر معقول</h6>
-                                    <p class="text-muted mb-0">ضع سعر مناسب لحالة المنتج وسعره الأصلي</p>
-                                </div>
+                            <div class="col-6">
+                                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-outline-secondary w-100 btn-sm">
+                                    <i class="fas fa-edit me-1"></i>تعديل
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            @endforeach
         </div>
-    </div>
+    @else
+        <div class="text-center py-5">
+            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">لا توجد منتجات</h4>
+            <p class="text-muted">لم تقم بإضافة أي منتجات مستعملة بعد</p>
+            <a href="{{ route('user.products.create') }}" class="btn btn-primary btn-lg mt-3">
+                <i class="fas fa-plus me-2"></i>إضافة منتج جديد
+            </a>
+        </div>
     @endif
 </div>
 
 <style>
-.stats-card {
-    transition: transform 0.3s ease;
-    border: 1px solid var(--dark-border);
+.product-card {
+    transition: all 0.3s ease;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
-.stats-card:hover {
+.product-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.table-dark {
-    background: var(--dark-card);
-    border-color: var(--dark-border);
+.card-img-container {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
 }
 
-.table-dark th {
-    border-color: var(--dark-border);
-    color: var(--gold-primary);
+.card-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
 }
 
-.table-dark td {
-    border-color: var(--dark-border);
-    vertical-align: middle;
+.product-card:hover .card-product-image {
+    transform: scale(1.05);
 }
 
-.btn-group .btn {
-    border-radius: 5px;
-    margin: 2px;
+.no-image-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
 }
 
-.alert {
-    border: 1px solid;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+.price-section {
+    margin: 1rem 0;
+}
+
+.product-info {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
 }
 </style>
 @endsection
