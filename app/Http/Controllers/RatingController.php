@@ -114,7 +114,7 @@ class RatingController extends Controller
     public function getMerchantRatings($merchantId)
     {
         $ratings = Rating::where('merchant_id', $merchantId)
-            ->approved()
+            ->where('is_approved', true)
             ->with('user')
             ->orderBy('created_at', 'desc')
             ->get();
