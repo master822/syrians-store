@@ -7,11 +7,6 @@
     <div class="row mb-4">
         <div class="col-12">
             <h1 class="text-center text-primary mb-3">جميع المنتجات</h1>
-            
-          
-
-            
-
         </div>
     </div>
 
@@ -21,7 +16,7 @@
             <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                 <div class="modern-card product-card h-100">
                     @if($product->discount_percentage > 0)
-                        <div class="position-absolute top-0 start-0 m-3">
+                        <div class="position-absolute top-0 start-0 m-3" style="z-index: 10;">
                             <span class="badge bg-danger">خصم {{ $product->discount_percentage }}%</span>
                         </div>
                     @endif
@@ -118,6 +113,7 @@
     transition: all 0.3s ease;
     overflow: hidden;
     border: 1px solid #e2e8f0;
+    position: relative;
 }
 
 .modern-card:hover {
@@ -157,6 +153,16 @@
 .product-info {
     border-top: 1px solid #e2e8f0;
     padding-top: 1rem;
+}
+
+/* إصلاح مشكلة البادجة */
+.position-absolute {
+    z-index: 10 !important;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
 }
 </style>
 @endsection

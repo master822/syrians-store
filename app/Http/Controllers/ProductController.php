@@ -289,8 +289,17 @@ class ProductController extends Controller
         $product->increment('views');
         
         $canEdit = Auth::check() && Auth::id() === $product->user_id;
+
+        // الحصول على منتجات مشابهة
+        $similarProducts = Product::where('category_id', $product->category_id)
+                                 ->where('id', '!=', $product->id)
+                                 ->where('status', 'active')
+                                 ->with(['user', 'category'])
+                                 ->inRandomOrder()
+                                 ->take(4)
+                                 ->get();
         
-        return view('products.show', compact('product', 'canEdit'));
+        return view('products.show', compact('product', 'canEdit', 'similarProducts'));
     }
 
     public function destroy($id)

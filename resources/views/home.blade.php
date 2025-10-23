@@ -204,9 +204,9 @@
             <div class="row">
                 @foreach($newProducts->take(8) as $product)
                 <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                    <div class="modern-card product-card h-100">
+                    <div class="modern-card product-card h-100" style="position: relative;">
                         @if($product->discount_percentage > 0)
-                            <div class="position-absolute top-0 start-0 m-3">
+                            <div class="position-absolute top-0 start-0 m-3" style="z-index: 10;">
                                 <span class="badge bg-danger fs-7">خصم {{ $product->discount_percentage }}%</span>
                             </div>
                         @endif
@@ -294,7 +294,7 @@
             <div class="row">
                 @foreach($topUsedProducts as $product)
                 <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="modern-card used-product-card h-100">
+                    <div class="modern-card used-product-card h-100" style="position: relative;">
                         <div class="used-badge">مستعمل</div>
                         <div class="card-img-container">
                             @if($product->images)
@@ -468,6 +468,7 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
     overflow: hidden;
+    position: relative;
 }
 
 .modern-card:hover {
@@ -557,6 +558,16 @@
 
 .bg-light {
     background: #f8f9fa !important;
+}
+
+/* إصلاح مشكلة البادجة */
+.position-absolute {
+    z-index: 10 !important;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
 }
 
 /* تحسينات للاستجابة */

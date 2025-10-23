@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Rating;
+use App\Models\Subscription;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
@@ -37,18 +38,36 @@ class AdminController extends Controller
 
         // إحصائيات الاشتراكات
         $subscriptionStats = [
-            'free_merchants' => User::where('user_type', 'merchant')->where('subscription_plan', 'free')->count(),
-            'basic_merchants' => User::where('user_type', 'merchant')->where('subscription_plan', 'basic')->count(),
-            'medium_merchants' => User::where('user_type', 'merchant')->where('subscription_plan', 'medium')->count(),
-            'premium_merchants' => User::where('user_type', 'merchant')->where('subscription_plan', 'premium')->count(),
+            'free_merchants' => User::where('user_type', 'merchant')->where('current_plan', 'free')->count(),
+            'basic_merchants' => User::where('user_type', 'merchant')->where('current_plan', 'basic')->count(),
+            'medium_merchants' => User::where('user_type', 'merchant')->where('current_plan', 'medium')->count(),
+            'premium_merchants' => User::where('user_type', 'merchant')->where('current_plan', 'premium')->count(),
+            'total_subscriptions' => Subscription::where('status', 'completed')->count(),
+            'monthly_revenue' => Subscription::where('status', 'completed')
+                ->whereMonth('created_at', now()->month)
+                ->sum('amount'),
+            'total_revenue' => Subscription::where('status', 'completed')->sum('amount'),
         ];
 
-        // الإيرادات (محاكاة)
-        $revenueStats = [
-            'monthly_revenue' => 150000, // محاكاة
-            'total_revenue' => 4500000, // محاكاة
-            'pending_payments' => 25000, // محاكاة
-        ];
+        // الإيرادات الشهرية (آخر 6 أشهر)
+        $monthlyRevenue = Subscription::where('status', 'completed')
+            ->where('created_at', '>=', now()->subMonths(6))
+            ->select(
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('SUM(amount) as revenue')
+            )
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
+            ->get();
+
+        // أحدث الاشتراكات
+        $recentSubscriptions = Subscription::with('user')
+            ->where('status', 'completed')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
 
         // أحدث المستخدمين
         $recentUsers = User::latest()->take(5)->get();
@@ -56,9 +75,76 @@ class AdminController extends Controller
         // أحدث المنتجات
         $recentProducts = Product::with('user')->latest()->take(5)->get();
 
-        return view('admin.dashboard', compact('stats', 'subscriptionStats', 'revenueStats', 'recentUsers', 'recentProducts'));
+        return view('admin.dashboard', compact(
+            'stats', 
+            'subscriptionStats', 
+            'monthlyRevenue',
+            'recentSubscriptions',
+            'recentUsers', 
+            'recentProducts'
+        ));
     }
 
+    public function subscriptions()
+    {
+        if (Auth::user()->user_type !== 'admin') {
+            return redirect('/')->with('error', 'ليس لديك صلاحية للوصول إلى هذه الصفحة');
+        }
+
+        $subscriptions = Subscription::with('user')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        return view('admin.subscriptions', compact('subscriptions'));
+    }
+
+    public function revenue()
+    {
+        if (Auth::user()->user_type !== 'admin') {
+            return redirect('/')->with('error', 'ليس لديك صلاحية للوصول إلى هذه الصفحة');
+        }
+
+        // إحصائيات الإيرادات
+        $revenueStats = [
+            'today' => Subscription::where('status', 'completed')
+                ->whereDate('created_at', today())
+                ->sum('amount'),
+            'this_week' => Subscription::where('status', 'completed')
+                ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+                ->sum('amount'),
+            'this_month' => Subscription::where('status', 'completed')
+                ->whereMonth('created_at', now()->month)
+                ->sum('amount'),
+            'this_year' => Subscription::where('status', 'completed')
+                ->whereYear('created_at', now()->year)
+                ->sum('amount'),
+            'total' => Subscription::where('status', 'completed')->sum('amount'),
+        ];
+
+        // الإيرادات حسب الخطة
+        $revenueByPlan = Subscription::where('status', 'completed')
+            ->select('plan_type', DB::raw('SUM(amount) as revenue'))
+            ->groupBy('plan_type')
+            ->get();
+
+        // الإيرادات الشهرية (آخر 12 شهر)
+        $monthlyRevenue = Subscription::where('status', 'completed')
+            ->where('created_at', '>=', now()->subMonths(12))
+            ->select(
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('SUM(amount) as revenue'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
+            ->get();
+
+        return view('admin.revenue', compact('revenueStats', 'revenueByPlan', 'monthlyRevenue'));
+    }
+
+    // الدوال الأخرى تبقى كما هي...
     public function users()
     {
         if (Auth::user()->user_type !== 'admin') {
