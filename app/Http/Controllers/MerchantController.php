@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Rating;
+use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,8 +14,14 @@ class MerchantController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
+        
+        if ($user->user_type !== 'merchant') {
+            return redirect('/')->with('error', 'ليس لديك صلاحية للوصول إلى هذه الصفحة');
+        }
+
         $products = Product::where('user_id', $user->id)->get();
         
+        // الإحصائيات
         $stats = [
             'total_products' => $products->count(),
             'active_products' => $products->where('status', 'active')->count(),
@@ -23,7 +30,52 @@ class MerchantController extends Controller
             'average_rating' => Rating::where('merchant_id', $user->id)->avg('rating') ?? 0,
         ];
         
-        return view('merchant.dashboard', compact('user', 'products', 'stats'));
+        // الرسائل
+        $unreadMessagesCount = Message::where('receiver_id', $user->id)
+            ->where('is_read', false)
+            ->count();
+            
+        $recentMessages = Message::where('receiver_id', $user->id)
+            ->with(['sender', 'product'])
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        // التقييمات
+        $newRatingsCount = Rating::where('merchant_id', $user->id)
+            ->where('created_at', '>=', now()->subDays(7))
+            ->count();
+            
+        $recentRatings = Rating::where('merchant_id', $user->id)
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        $allRatings = Rating::where('merchant_id', $user->id)
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // إضافة debugging للرسائل
+        $sessionMessages = [
+            'success' => session('success'),
+            'error' => session('error'),
+            'warning' => session('warning')
+        ];
+        
+        \Illuminate\Support\Facades\Log::info('🔹 Merchant Dashboard Session Messages', $sessionMessages);
+        
+        return view('merchant.dashboard', compact(
+            'user', 
+            'products', 
+            'stats',
+            'unreadMessagesCount',
+            'recentMessages',
+            'newRatingsCount',
+            'recentRatings',
+            'allRatings'
+        ));
     }
 
     public function myProducts()
@@ -45,7 +97,6 @@ class MerchantController extends Controller
                     }])
                     ->with(['ratings']);
 
-        // تصفية حسب نوع المتجر إذا كان محدد
         if ($category && in_array($category, ['clothes', 'electronics', 'home', 'grocery'])) {
             $query->where('store_category', $category);
         }
@@ -66,21 +117,18 @@ class MerchantController extends Controller
                         ->with(['ratings'])
                         ->firstOrFail();
 
-        // حساب متوسط التقييم
         $averageRating = $merchant->ratings->avg('rating') ?? 0;
         $totalRatings = $merchant->ratings->count();
 
-        // الحصول على منتجات التاجر فقط (المنتجات الجديدة)
         $products = Product::where('user_id', $id)
                           ->where('status', 'active')
-                          ->where('is_used', false) // منتجات جديدة فقط
+                          ->where('is_used', false)
                           ->with('category')
                           ->paginate(12);
 
         return view('merchants.show', compact('merchant', 'products', 'averageRating', 'totalRatings'));
     }
 
-    // دالة لعرض تجار نوع معين
     public function byCategory($category)
     {
         $merchants = User::where('user_type', 'merchant')

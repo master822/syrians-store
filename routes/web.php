@@ -13,6 +13,7 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MerchantSubscriptionController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ChatController;
 
 // الصفحة الرئيسية
@@ -81,6 +82,23 @@ Route::middleware(['auth'])->prefix('merchant')->group(function () {
     Route::post('/subscription/{plan}', [MerchantSubscriptionController::class, 'subscribe'])->name('merchant.subscribe');
 });
 
+// نظام الدفع والاشتراكات - تم التصحيح بشكل نهائي
+Route::middleware(['auth'])->group(function () {
+    // المسارات الثابتة أولاً (لتجنب التعارض)
+    Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+    Route::get('/payment/cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
+    
+    // المسارات الديناميكية بعد ذلك
+    Route::get('/payment/{plan}', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
+    Route::post('/payment/{plan}/initiate', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
+});
+
+// مسارات الاشتراك (منفصلة)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/subscription/history', [PaymentController::class, 'subscriptionHistory'])->name('subscription.history');
+    Route::post('/subscription/cancel', [PaymentController::class, 'cancelSubscription'])->name('subscription.cancel');
+});
+
 // لوحة تحكم المستخدم العادي
 Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
@@ -89,7 +107,7 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
 });
 
 // لوحة تحكم المدير
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
     Route::get('/products', [AdminController::class, 'products'])->name('admin.products');
@@ -109,6 +127,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     
     // متاجر التجار
     Route::get('/merchants/{id}/store', [AdminController::class, 'viewMerchantStore'])->name('admin.merchant.store');
+    
+    // تقارير الاشتراكات
+    Route::get('/subscriptions', [AdminController::class, 'subscriptions'])->name('admin.subscriptions');
+    Route::get('/revenue', [AdminController::class, 'revenue'])->name('admin.revenue');
 });
 
 // التخفيضات
@@ -141,3 +163,8 @@ Route::view('/about', 'about')->name('about');
 Route::view('/contact', 'contact')->name('contact');
 Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/terms', 'terms')->name('terms');
+
+// صفحة اختبار الدفع
+Route::get('/test-payment', function() {
+    return view('test-payment');
+});
