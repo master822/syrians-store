@@ -50,12 +50,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ratings/{merchantId}', [RatingController::class, 'index'])->name('ratings.index');
 });
 
-// الرسائل
+// الرسائل والمحادثات
 Route::middleware(['auth'])->group(function () {
     Route::post('/messages/contact/{productId}', [MessageController::class, 'contactMerchant'])->name('messages.contact');
+    Route::post('/messages/contact-seller/{productId}', [MessageController::class, 'contactProductSeller'])->name('messages.contact-seller');
     Route::get('/messages/inbox', [MessageController::class, 'inbox'])->name('messages.inbox');
     Route::get('/messages/sent', [MessageController::class, 'sent'])->name('messages.sent');
     Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
+    Route::get('/messages/conversation/{userId}', [MessageController::class, 'showConversation'])->name('messages.conversation');
+    Route::post('/messages/conversation/{userId}/send', [MessageController::class, 'sendMessageInConversation'])->name('messages.send-conversation');
+    Route::post('/messages/{messageId}/reply', [MessageController::class, 'replyToMessage'])->name('messages.reply');
 });
 
 // التجار

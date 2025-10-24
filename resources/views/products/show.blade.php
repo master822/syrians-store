@@ -1,193 +1,165 @@
 @extends('layouts.app')
 
-@section('title', $product->name . ' - متجر التخفيضات')
+@section('title', $product->name)
 
 @section('content')
 <div class="container py-4">
     <div class="row">
-        <!-- صور المنتج -->
-        <div class="col-lg-6 mb-4">
-            <div class="product-images">
-                @if($product->images)
-                    @php
-                        $images = json_decode($product->images);
-                        $mainImage = $images[0] ?? null;
-                    @endphp
-                    @if($mainImage)
-                        <div class="main-image mb-3">
-                            <img src="{{ asset('storage/' . $mainImage) }}" 
+        <div class="col-md-6 mb-4">
+            <!-- معرض الصور -->
+            <div class="card">
+                <div class="card-body">
+                    @if($product->images)
+                        @php
+                            $images = json_decode($product->images);
+                            $firstImage = $images[0] ?? null;
+                        @endphp
+                        @if($firstImage)
+                            <img src="{{ asset('storage/' . $firstImage) }}" 
                                  class="img-fluid rounded" 
                                  alt="{{ $product->name }}"
-                                 id="mainProductImage">
-                        </div>
-                        @if(count($images) > 1)
-                            <div class="image-thumbnails d-flex gap-2">
-                                @foreach($images as $index => $image)
-                                    <img src="{{ asset('storage/' . $image) }}" 
-                                         class="img-thumbnail {{ $index === 0 ? 'active' : '' }}"
-                                         style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
-                                         onclick="changeMainImage('{{ asset('storage/' . $image) }}', this)"
-                                         alt="{{ $product->name }}">
-                                @endforeach
+                                 style="max-height: 400px; width: 100%; object-fit: cover;">
+                        @else
+                            <div class="text-center py-5 bg-light rounded">
+                                <i class="fas fa-image fa-3x text-muted"></i>
+                                <p class="text-muted mt-2">لا توجد صورة</p>
                             </div>
                         @endif
+                    @else
+                        <div class="text-center py-5 bg-light rounded">
+                            <i class="fas fa-image fa-3x text-muted"></i>
+                            <p class="text-muted mt-2">لا توجد صورة</p>
+                        </div>
                     @endif
-                @else
-                    <div class="no-image text-center py-5 bg-light rounded">
-                        <i class="fas fa-image fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">لا توجد صور للمنتج</p>
-                    </div>
-                @endif
+                </div>
             </div>
         </div>
 
-        <!-- معلومات المنتج -->
-        <div class="col-lg-6 mb-4">
-            <div class="product-info">
-                <h1 class="h2 mb-3">{{ $product->name }}</h1>
-                
-                @if($product->discount_percentage > 0)
-                    <div class="discount-badge mb-3">
-                        <span class="badge bg-danger fs-6">خصم {{ $product->discount_percentage }}%</span>
-                    </div>
-                @endif
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="h3 text-primary">{{ $product->name }}</h1>
+                    
+                    @if($product->is_used)
+                        <span class="badge bg-warning text-dark mb-3">منتج مستعمل</span>
+                        @if($product->condition)
+                            <span class="badge bg-info mb-3">الحالة: {{ $product->condition }}</span>
+                        @endif
+                    @else
+                        <span class="badge bg-success mb-3">منتج جديد</span>
+                    @endif
 
-                <div class="price-section mb-4">
                     @if($product->discount_percentage > 0)
-                        @php
-                            $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
-                        @endphp
-                        <div class="current-price text-danger fw-bold fs-3">
-                            {{ number_format($discountedPrice, 2) }} TL
-                        </div>
-                        <div class="original-price text-muted text-decoration-line-through fs-5">
-                            {{ number_format($product->price, 2) }} TL
+                        <div class="price-section mb-3">
+                            <span class="text-danger fw-bold fs-3">
+                                {{ number_format($product->price - ($product->price * $product->discount_percentage / 100), 2) }} TL
+                            </span>
+                            <small class="text-muted text-decoration-line-through d-block fs-5">
+                                {{ number_format($product->price, 2) }} TL
+                            </small>
+                            <span class="badge bg-danger fs-6">خصم {{ $product->discount_percentage }}%</span>
                         </div>
                     @else
-                        <div class="current-price text-primary fw-bold fs-3">
-                            {{ number_format($product->price, 2) }} TL
+                        <div class="price-section mb-3">
+                            <span class="fw-bold text-primary fs-3">{{ number_format($product->price, 2) }} TL</span>
                         </div>
                     @endif
-                </div>
 
-                <div class="product-meta mb-4">
-                    <div class="row">
-                        <div class="col-6">
-                            <small class="text-muted d-block">
-                                <i class="fas fa-eye me-1"></i>
-                                {{ $product->views }} مشاهدة
-                            </small>
-                        </div>
-                        <div class="col-6">
-                            <small class="text-muted d-block">
-                                <i class="fas fa-calendar me-1"></i>
-                                {{ $product->created_at->diffForHumans() }}
-                            </small>
+                    <div class="product-meta mb-4">
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-eye me-1"></i>
+                                    {{ $product->views }} مشاهدة
+                                </small>
+                            </div>
+                            <div class="col-6 text-end">
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{ $product->created_at->diffForHumans() }}
+                                </small>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="description-section mb-4">
-                    <h5 class="mb-3">وصف المنتج</h5>
-                    <p class="text-muted">{{ $product->description }}</p>
-                </div>
+                    <h5 class="text-dark">الوصف:</h5>
+                    <p class="text-muted mb-4">{{ $product->description }}</p>
 
-                @if($product->is_used)
-                    <div class="condition-section mb-4">
-                        <h5 class="mb-3">حالة المنتج</h5>
-                        <span class="badge bg-info fs-6">{{ $product->condition }}</span>
-                    </div>
-                @endif
-
-                <!-- معلومات التاجر -->
-                <div class="merchant-section mb-4">
-                    <h5 class="mb-3">معلومات التاجر</h5>
-                    <div class="card">
+                    <!-- معلومات البائع -->
+                    <div class="seller-info card bg-light mb-4">
                         <div class="card-body">
+                            <h6 class="card-title">معلومات البائع:</h6>
                             <div class="d-flex align-items-center">
-                                <img src="{{ $product->user->getAvatarUrlAttribute() }}" 
-                                     class="rounded-circle me-3"
-                                     style="width: 50px; height: 50px; object-fit: cover;"
-                                     alt="{{ $product->user->name }}">
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">{{ $product->user->name }}</h6>
-                                    @if($product->user->store_name)
-                                        <p class="text-muted mb-1">{{ $product->user->store_name }}</p>
-                                    @endif
-                                    <div class="rating-stars">
-                                        @php
-                                            $avgRating = $product->user->ratings->avg('rating') ?? 0;
-                                            $fullStars = floor($avgRating);
-                                            $halfStar = $avgRating - $fullStars >= 0.5;
-                                        @endphp
-                                        @for($i = 1; $i <= 5; $i++)
-                                            @if($i <= $fullStars)
-                                                <i class="fas fa-star text-warning"></i>
-                                            @elseif($i == $fullStars + 1 && $halfStar)
-                                                <i class="fas fa-star-half-alt text-warning"></i>
-                                            @else
-                                                <i class="far fa-star text-warning"></i>
-                                            @endif
-                                        @endfor
-                                        <span class="text-muted ms-1">({{ $product->user->ratings->count() }})</span>
+                                @if($product->user->avatar)
+                                    <img src="{{ asset('storage/' . $product->user->avatar) }}" 
+                                         alt="{{ $product->user->name }}" 
+                                         class="rounded-circle me-3"
+                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                @else
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                                         style="width: 50px; height: 50px;">
+                                        <i class="fas fa-user"></i>
                                     </div>
+                                @endif
+                                <div>
+                                    <h6 class="mb-1">{{ $product->user->name }}</h6>
+                                    @if($product->user->user_type === 'merchant')
+                                        <p class="text-muted mb-1 small">{{ $product->user->store_name }}</p>
+                                        <small class="text-muted">
+                                            <i class="fas fa-store me-1"></i>تاجر
+                                        </small>
+                                    @else
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>مستخدم عادي
+                                        </small>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- أزرار الإجراءات -->
-                <div class="action-buttons">
+                    <!-- زر التواصل -->
                     @auth
-                        @if(Auth::user()->user_type === 'user' && $product->user->user_type === 'merchant')
-                            <div class="row g-2">
-                                <div class="col-md-6">
-                                    <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#contactModal">
-                                        <i class="fas fa-envelope me-2"></i>مراسلة التاجر
-                                    </button>
-                                </div>
-                                <div class="col-md-6">
-                                    <button class="btn btn-outline-warning w-100 mb-2" data-bs-toggle="modal" data-bs-target="#ratingModal">
-                                        <i class="fas fa-star me-2"></i>تقييم التاجر
-                                    </button>
-                                </div>
-                            </div>
+                        @if(Auth::id() !== $product->user_id)
+                            <button type="button" class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#contactModal">
+                                <i class="fas fa-envelope me-2"></i>
+                                @if($product->user->user_type === 'merchant')
+                                    تواصل مع التاجر
+                                @else
+                                    تواصل مع البائع
+                                @endif
+                            </button>
                         @endif
-                        
+
                         @if($canEdit)
-                            <div class="row g-2 mt-2">
-                                <div class="col-md-6">
-                                    <a href="{{ route('products.edit', $product->id) }}" class="btn btn-outline-secondary w-100">
-                                        <i class="fas fa-edit me-2"></i>تعديل المنتج
-                                    </a>
-                                </div>
-                                <div class="col-md-6">
-                                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger w-100" onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟')">
-                                            <i class="fas fa-trash me-2"></i>حذف المنتج
-                                        </button>
-                                    </form>
-                                </div>
+                            <div class="d-grid gap-2">
+                                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning">
+                                    <i class="fas fa-edit me-2"></i>تعديل المنتج
+                                </a>
+                                <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger w-100" onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟')">
+                                        <i class="fas fa-trash me-2"></i>حذف المنتج
+                                    </button>
+                                </form>
                             </div>
                         @endif
                     @else
-                        <div class="alert alert-info">
-                            <p class="mb-2">للمراسلة أو التقييم، يرجى <a href="{{ route('login') }}">تسجيل الدخول</a></p>
-                        </div>
+                        <a href="{{ route('login') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-sign-in-alt me-2"></i>سجل الدخول للتواصل مع البائع
+                        </a>
                     @endauth
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- منتجات مشابهة -->
+    <!-- المنتجات المشابهة -->
     @if($similarProducts->count() > 0)
     <div class="row mt-5">
         <div class="col-12">
-            <h3 class="mb-4">منتجات مشابهة</h3>
+            <h3 class="text-primary mb-4">منتجات مشابهة</h3>
             <div class="row">
                 @foreach($similarProducts as $similarProduct)
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
@@ -198,7 +170,13 @@
                             </div>
                         @endif
                         
-                        <div class="card-img-container">
+                        @if($similarProduct->is_used)
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-warning text-dark">مستعمل</span>
+                            </div>
+                        @endif
+
+                        <div class="card-img-container" style="height: 200px;">
                             @if($similarProduct->images)
                                 @php
                                     $similarImages = json_decode($similarProduct->images);
@@ -206,15 +184,15 @@
                                 @endphp
                                 @if($similarFirstImage)
                                     <img src="{{ asset('storage/' . $similarFirstImage) }}" 
-                                         class="card-product-image" 
-                                         alt="{{ $similarProduct->name }}">
+                                         class="card-img-top product-image" 
+                                         alt="{{ $similarProduct->name }}"
+                                         style="height: 100%; object-fit: cover;">
                                 @endif
                             @endif
                         </div>
                         
                         <div class="card-body">
-                            <h5 class="card-title">{{ $similarProduct->name }}</h5>
-                            <p class="card-text text-muted">{{ Str::limit($similarProduct->description, 50) }}</p>
+                            <h6 class="card-title">{{ Str::limit($similarProduct->name, 50) }}</h6>
                             
                             <div class="price-section">
                                 @if($similarProduct->discount_percentage > 0)
@@ -230,8 +208,8 @@
                         </div>
                         
                         <div class="card-footer bg-transparent">
-                            <a href="{{ route('products.show', $similarProduct->id) }}" class="btn btn-primary w-100">
-                                <i class="fas fa-eye me-2"></i>عرض المنتج
+                            <a href="{{ route('products.show', $similarProduct->id) }}" class="btn btn-outline-primary w-100 btn-sm">
+                                <i class="fas fa-eye me-2"></i>عرض
                             </a>
                         </div>
                     </div>
@@ -243,164 +221,85 @@
     @endif
 </div>
 
-<!-- مودال مراسلة التاجر -->
-<div class="modal fade" id="contactModal" tabindex="-1">
+<!-- Modal التواصل -->
+@auth
+@if(Auth::id() !== $product->user_id)
+<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">مراسلة التاجر</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="contactModalLabel">
+                    <i class="fas fa-envelope me-2"></i>
+                    @if($product->user->user_type === 'merchant')
+                        تواصل مع التاجر
+                    @else
+                        تواصل مع البائع
+                    @endif
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('messages.contact', $product->id) }}" method="POST">
+            <form action="@if($product->user->user_type === 'merchant') {{ route('messages.contact', $product->id) }} @else {{ route('messages.contact-seller', $product->id) }} @endif" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="message" class="form-label">رسالتك إلى {{ $product->user->name }}</label>
-                        <textarea class="form-control" id="message" name="message" rows="5" 
+                        <label for="message" class="form-label">رسالتك:</label>
+                        <textarea class="form-control" id="message" name="message" rows="4" 
                                   placeholder="اكتب رسالتك هنا..." required></textarea>
                     </div>
                     <div class="alert alert-info">
                         <small>
                             <i class="fas fa-info-circle me-2"></i>
-                            سيتم إرسال رسالتك إلى التاجر وسيتم إشعاره برسالة جديدة.
+                            ستتم إضافة رسالتك إلى محادثتك مع {{ $product->user->name }} ويمكنك متابعتها من صفحة الرسائل.
                         </small>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-primary">إرسال الرسالة</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>إرسال الرسالة
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-<!-- مودال تقييم التاجر -->
-<div class="modal fade" id="ratingModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">تقييم التاجر</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="{{ route('ratings.store') }}" method="POST">
-                @csrf
-                <input type="hidden" name="merchant_id" value="{{ $product->user->id }}">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">التقييم</label>
-                        <div class="rating-stars-input text-center">
-                            @for($i = 5; $i >= 1; $i--)
-                                <input type="radio" id="star{{ $i }}" name="rating" value="{{ $i }}" {{ $i == 5 ? 'checked' : '' }}>
-                                <label for="star{{ $i }}" class="star-label">
-                                    <i class="fas fa-star"></i>
-                                </label>
-                            @endfor
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="comment" class="form-label">تعليقك (اختياري)</label>
-                        <textarea class="form-control" id="comment" name="comment" rows="3" 
-                                  placeholder="اكتب تعليقك عن التاجر..."></textarea>
-                    </div>
-                    <div class="alert alert-warning">
-                        <small>
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            سيتم مراجعة تعليقك قبل النشر للتأكد من خلوه من الكلمات غير اللائقة.
-                        </small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-warning">إرسال التقييم</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+@endif
+@endauth
 
 <style>
-.product-images .main-image img {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-    border-radius: 10px;
+.product-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.image-thumbnails .img-thumbnail.active {
-    border-color: #6366f1;
-}
-
-.rating-stars-input {
-    direction: ltr;
-    unicode-bidi: bidi-override;
-}
-
-.rating-stars-input input[type="radio"] {
-    display: none;
-}
-
-.rating-stars-input .star-label {
-    font-size: 2rem;
-    color: #ddd;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.rating-stars-input input[type="radio"]:checked ~ .star-label,
-.rating-stars-input .star-label:hover,
-.rating-stars-input .star-label:hover ~ .star-label {
-    color: #ffc107;
-}
-
-.rating-stars-input input[type="radio"]:checked + .star-label {
-    color: #ffc107;
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
 }
 
 .card-img-container {
-    height: 200px;
     overflow: hidden;
+    border-radius: 8px 8px 0 0;
 }
 
-.card-product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
+.product-image {
+    transition: transform 0.5s ease;
 }
 
-.product-card:hover .card-product-image {
+.product-card:hover .product-image {
     transform: scale(1.05);
 }
-</style>
 
-<script>
-function changeMainImage(src, element) {
-    document.getElementById('mainProductImage').src = src;
-    
-    // إزالة النشاط من جميع الصور المصغرة
-    document.querySelectorAll('.image-thumbnails .img-thumbnail').forEach(img => {
-        img.classList.remove('active');
-    });
-    
-    // إضافة النشاط للصورة المحددة
-    element.classList.add('active');
+.price-section {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
 }
 
-// إدارة نجوم التقييم
-document.querySelectorAll('.rating-stars-input input[type="radio"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-        const stars = document.querySelectorAll('.rating-stars-input .star-label');
-        const rating = parseInt(this.value);
-        
-        stars.forEach((star, index) => {
-            if (index >= (5 - rating)) {
-                star.style.color = '#ffc107';
-            } else {
-                star.style.color = '#ddd';
-            }
-        });
-    });
-});
-</script>
+.seller-info {
+    border-left: 4px solid #6366f1;
+}
+</style>
 @endsection
