@@ -35,8 +35,8 @@
                             {{ $merchant->products_count }} منتج
                         </span>
                     </div>
-                    <a href="{{ url('/products') }}?merchant={{ $merchant->id }}" class="btn btn-outline-primary btn-sm rounded-pill">
-                        استعرض منتجات التاجر
+                    <a href="{{ route('merchants.show', $merchant->id) }}" class="btn btn-outline-primary btn-sm rounded-pill">
+                        استعرض  المتجر
                     </a>
                 </div>
             </div>

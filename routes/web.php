@@ -30,7 +30,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/new', [ProductController::class, 'newProducts'])->name('products.new');
 Route::get('/products/used', [ProductController::class, 'usedProducts'])->name('products.used');
-Route::get('/products/category/{categoryId}', [ProductController::class, 'byCategory'])->name('products.byCategory');
+Route::get('/products/category/{categorySlug}', [ProductController::class, 'byCategory'])->name('products.byCategory');
 Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
@@ -86,18 +86,15 @@ Route::middleware(['auth'])->prefix('merchant')->group(function () {
     Route::post('/subscription/{plan}', [MerchantSubscriptionController::class, 'subscribe'])->name('merchant.subscribe');
 });
 
-// نظام الدفع والاشتراكات - تم التصحيح بشكل نهائي
+// نظام الدفع والاشتراكات
 Route::middleware(['auth'])->group(function () {
-    // المسارات الثابتة أولاً (لتجنب التعارض)
     Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
     Route::get('/payment/cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
-    
-    // المسارات الديناميكية بعد ذلك
     Route::get('/payment/{plan}', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
     Route::post('/payment/{plan}/initiate', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
 });
 
-// مسارات الاشتراك (منفصلة)
+// مسارات الاشتراك
 Route::middleware(['auth'])->group(function () {
     Route::get('/subscription/history', [PaymentController::class, 'subscriptionHistory'])->name('subscription.history');
     Route::post('/subscription/cancel', [PaymentController::class, 'cancelSubscription'])->name('subscription.cancel');
@@ -110,8 +107,8 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/products/create', [ProductController::class, 'create'])->name('user.products.create');
 });
 
-// لوحة تحكم المدير
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+// لوحة تحكم المدير - بدون middleware مخصص
+Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
     Route::get('/products', [AdminController::class, 'products'])->name('admin.products');
@@ -119,6 +116,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/categories', [AdminController::class, 'categories'])->name('admin.categories');
     Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Route::post('/settings', [AdminController::class, 'updateSettings'])->name('admin.settings.update');
+    
+    // الملف الشخصي للمسؤول
+    Route::get('/profile', [AdminController::class, 'showProfile'])->name('admin.profile');
+    Route::put('/profile', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
     
     // إدارة المستخدمين
     Route::post('/users/{id}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('admin.user.toggle-status');
@@ -128,7 +129,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // إدارة المنتجات
     Route::post('/products/{id}/toggle-status', [AdminController::class, 'toggleProductStatus'])->name('admin.product.toggle-status');
     Route::delete('/products/{id}', [AdminController::class, 'deleteProduct'])->name('admin.product.delete');
-    
+    // عرض تفاصيل المنتج
+    Route::get('/products/{id}', [AdminController::class, 'viewProduct'])->name('admin.product.view');      
+    // إدارة الفئات
+    Route::post('/categories', [AdminController::class, 'createCategory'])->name('admin.category.create');
+    Route::put('/categories/{id}', [AdminController::class, 'updateCategory'])->name('admin.category.update');
+    Route::delete('/categories/{id}', [AdminController::class, 'deleteCategory'])->name('admin.category.delete');           
+    // عرض تفاصيل التاجر
+    Route::get('/merchants/{id}', [AdminController::class, 'viewMerchant'])->name('admin.merchant.view');               
+    // إدارة التجار
+    Route::post('/merchants/{id}/toggle-status', [AdminController::class, 'toggleMerchantStatus'])->name('admin.merchant.toggle-status');
+    Route::delete('/merchants/{id}', [AdminController::class, 'deleteMerchant'])->name('admin.merchant.delete');        
     // متاجر التجار
     Route::get('/merchants/{id}/store', [AdminController::class, 'viewMerchantStore'])->name('admin.merchant.store');
     
@@ -150,15 +161,10 @@ Route::middleware(['auth'])->prefix('chat')->group(function () {
 
 // الملف الشخصي وإدارة الحساب
 Route::middleware(['auth'])->group(function () {
-    // الملف الشخصي
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    
-    // تغيير كلمة المرور
     Route::get('/change-password', [ProfileController::class, 'showChangePassword'])->name('change-password');
     Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('change-password.update');
-    
-    // المحادثات
     Route::get('/chat', [ProfileController::class, 'showChat'])->name('chat');
 });
 

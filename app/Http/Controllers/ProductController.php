@@ -197,12 +197,12 @@ class ProductController extends Controller
         return view('products.new', compact('products'));
     }
 
-    public function byCategory($categoryId)
+    public function byCategory($categorySlug)
     {
-        $category = Category::where('slug', $categoryId)->first();
+        $category = Category::where('slug', $categorySlug)->first();
         
         if (!$category) {
-            $category = Category::find($categoryId);
+            $category = Category::find($categorySlug);
         }
 
         if (!$category) {

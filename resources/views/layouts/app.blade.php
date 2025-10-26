@@ -794,3 +794,7 @@
     @stack('scripts')
 </body>
 </html>
+{{-- في قسم dropdown المسؤول - أضف هذا البند --}}
+<li><a class="dropdown-item" href="{{ route('admin.profile') }}">
+    <i class="fas fa-user-edit me-2"></i>تحديث الملف الشخصي
+</a></li>

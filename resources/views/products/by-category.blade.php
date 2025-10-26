@@ -1,16 +1,17 @@
 @extends('layouts.app')
 
-@section('title', $category->name . ' - التصنيفات')
+@section('title', 'منتجات ' . $category->name)
 
 @section('content')
 <div class="container py-4">
-    <!-- رأس الصفحة -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h1 class="text-primary">{{ $category->name }}</h1>
-                    <p class="text-muted">{{ $category->description }}</p>
+                    @if($category->description)
+                        <p class="text-muted">{{ $category->description }}</p>
+                    @endif
                 </div>
                 <div class="text-end">
                     <span class="badge bg-primary fs-6">{{ $products->total() }} منتج</span>
@@ -63,10 +64,10 @@
                                     @php
                                         $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
                                     @endphp
-                                    <span class="text-danger fw-bold fs-5">{{ number_format($discountedPrice, 2) }} ر.س</span>
-                                    <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} ر.س</small>
+                                    <span class="text-danger fw-bold fs-5">{{ number_format($discountedPrice, 2) }} TL</span>
+                                    <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} TL</small>
                                 @else
-                                    <span class="fw-bold text-primary fs-5">{{ number_format($product->price, 2) }} ر.س</span>
+                                    <span class="fw-bold text-primary fs-5">{{ number_format($product->price, 2) }} TL</span>
                                 @endif
                             </div>
                             
