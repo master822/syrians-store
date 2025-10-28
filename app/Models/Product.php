@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -24,12 +25,7 @@ class Product extends Model
         'discount_images'
     ];
 
-    protected $casts = [
-        'price' => 'decimal:2',
-        'is_used' => 'boolean',
-        'images' => 'array',
-        'discount_images' => 'array'
-    ];
+    protected $appends = ['first_image_url', 'image_urls', 'has_images'];
 
     public function user()
     {
@@ -46,27 +42,62 @@ class Product extends Model
         return $this->hasMany(Rating::class);
     }
 
-    public function scopeActive($query)
+    // الحصول على مصفوفة الصور
+    public function getImagesArrayAttribute()
     {
-        return $query->where('status', 'active');
+        if (!$this->images) {
+            return [];
+        }
+        
+        try {
+            $images = json_decode($this->images, true);
+            return is_array($images) ? $images : [];
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
-    public function scopeUsed($query)
+    // التحقق من وجود الصور
+    public function getHasImagesAttribute()
     {
-        return $query->where('is_used', true);
+        return !empty($this->images_array);
     }
 
-    public function scopeNew($query)
+    // الحصول على روابط الصور للعرض
+    public function getImageUrlsAttribute()
     {
-        return $query->where('is_used', false);
+        $images = $this->images_array;
+        $urls = [];
+        
+        foreach ($images as $image) {
+            if ($image) {
+                // استخدام المسار المباشر للتخزين
+                $urls[] = asset('storage/' . $image);
+            }
+        }
+        
+        // إذا لم توجد صور، استخدم صورة افتراضية
+        if (empty($urls)) {
+            $urls[] = $this->getDefaultImage();
+        }
+        
+        return $urls;
     }
 
-    public function scopeDiscounted($query)
+    // الحصول على الصورة الأولى
+    public function getFirstImageUrlAttribute()
     {
-        return $query->where('discount_percentage', '>', 0);
+        $images = $this->image_urls;
+        return $images[0];
     }
 
-    public function getDiscountedPriceAttribute()
+    // صورة افتراضية
+    private function getDefaultImage()
+    {
+        return 'https://via.placeholder.com/400x300/6366f1/ffffff?text=' . urlencode($this->name);
+    }
+
+    public function getDiscountPriceAttribute()
     {
         if ($this->discount_percentage > 0) {
             return $this->price - ($this->price * $this->discount_percentage / 100);
@@ -74,43 +105,23 @@ class Product extends Model
         return $this->price;
     }
 
-    public function getIsDiscountedAttribute()
+    public function scopeActive($query)
     {
-        return $this->discount_percentage > 0;
+        return $query->where('status', 'active');
     }
 
-    public function getFirstImageAttribute()
+    public function scopeNew($query)
     {
-        if ($this->images) {
-            $imagesArray = json_decode($this->images, true);
-            if (is_array($imagesArray) && count($imagesArray) > 0 && !empty($imagesArray[0])) {
-                // التحقق من وجود الصورة في التخزين
-                if (file_exists(storage_path('app/public/' . $imagesArray[0]))) {
-                    return asset('storage/' . $imagesArray[0]);
-                }
-            }
-        }
-        return asset('images/default-product.jpg');
+        return $query->where('is_used', false);
     }
 
-    public function getProductImagesAttribute()
+    public function scopeUsed($query)
     {
-        $images = [];
-        if ($this->images) {
-            $imagesArray = json_decode($this->images, true);
-            if (is_array($imagesArray)) {
-                foreach ($imagesArray as $image) {
-                    if (!empty($image) && file_exists(storage_path('app/public/' . $image))) {
-                        $images[] = asset('storage/' . $image);
-                    }
-                }
-            }
-        }
-        
-        if (empty($images)) {
-            $images[] = asset('images/default-product.jpg');
-        }
-        
-        return $images;
+        return $query->where('is_used', true);
+    }
+
+    public function scopeWithDiscount($query)
+    {
+        return $query->where('discount_percentage', '>', 0);
     }
 }

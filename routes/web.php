@@ -34,16 +34,6 @@ Route::get('/products/category/{categorySlug}', [ProductController::class, 'byCa
 Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
-// المنتجات (تحتاج مصادقة)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/merchant/products/create', [ProductController::class, 'create'])->name('merchant.products.create');
-    Route::get('/user/products/create', [ProductController::class, 'create'])->name('user.products.create');
-    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-    Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
-});
-
 // التقييمات
 Route::middleware(['auth'])->group(function () {
     Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
@@ -107,7 +97,7 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/products/create', [ProductController::class, 'create'])->name('user.products.create');
 });
 
-// لوحة تحكم المدير - بدون middleware مخصص
+// لوحة تحكم المدير
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
@@ -129,18 +119,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // إدارة المنتجات
     Route::post('/products/{id}/toggle-status', [AdminController::class, 'toggleProductStatus'])->name('admin.product.toggle-status');
     Route::delete('/products/{id}', [AdminController::class, 'deleteProduct'])->name('admin.product.delete');
-    // عرض تفاصيل المنتج
-    Route::get('/products/{id}', [AdminController::class, 'viewProduct'])->name('admin.product.view');      
-    // إدارة الفئات
-    Route::post('/categories', [AdminController::class, 'createCategory'])->name('admin.category.create');
-    Route::put('/categories/{id}', [AdminController::class, 'updateCategory'])->name('admin.category.update');
-    Route::delete('/categories/{id}', [AdminController::class, 'deleteCategory'])->name('admin.category.delete');           
-    // عرض تفاصيل التاجر
-    Route::get('/merchants/{id}', [AdminController::class, 'viewMerchant'])->name('admin.merchant.view');               
+    
     // إدارة التجار
     Route::post('/merchants/{id}/toggle-status', [AdminController::class, 'toggleMerchantStatus'])->name('admin.merchant.toggle-status');
-    Route::delete('/merchants/{id}', [AdminController::class, 'deleteMerchant'])->name('admin.merchant.delete');        
-    // متاجر التجار
+    Route::delete('/merchants/{id}', [AdminController::class, 'deleteMerchant'])->name('admin.merchant.delete');
     Route::get('/merchants/{id}/store', [AdminController::class, 'viewMerchantStore'])->name('admin.merchant.store');
     
     // تقارير الاشتراكات
@@ -166,6 +148,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/change-password', [ProfileController::class, 'showChangePassword'])->name('change-password');
     Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('change-password.update');
     Route::get('/chat', [ProfileController::class, 'showChat'])->name('chat');
+});
+
+// المنتجات (تحتاج مصادقة) - مسارات مشتركة
+Route::middleware(['auth'])->group(function () {
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
 });
 
 // صفحات إضافية

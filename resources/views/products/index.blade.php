@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'جميع المنتجات')
-
+ <a href="{{ route('products.search') }}" class="btn btn-outline-primary">
+                <i class="fas fa-search me-2"></i>البحث عن منتجات
+            </a>
 @section('content')
 <div class="container py-4">
     <div class="row mb-4">

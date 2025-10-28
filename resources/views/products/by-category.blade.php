@@ -8,12 +8,16 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="text-primary">{{ $category->name }}</h1>
+                    <h1 class="text-primary">{{ $category->name,  }}</h1>
+                    
                     @if($category->description)
                         <p class="text-muted">{{ $category->description }}</p>
                     @endif
                 </div>
                 <div class="text-end">
+                     <a href="{{ route('products.search') }}" class="btn btn-outline-primary">
+                <i class="fas fa-search me-2"></i>البحث عن منتجات
+            </a>
                     <span class="badge bg-primary fs-6">{{ $products->total() }} منتج</span>
                 </div>
             </div>
@@ -49,9 +53,11 @@
                                     <i class="fas fa-image fa-2x text-muted"></i>
                                 </div>
                             @endif
+                            
                         @else
                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
                                 <i class="fas fa-image fa-2x text-muted"></i>
+                                
                             </div>
                         @endif
                         

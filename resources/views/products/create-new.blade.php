@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('title', 'إضافة منتج جديد - لوحة التحكم')
@@ -55,9 +56,6 @@
                                     💰 السعر (TL) <span class="text-danger">*</span>
                                 </label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-success text-white border-success">
-                                        <i class="fas fa-lira-sign"></i>
-                                    </span>
                                     <input type="number" step="0.01" class="form-control modern-input fs-6" 
                                            id="price" name="price" value="{{ old('price') }}" 
                                            placeholder="0.00" min="0" required>
@@ -75,6 +73,9 @@
                                 <select class="form-select modern-input fs-6" 
                                         id="category_id" name="category_id" required>
                                     <option value="">اختر التصنيف...</option>
+                                    @php
+                                        $categories = \App\Models\Category::all();
+                                    @endphp
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}" 
                                             {{ old('category_id') == $category->id ? 'selected' : '' }}>
@@ -375,229 +376,244 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
+/* الألوان الأساسية */
+:root {
+  --primary: #8B5CF6;
+  --primary-dark: #7C3AED;
+  --secondary: #06B6D4;
+  --accent: #F59E0B;
+  --success: #10B981;
+  --danger: #EF4444;
+  --dark: #1F2937;
+  --darker: #111827;
+}
+
+/* تصميم داكن بالكامل بدون أي أبيض */
+body {
+  background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+  color: #E5E7EB;
+  min-height: 100vh;
+}
+
+/* الكارد الأساسي */
 .modern-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    border-radius: 20px;
-    border: none;
-    overflow: hidden;
-    transition: all 0.3s ease;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 .modern-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+  border-color: var(--primary);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+  transform: translateY(-2px);
 }
 
+/* الحقول */
 .modern-input {
-    background: #ffffff;
-    border: 2px solid #e9ecef;
-    color: #495057;
-    font-size: 16px !important;
-    padding: 15px 20px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  background: rgba(55, 65, 81, 0.6);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  color: #F3F4F6;
+  border-radius: 10px;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
 }
 
 .modern-input:focus {
-    background: #ffffff;
-    border-color: #4CAF50;
-    color: #495057;
-    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.15);
-    transform: translateY(-1px);
+  background: rgba(55, 65, 81, 0.8);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  color: #F3F4F6;
 }
 
-.form-label {
-    font-weight: 700 !important;
-    margin-bottom: 12px;
-    display: block;
-    color: #2c3e50 !important;
+.modern-input::placeholder {
+  color: #9CA3AF;
 }
 
-.file-upload-area {
-    transition: all 0.3s ease;
-    cursor: pointer;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-}
-
-.file-upload-area:hover {
-    border-color: #4CAF50 !important;
-    background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
-}
-
-.file-upload-area.drag-over {
-    border-color: #4CAF50 !important;
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-    transform: scale(1.02);
-}
-
-.image-preview-card {
-    border: 2px solid #e9ecef;
-    border-radius: 15px;
-    padding: 10px;
-    background: #ffffff;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.image-preview-card:hover {
-    border-color: #4CAF50;
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.15);
-}
-
-.alert-info {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    border: 2px solid #2196F3;
-    border-radius: 15px;
-    color: #1565C0;
-}
-
-.alert-warning {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-    border: 2px solid #ffc107;
-    border-radius: 15px;
-    color: #856404;
-}
-
-.btn-lg {
-    padding: 15px 35px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    border: none;
-    position: relative;
-    overflow: hidden;
-}
-
+/* الأزرار */
 .btn-success {
-    background: linear-gradient(135deg, #4CAF50, #45a049);
-    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .btn-success:hover {
-    background: linear-gradient(135deg, #45a049, #3d8b40);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
-}
-
-.btn-success:active {
-    transform: translateY(0);
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+  color: white;
 }
 
 .btn-outline-secondary {
-    border: 2px solid #6c757d;
-    color: #6c757d;
-    background: transparent;
-    transition: all 0.3s ease;
+  background: transparent;
+  border: 1px solid #4B5563;
+  color: #D1D5DB;
+  border-radius: 10px;
+  transition: all 0.3s ease;
 }
 
 .btn-outline-secondary:hover {
-    background: #6c757d;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  background: #374151;
+  border-color: #6B7280;
+  color: #F3F4F6;
+  transform: translateY(-1px);
 }
 
-.submit-btn.submitting {
-    background: linear-gradient(135deg, #6c757d, #5a6268) !important;
-    transform: scale(0.98);
+/* منطقة رفع الملفات */
+.file-upload-area {
+  background: rgba(55, 65, 81, 0.4);
+  border: 2px dashed #4B5563;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
-/* الحركات */
+.file-upload-area:hover {
+  border-color: var(--primary);
+  background: rgba(55, 65, 81, 0.6);
+}
+
+.file-upload-area.drag-over {
+  border-color: var(--success);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+/* معاينة الصور */
+.image-preview-card {
+  background: rgba(55, 65, 81, 0.6);
+  border: 1px solid #4B5563;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.image-preview-card:hover {
+  border-color: var(--primary);
+  transform: scale(1.02);
+}
+
+/* التنبيهات */
+.alert-info {
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 12px;
+  color: #67E8F9;
+}
+
+.alert-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 12px;
+  color: #FCD34D;
+}
+
+/* التسميات */
+.form-label {
+  color: #E5E7EB;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* الأنيميشن البسيطة */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes pop {
-    0% {
-        transform: scale(0.8);
-        opacity: 0;
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
-    opacity: 0;
+  animation: fadeIn 0.5s ease-out;
 }
 
-.animate-pop {
-    animation: pop 0.5s ease-out forwards;
-}
-
-.animate-shake {
-    animation: shake 0.5s ease-in-out;
+.animate-slide-in {
+  animation: slideIn 0.5s ease-out;
 }
 
 /* شريط التقدم */
 .progress {
-    border-radius: 10px;
-    background: #e9ecef;
-    overflow: hidden;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  background: #374151;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .progress-bar {
-    border-radius: 10px;
-    transition: width 0.5s ease;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 8px;
+  transition: width 0.3s ease;
 }
 
-/* تحسينات للاستجابة */
-@media (max-width: 768px) {
-    .container {
-        padding: 20px 10px;
-    }
-    
-    .card-body {
-        padding: 25px !important;
-    }
-    
-    .btn-lg {
-        padding: 12px 25px;
-        font-size: 14px;
-    }
-    
-    .modern-input {
-        font-size: 14px !important;
-        padding: 12px 15px;
-    }
-}
-
-/* تأثيرات النص */
+/* النصوص */
 .text-dark {
-    color: #2c3e50 !important;
+  color: #F9FAFB !important;
 }
 
 .text-muted {
-    color: #6c757d !important;
+  color: #9CA3AF !important;
 }
 
-/* إشعارات */
-.alert {
-    border-radius: 12px;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+/* الهيدر */
+.card-header {
+  background: rgba(30, 41, 59, 0.9) !important;
+  border-bottom: 1px solid #374151;
+  color: #F9FAFB;
+}
+
+/* التكيف مع الشاشات الصغيرة */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .modern-card {
+    margin: 0;
+  }
+  
+  .btn-lg {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
+
+/* تأثيرات بسيطة عند التحميل */
+.submit-btn.submitting {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* تحسين شريط التمرير */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
 }
 </style>
 @endsection

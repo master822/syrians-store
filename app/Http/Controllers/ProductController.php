@@ -134,14 +134,30 @@ class ProductController extends Controller
                 Storage::disk('public')->delete($imageToDelete);
             }
             
-            $currentImages = json_decode($product->images, true) ?? [];
+            // الحصول على الصور الحالية كـ array
+            $currentImages = [];
+            if ($product->images) {
+                $decodedImages = json_decode($product->images, true);
+                if (is_array($decodedImages)) {
+                    $currentImages = $decodedImages;
+                }
+            }
+            
             $remainingImages = array_diff($currentImages, $request->delete_images);
             $product->images = !empty($remainingImages) ? json_encode(array_values($remainingImages)) : null;
         }
 
         // معالجة إضافة صور جديدة
         if ($request->hasFile('images')) {
-            $currentImages = json_decode($product->images, true) ?? [];
+            // الحصول على الصور الحالية كـ array
+            $currentImages = [];
+            if ($product->images) {
+                $decodedImages = json_decode($product->images, true);
+                if (is_array($decodedImages)) {
+                    $currentImages = $decodedImages;
+                }
+            }
+            
             $newImages = [];
             
             foreach ($request->file('images') as $image) {
@@ -314,8 +330,10 @@ class ProductController extends Controller
         // حذف الصور من التخزين
         if ($product->images) {
             $images = json_decode($product->images);
-            foreach ($images as $image) {
-                Storage::disk('public')->delete($image);
+            if (is_array($images)) {
+                foreach ($images as $image) {
+                    Storage::disk('public')->delete($image);
+                }
             }
         }
 

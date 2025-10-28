@@ -158,7 +158,7 @@
                                                 <br>
                                                 <small class="text-muted text-decoration-line-through">{{ number_format($product->price, 2) }} ر.س</small>
                                             @else
-                                                <span class="fw-bold">{{ number_format($product->price, 2) }} ر.س</span>
+                                                <span class="fw-bold">{{ number_format($product->price, 2) }} TL</span>
                                             @endif
                                         </td>
                                         <td>
