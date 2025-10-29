@@ -13,8 +13,9 @@ COPY . /var/www/html/
 
 WORKDIR /var/www/html
 
-# إنشاء مجلدات Laravel الأساسية
-RUN mkdir -p storage/framework/sessions \
+# إنشاء جميع مجلدات Laravel المطلوبة
+RUN mkdir -p \
+    storage/framework/sessions \
     storage/framework/views \
     storage/framework/cache \
     storage/logs \
@@ -28,10 +29,18 @@ RUN chown -R www-data:www-data /var/www/html \
 # تثبيت dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# تنظيف cache Laravel
+# إنشاء ملفات cache الأساسية
+RUN touch storage/framework/views/.gitignore \
+    && touch storage/framework/cache/.gitignore \
+    && touch storage/framework/sessions/.gitignore \
+    && touch storage/logs/.gitignore \
+    && touch bootstrap/cache/.gitignore
+
+# تنظيف وتجهيز cache Laravel
 RUN php artisan config:clear || true \
     && php artisan cache:clear || true \
-    && php artisan view:clear || true
+    && php artisan view:clear || true \
+    && php artisan route:clear || true
 
 # إعداد Apache
 RUN a2enmod rewrite \
