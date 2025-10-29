@@ -2,28 +2,22 @@ FROM php:8.2-apache
 
 # تثبيت المتطلبات الأساسية
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    unzip \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libzip-dev
-
-# تثبيت إضافات PHP
-RUN docker-php-ext-install pdo pdo_mysql mysqli mbstring gd zip
+    git curl unzip \
+    && docker-php-ext-install pdo pdo_mysql mysqli
 
 # تثبيت Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# نسخ جميع ملفات المشروع
+# نسخ الملفات
 COPY . /var/www/html/
 
-# الانتقال إلى مجلد العمل
 WORKDIR /var/www/html
 
-# تثبيت dependencies - هذه هي الخطوة الأهم!
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+# تثبيت dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# نسخ .env.example إلى .env إذا لم يوجد .env
+RUN cp .env.example .env 2>/dev/null || true
 
 # إعداد Apache
 RUN a2enmod rewrite
@@ -31,8 +25,11 @@ RUN a2enmod rewrite
 # تغيير DocumentRoot إلى مجلد public
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
-# تعيين صلاحيات المجلدات
-RUN chown -R www-data:www-data /var/www/html/storage
-RUN chown -R www-data:www-data /var/www/html/bootstrap/cache
+# تعيين الصلاحيات
+RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chmod -R 775 storage bootstrap/cache
+
+# إنشاء قاعدة بيانات SQLite إذا لم توجد
+RUN touch database/database.sqlite
 
 CMD ["apache2-foreground"]
