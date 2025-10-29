@@ -8,17 +8,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="section-title gradient-text">تجار {{ $categoryName }}</h1>
-                <div class="d-flex gap-2 flex-wrap">
-                    <a href="{{ route('merchants.index') }}" class="btn btn-outline-primary btn-sm">
-                        جميع التجار
-                    </a>
-                    <a href="{{ url('/merchants/category/electronics') }}" class="btn btn-outline-info btn-sm">
-                        تجار الإلكترونيات
-                    </a>
-                    <a href="{{ url('/merchants/category/home') }}" class="btn btn-outline-success btn-sm">
-                        تجار الأدوات المنزلية
-                    </a>
-                </div>
+               
             </div>
             <p class="text-muted mb-4">استعرض أفضل تجار {{ $categoryName }} في منصتنا</p>
 

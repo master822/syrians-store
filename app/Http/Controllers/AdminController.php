@@ -189,6 +189,14 @@ class AdminController extends Controller
             $envContent = preg_replace('/MAIL_FROM_ADDRESS=.*/', 'MAIL_FROM_ADDRESS=' . $request->contact_email, $envContent);
         }
 
+        // حفظ شعار الموقع إذا تم رفعه
+        if ($request->hasFile('site_logo')) {
+            $logoPath = $request->file('site_logo')->store('site', 'public');
+            
+            // حفظ مسار الشعار في ملف البيئة
+            $envContent = preg_replace('/SITE_LOGO=.*/', 'SITE_LOGO=' . $logoPath, $envContent);
+        }
+
         file_put_contents($envPath, $envContent);
 
         return redirect()->route('admin.settings')->with('success', 'تم تحديث الإعدادات بنجاح.');
@@ -218,6 +226,7 @@ class AdminController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
             'city' => 'nullable|string|max:255',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'current_password' => 'nullable|required_with:new_password',
             'new_password' => 'nullable|min:8|confirmed',
         ], [
@@ -226,21 +235,26 @@ class AdminController extends Controller
             'new_password.confirmed' => 'تأكيد كلمة المرور غير متطابق',
         ]);
 
-        // التحقق من كلمة المرور الحالية إذا تم إدخال كلمة مرور جديدة
-        if ($request->filled('new_password')) {
-            if (!Hash::check($request->current_password, $user->password)) {
-                return back()->withErrors(['current_password' => 'كلمة المرور الحالية غير صحيحة']);
-            }
-        }
-
         // تحديث البيانات الأساسية
         $user->name = $request->name;
         $user->email = $request->email;
         $user->phone = $request->phone;
         $user->city = $request->city;
 
-        // تحديث كلمة المرور إذا تم إدخال كلمة مرور جديدة
+        // تحديث صورة الملف الشخصي
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $avatarPath;
+        }
+
+        // التحقق من كلمة المرور الحالية إذا تم إدخال كلمة مرور جديدة
         if ($request->filled('new_password')) {
+            if (!Hash::check($request->current_password, $user->password)) {
+                return back()->withErrors(['current_password' => 'كلمة المرور الحالية غير صحيحة']);
+            }
             $user->password = Hash::make($request->new_password);
         }
 

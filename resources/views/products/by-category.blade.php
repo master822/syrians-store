@@ -111,9 +111,7 @@
             <a href="{{ route('products.index') }}" class="btn btn-primary me-2">
                 <i class="fas fa-arrow-right me-2"></i>استعراض جميع المنتجات
             </a>
-            <a href="{{ route('products.search') }}" class="btn btn-outline-primary">
-                <i class="fas fa-search me-2"></i>البحث عن منتجات
-            </a>
+           
         </div>
     @endif
 </div>

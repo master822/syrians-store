@@ -1,4 +1,3 @@
-cat > resources/views/change-password.blade.php << 'EOF'
 @extends('layouts.app')
 
 @section('title', 'تغيير كلمة المرور')
@@ -104,4 +103,3 @@ cat > resources/views/change-password.blade.php << 'EOF'
 }
 </style>
 @endsection
-EOF

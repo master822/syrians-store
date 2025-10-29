@@ -8,7 +8,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h2 mb-0">
-                    <i class="fas fa-store me-2"></i>لوحة تحكم التاجر
+                    لوحة تحكم التاجر
                 </h1>
                 <div class="badge bg-primary fs-6">
                     <i class="fas fa-user me-1"></i>{{ Auth::user()->name }}

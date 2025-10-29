@@ -168,3 +168,21 @@ Route::view('/terms', 'terms')->name('terms');
 Route::get('/test-payment', function() {
     return view('test-payment');
 });
+
+// إضافة هذه المسارات في ملف routes/web.php
+
+// الملف الشخصي وإدارة الحساب
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/change-password', [ProfileController::class, 'showChangePassword'])->name('change-password');
+    Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('change-password.update');
+    Route::get('/chat', [ProfileController::class, 'showChat'])->name('chat');
+});
+
+// للمسؤولين فقط
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    // ... المسارات الحالية ...
+    Route::get('/profile', [AdminController::class, 'showProfile'])->name('admin.profile');
+    Route::put('/profile', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
+});

@@ -1,47 +1,44 @@
 @extends('layouts.app')
 
-@section('title', $merchant->store_name . ' - متجر التاجر')
+@section('title', $merchant->store_name . ' - متجر التخفيضات')
 
 @section('content')
-<div class="container-fluid py-4">
-    <!-- رأس المتجر -->
+<div class="container py-4">
+    <!-- معلومات المتجر -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card bg-gradient-primary text-white">
+            <div class="modern-card">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-2 text-center">
-                            @if($merchant->store_logo)
-                                <img src="{{ asset('storage/' . $merchant->store_logo) }}" 
-                                     alt="{{ $merchant->store_name }}" 
-                                     class="rounded-circle shadow"
-                                     style="width: 120px; height: 120px; object-fit: cover;">
-                            @else
-                                <div class="rounded-circle bg-white text-primary d-inline-flex align-items-center justify-content-center shadow"
-                                     style="width: 120px; height: 120px;">
-                                    <i class="fas fa-store fa-3x"></i>
-                                </div>
-                            @endif
+                            <img src="{{ $merchant->store_logo_url }}" 
+                                 alt="{{ $merchant->store_name }}" 
+                                 class="store-logo rounded-circle"
+                                 style="width: 120px; height: 120px; object-fit: cover;">
                         </div>
-                        <div class="col-md-8">
-                            <h1 class="mb-2">{{ $merchant->store_name }}</h1>
-                            <p class="mb-2 lead">{{ $merchant->store_description }}</p>
-                            <div class="d-flex flex-wrap gap-3">
-                                <span class="badge bg-light text-dark fs-6">
-                                    <i class="fas fa-tag me-1"></i>{{ $merchant->store_category_name }}
-                                </span>
-                                <span class="badge bg-light text-dark fs-6">
-                                    <i class="fas fa-map-marker-alt me-1"></i>{{ $merchant->store_city }}
-                                </span>
-                                <span class="badge bg-light text-dark fs-6">
-                                    <i class="fas fa-phone me-1"></i>{{ $merchant->store_phone }}
-                                </span>
+                        <div class="col-md-6">
+                            <h1 class="store-name text-primary mb-2">{{ $merchant->store_name }}</h1>
+                            <p class="store-description text-muted mb-3">{{ $merchant->store_description }}</p>
+                            <div class="store-meta">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <small class="text-muted">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            {{ $merchant->store_city }}
+                                        </small>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <small class="text-muted">
+                                            <i class="fas fa-phone me-1"></i>
+                                            {{ $merchant->store_phone }}
+                                        </small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-2 text-center">
+                        <div class="col-md-4 text-center">
                             <div class="rating-section">
-                                <div class="display-4 text-warning mb-1">{{ number_format($averageRating, 1) }}</div>
-                                <div class="stars mb-2">
+                                <div class="rating-stars mb-2">
                                     @for($i = 1; $i <= 5; $i++)
                                         @if($i <= floor($averageRating))
                                             <i class="fas fa-star text-warning"></i>
@@ -51,8 +48,12 @@
                                             <i class="far fa-star text-warning"></i>
                                         @endif
                                     @endfor
+                                    <span class="ms-2 text-muted">({{ number_format($averageRating, 1) }})</span>
                                 </div>
-                                <small class="text-white-50">({{ $totalRatings }} تقييم)</small>
+                                <div class="total-ratings mb-3">
+                                    <small class="text-muted">{{ $totalRatings }} تقييم</small>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -61,194 +62,199 @@
         </div>
     </div>
 
-    <!-- محتوى المتجر -->
+    <!-- منتجات المتجر -->
     <div class="row">
-        <!-- معلومات المتجر -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h6 class="mb-0">
-                        <i class="fas fa-info-circle me-2"></i>معلومات المتجر
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <strong><i class="fas fa-user me-2"></i>صاحب المتجر:</strong>
-                        <p class="mb-0">{{ $merchant->name }}</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong><i class="fas fa-tag me-2"></i>التصنيف:</strong>
-                        <p class="mb-0">{{ $merchant->store_category_name }}</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong><i class="fas fa-map-marker-alt me-2"></i>المدينة:</strong>
-                        <p class="mb-0">{{ $merchant->store_city }}</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong><i class="fas fa-phone me-2"></i>هاتف المتجر:</strong>
-                        <p class="mb-0">{{ $merchant->store_phone }}</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong><i class="fas fa-boxes me-2"></i>عدد المنتجات:</strong>
-                        <p class="mb-0">{{ $merchant->products_count }} منتج</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- نموذج التقييم -->
-            @auth
-                @if(auth()->user()->user_type === 'user')
-                <div class="card shadow mt-4">
-                    <div class="card-header bg-success text-white">
-                        <h6 class="mb-0">
-                            <i class="fas fa-star me-2"></i>تقييم المتجر
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <form action="{{ route('ratings.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="merchant_id" value="{{ $merchant->id }}">
-                            
-                            <div class="mb-3">
-                                <label class="form-label">التقييم</label>
-                                <div class="rating-input">
-                                    @for($i = 5; $i >= 1; $i--)
-                                        <input type="radio" id="star{{ $i }}" name="rating" value="{{ $i }}" required>
-                                        <label for="star{{ $i }}" class="star-label">
-                                            <i class="fas fa-star"></i>
-                                        </label>
-                                    @endfor
+        <div class="col-12">
+            <h3 class="section-title mb-4">منتجات المتجر</h3>
+            
+            @if($products->count() > 0)
+                <div class="row">
+                    @foreach($products as $product)
+                    <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                        <div class="modern-card product-card h-100" style="position: relative;">
+                            @if($product->discount_percentage > 0)
+                                <div class="position-absolute top-0 start-0 m-3" style="z-index: 10;">
+                                    <span class="badge bg-danger fs-7">خصم {{ $product->discount_percentage }}%</span>
                                 </div>
-                            </div>
+                            @endif
                             
-                            <div class="mb-3">
-                                <label class="form-label">تعليقك</label>
-                                <textarea name="comment" class="form-control" rows="3" 
-                                          placeholder="اكتب تعليقك عن المتجر..." required></textarea>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-success w-100">
-                                <i class="fas fa-paper-plane me-2"></i>إرسال التقييم
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                @endif
-            @endauth
-        </div>
-
-        <!-- منتجات المتجر -->
-        <div class="col-lg-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0">
-                        <i class="fas fa-boxes me-2"></i>منتجات المتجر
-                    </h6>
-                    <span class="badge bg-light text-dark">{{ $products->total() }} منتج</span>
-                </div>
-                <div class="card-body">
-                    @if($products->count() > 0)
-                        <div class="row">
-                            @foreach($products as $product)
-                            <div class="col-lg-6 mb-4">
-                                <div class="card product-card h-100">
-                                    @if($product->images)
-                                        @php
-                                            $images = json_decode($product->images);
-                                            $firstImage = $images[0] ?? null;
-                                        @endphp
-                                        @if($firstImage)
-                                            <img src="{{ asset('storage/' . $firstImage) }}" 
-                                                 class="card-img-top" 
-                                                 alt="{{ $product->name }}"
-                                                 style="height: 200px; object-fit: cover;">
-                                        @else
-                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                                                 style="height: 200px;">
-                                                <i class="fas fa-image fa-2x text-muted"></i>
-                                            </div>
-                                        @endif
+                            <div class="card-img-container">
+                                @if($product->images)
+                                    @php
+                                        $images = json_decode($product->images);
+                                        $firstImage = $images[0] ?? null;
+                                    @endphp
+                                    @if($firstImage)
+                                        <img src="{{ asset('storage/' . $firstImage) }}" 
+                                             class="card-product-image" 
+                                             alt="{{ $product->name }}">
                                     @else
-                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                                             style="height: 200px;">
+                                        <div class="no-image-placeholder">
                                             <i class="fas fa-image fa-2x text-muted"></i>
                                         </div>
-                                    @endif>
-                                    
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ $product->name }}</h5>
-                                        <p class="card-text text-muted">{{ Str::limit($product->description, 80) }}</p>
-                                        
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="h5 text-primary">{{ number_format($product->price, 2) }} ر.س</span>
-                                            <span class="badge bg-success">جديد</span>
-                                        </div>
+                                    @endif
+                                @else
+                                    <div class="no-image-placeholder">
+                                        <i class="fas fa-image fa-2x text-muted"></i>
                                     </div>
-                                    
-                                    <div class="card-footer">
-                                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-primary w-100">
-                                            <i class="fas fa-eye me-2"></i>عرض المنتج
-                                        </a>
-                                    </div>
+                                @endif
+                            </div>
+                            
+                            <div class="card-body">
+                                <h5 class="card-title text-dark">{{ $product->name }}</h5>
+                                <p class="card-text text-secondary">{{ Str::limit($product->description, 60) }}</p>
+                                
+                                <div class="price-section mb-2">
+                                    @if($product->discount_percentage > 0)
+                                        @php
+                                            $discountedPrice = $product->price - ($product->price * $product->discount_percentage / 100);
+                                        @endphp
+                                        <span class="text-danger fw-bold fs-5">{{ number_format($discountedPrice, 2) }} TL</span>
+                                        <small class="text-muted text-decoration-line-through d-block">{{ number_format($product->price, 2) }} TL</small>
+                                    @else
+                                        <span class="fw-bold text-primary fs-5">{{ number_format($product->price, 2) }} TL</span>
+                                    @endif
                                 </div>
                             </div>
-                            @endforeach
+                            <div class="card-action">
+                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-primary w-100 btn-view-product">
+                                    <i class="fas fa-eye me-2"></i>عرض المنتج
+                                </a>
+                            </div>
                         </div>
-                        
-                        <!-- الترقيم -->
-                        <div class="d-flex justify-content-center mt-4">
-                            {{ $products->links() }}
-                        </div>
-                    @else
-                        <div class="text-center py-5">
-                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-                            <h4 class="text-muted">لا توجد منتجات في هذا المتجر</h4>
-                            <p class="text-muted">سيقوم التاجر بإضافة منتجات قريباً</p>
-                        </div>
-                    @endif
+                    </div>
+                    @endforeach
                 </div>
-            </div>
+
+                <!-- الترقيم الصفحي -->
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $products->links() }}
+                </div>
+            @else
+                <div class="text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-box fa-4x text-muted mb-4"></i>
+                        <h4 class="text-muted">لا توجد منتجات في هذا المتجر</h4>
+                        <p class="text-muted">لم يقم التاجر بإضافة أي منتجات بعد</p>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>
 
 <style>
-.rating-input {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
-    gap: 5px;
+.store-logo {
+    border: 3px solid #e9ecef;
+    transition: all 0.3s ease;
 }
 
-.rating-input input {
-    display: none;
+.store-logo:hover {
+    border-color: #4361ee;
+    transform: scale(1.05);
 }
 
-.rating-input .star-label {
-    font-size: 1.5rem;
-    color: #ddd;
-    cursor: pointer;
-    transition: color 0.2s;
+.store-name {
+    font-size: 1.8rem;
+    font-weight: 700;
 }
 
-.rating-input input:checked ~ .star-label,
-.rating-input .star-label:hover,
-.rating-input .star-label:hover ~ .star-label {
-    color: #ffc107;
+.store-description {
+    font-size: 1rem;
+    line-height: 1.6;
 }
 
-.product-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #e9ecef;
+.section-title {
+    position: relative;
+    display: inline-block;
+    font-weight: 700;
+    color: #2d3748;
 }
 
-.product-card:hover {
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    border-radius: 2px;
+}
+
+.rating-stars {
+    direction: ltr;
+    unicode-bidi: bidi-override;
+}
+
+.modern-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.modern-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+.card-img-container {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+    border-radius: 15px 15px 0 0;
+}
+
+.card-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.modern-card:hover .card-product-image {
+    transform: scale(1.1);
+}
+
+.no-image-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+}
+
+.btn-view-product {
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-view-product:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+}
+
+.empty-state {
+    padding: 3rem 1rem;
+}
+
+@media (max-width: 768px) {
+    .store-name {
+        font-size: 1.5rem;
+    }
+    
+    .store-logo {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 1rem;
+    }
 }
 </style>
 @endsection

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Merchanta')</title>
+    <title>@yield('title', config('app.name', 'Merchanta'))</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -337,8 +337,15 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary py-2">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
-                <img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Merchanta" class="logo-img">
-                Merchanta
+                @php
+                    $siteLogo = env('SITE_LOGO');
+                @endphp
+                @if($siteLogo && Storage::disk('public')->exists($siteLogo))
+                    <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ config('app.name', 'Merchanta') }}" class="logo-img">
+                @else
+                    <img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="{{ config('app.name', 'Merchanta') }}" class="logo-img">
+                @endif
+                {{ config('app.name', 'Merchanta') }}
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -429,12 +436,20 @@
                     
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                                <img src="{{ Auth::user()->avatar_url }}" 
+                                     class="rounded-circle me-2" 
+                                     width="25" 
+                                     height="25" 
+                                     alt="{{ Auth::user()->name }}">
                                 <small>{{ Auth::user()->name }}</small>
                             </a>
                             <ul class="dropdown-menu">
                                 @if(Auth::user()->user_type === 'admin')
                                     <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">
                                         <i class="fas fa-cog me-2"></i>لوحة التحكم
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.profile') }}">
+                                        <i class="fas fa-user-edit me-2"></i>تحديث الملف الشخصي
                                     </a></li>
                                 @elseif(Auth::user()->user_type === 'merchant')
                                     <li><a class="dropdown-item" href="{{ route('merchant.dashboard') }}">
@@ -468,6 +483,9 @@
                                 @endif
                                 <li><a class="dropdown-item" href="{{ route('profile') }}">
                                     <i class="fas fa-user me-2"></i>الملف الشخصي
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ route('change-password') }}">
+                                    <i class="fas fa-key me-2"></i>تغيير كلمة المرور
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
@@ -564,7 +582,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <h6 class="mb-2">Merchanta</h6>
+                    <h6 class="mb-2">{{ config('app.name', 'Merchanta') }}</h6>
                     <p class="small mb-0">منصة شاملة لبيع وشراء المنتجات الجديدة والمستعملة مع أفضل العروض والتخفيضات</p>
                 </div>
                 <div class="col-md-3">
@@ -794,7 +812,3 @@
     @stack('scripts')
 </body>
 </html>
-{{-- في قسم dropdown المسؤول - أضف هذا البند --}}
-<li><a class="dropdown-item" href="{{ route('admin.profile') }}">
-    <i class="fas fa-user-edit me-2"></i>تحديث الملف الشخصي
-</a></li>
