@@ -1,48 +1,38 @@
 FROM php:8.2-apache
 
-# تثبيت dependencies النظام
+# تثبيت المتطلبات الأساسية
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    unzip \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    && docker-php-ext-configure zip \
-    && docker-php-ext-install pdo pdo_mysql mysqli mbstring exif pcntl bcmath gd zip
+    libzip-dev
 
-# تنظيف cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# تثبيت إضافات PHP
+RUN docker-php-ext-install pdo pdo_mysql mysqli mbstring gd zip
 
 # تثبيت Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# نسخ ملفات المشروع من المسار الصحيح
-COPY . /var/www/html/syrians-store/
+# نسخ جميع ملفات المشروع
+COPY . /var/www/html/
 
-# نقل الملفات إلى المسار الصحيح لـ Apache
-RUN cp -r /var/www/html/syrians-store/* /var/www/html/ && \
-    cp -r /var/www/html/syrians-store/.* /var/www/html/ 2>/dev/null || true
+# الانتقال إلى مجلد العمل
+WORKDIR /var/www/html
+
+# تثبيت dependencies - هذه هي الخطوة الأهم!
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# إعداد Apache
+RUN a2enmod rewrite
 
 # تغيير DocumentRoot إلى مجلد public
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
-
-# تفعيل mod_rewrite
-RUN a2enmod rewrite
-
-# تثبيت dependencies باستخدام Composer
-RUN composer install --no-dev --optimize-autoloader --no-scripts
-
-# تشغيل scripts المهمة فقط
-RUN composer run-script post-autoload-dump
 
 # تعيين صلاحيات المجلدات
 RUN chown -R www-data:www-data /var/www/html/storage
 RUN chown -R www-data:www-data /var/www/html/bootstrap/cache
-
-WORKDIR /var/www/html
 
 CMD ["apache2-foreground"]
