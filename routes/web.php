@@ -15,7 +15,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MerchantSubscriptionController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ChatController;
-use Illuminate\Support\Facades\Route;
+
 // الصفحة الرئيسية
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
