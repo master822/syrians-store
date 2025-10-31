@@ -15,7 +15,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MerchantSubscriptionController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ChatController;
-
+use Illuminate\Support\Facades\Route;
 // الصفحة الرئيسية
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -171,6 +171,14 @@ Route::get('/test-payment', function() {
 
 // إضافة هذه المسارات في ملف routes/web.php
 
+
+Route::get('/test', function() {
+    return '🎉 TEST: الموقع يعمل!';
+});
+
+Route::get('/', function() {
+    return '🎉 الرئيسية تعمل!';
+});
 // الملف الشخصي وإدارة الحساب
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
